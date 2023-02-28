@@ -5,10 +5,13 @@
 package Beans;
 
 import com.mycompany.aadhar_based_ehrs.Users;
+import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Date;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
 
 /**
  *
@@ -25,5 +28,21 @@ public class userBean implements userBeanLocal {
         return em.createNamedQuery("Users.findAll").getResultList();
     }
 
+    @Override
+    public void addUser(String username, String email, String password, BigInteger aadharNo, int roleid, BigInteger contactNo, String gender, Date dob, int bloodGroupId)
+    {
+        Users user = new Users();
+        user.setUsername(username);
+        user.setEmailid(email);
+        user.setPassword(password);
+        user.setAadharno(aadharNo);
+        user.setRoleid(roleid);
+        user.setContactno(contactNo);
+        user.setGender(gender);
+        user.setDob(dob);
+        user.setBloodgroupid(bloodGroupId);
+        em.persist(user);
+    }
+    
     
 }

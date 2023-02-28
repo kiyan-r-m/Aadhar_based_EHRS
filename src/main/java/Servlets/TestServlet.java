@@ -8,7 +8,10 @@ import Beans.userBeanLocal;
 import com.mycompany.aadhar_based_ehrs.Users;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -53,6 +56,11 @@ public class TestServlet extends HttpServlet {
             }
             
             out.println("<h1>Servlet TestServlet at " + request.getContextPath() + "</h1>");
+            
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
+            String datestring = "28-04-2001";
+            Date date = new Date(28-04-2001);
+            ubl.addUser("krmorena", "krmorena@gmail.com", "qwer1234", BigInteger.valueOf(123476548765L), 1, BigInteger.valueOf(9876987555L), "male", date, 1);
             out.println("</body>");
             out.println("</html>");
         }

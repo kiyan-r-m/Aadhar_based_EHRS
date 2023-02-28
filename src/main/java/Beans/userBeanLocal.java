@@ -5,7 +5,9 @@
 package Beans;
 
 import com.mycompany.aadhar_based_ehrs.Users;
+import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Date;
 import javax.ejb.Local;
 
 /**
@@ -16,5 +18,6 @@ import javax.ejb.Local;
 public interface userBeanLocal {
     
     Collection<Users> getAllUsers();
+    void addUser(String username, String email, String password, BigInteger aadharNo, int roleid, BigInteger contactNo, String gender, Date dob, int bloodGroupId);
     
 }
