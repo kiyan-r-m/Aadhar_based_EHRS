@@ -15,6 +15,7 @@ public class ResponseModel<T> {
     public T data;
 
     public ResponseModel() {
+        this.message = "";
     }
 
     public boolean getStatus() {
