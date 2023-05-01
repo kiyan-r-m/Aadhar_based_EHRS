@@ -4,11 +4,17 @@
  */
 package Beans;
 
-import com.mycompany.aadhar_based_ehrs.Users;
-import java.math.BigInteger;
+import Entities.Addresses;
+import Entities.Allergies;
+import Entities.Appointments;
+import Entities.PatientAccessMapper;
+import Entities.PatientDoctorMapper;
+import Entities.ResponseModel;
+import Entities.Users;
 import java.util.Collection;
-import java.util.Date;
 import javax.ejb.Local;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  *
@@ -17,7 +23,18 @@ import javax.ejb.Local;
 @Local
 public interface userBeanLocal {
     
-    Collection<Users> getAllUsers();
-    void addUser(String username, String email, String password, BigInteger aadharNo, int roleid, BigInteger contactNo, String gender, Date dob, int bloodGroupId);
-    
+    ResponseModel<Collection<Users>> getAllUsers();
+    ResponseModel addUser(Users user);
+    ResponseModel updateUser(Users user);
+    ResponseModel<Collection<Allergies>> getAllAllergies();
+    ResponseModel<Collection<Appointments>> getAppointmentsByUserId(int userId);
+    ResponseModel<Addresses> getAddressByUserId(int userId);
+    ResponseModel addAddressForUserId(Addresses address);
+    ResponseModel updateAddressesForUserId(Addresses address);
+    ResponseModel<Collection<PatientAccessMapper>> getAccessMapperByUserId(int userId);
+    ResponseModel updateAccessMapperForUserId(PatientAccessMapper accessMapper);
+    ResponseModel<Collection<PatientDoctorMapper>> getPatientDoctorMapperByUserId(int userId);
+    ResponseModel ChangePassword(int userId, String oldPassword, String newPassword);
+    ResponseModel SendMailForForgetPassword(String emailId, HttpServletResponse response);
+    ResponseModel ForgetPassword(HttpServletRequest request, HttpServletResponse response, int userId, String OTP, String newPassword);
 }

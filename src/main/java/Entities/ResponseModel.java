@@ -2,22 +2,22 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.aadhar_based_ehrs;
+package Entities;
 
 /**
  *
  * @author admin
  */
 public class ResponseModel<T> {
-    
     public boolean status;
     public String message;
     public T data;
 
     public ResponseModel() {
+        this.message = "";
     }
 
-    public boolean getStatus() {
+    public boolean isStatus() {
         return status;
     }
 
@@ -40,6 +40,7 @@ public class ResponseModel<T> {
     public void setData(T data) {
         this.data = data;
     }
+    
     
     
 }
