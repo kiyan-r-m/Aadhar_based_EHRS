@@ -4,7 +4,7 @@
  */
 package Beans;
 
-import com.mycompany.aadhar_based_ehrs.ResponseModel;
+import Entities.ResponseModel;
 import javax.ejb.Local;
 
 /**

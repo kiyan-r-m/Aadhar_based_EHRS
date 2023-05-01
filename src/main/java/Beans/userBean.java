@@ -4,13 +4,13 @@
  */
 package Beans;
 
-import com.mycompany.aadhar_based_ehrs.Addresses;
-import com.mycompany.aadhar_based_ehrs.Allergies;
-import com.mycompany.aadhar_based_ehrs.Appointments;
-import com.mycompany.aadhar_based_ehrs.PatientAccessMapper;
-import com.mycompany.aadhar_based_ehrs.PatientDoctorMapper;
-import com.mycompany.aadhar_based_ehrs.ResponseModel;
-import com.mycompany.aadhar_based_ehrs.Users;
+import Entities.Addresses;
+import Entities.Allergies;
+import Entities.Appointments;
+import Entities.PatientAccessMapper;
+import Entities.PatientDoctorMapper;
+import Entities.ResponseModel;
+import Entities.Users;
 import java.util.Collection;
 import java.util.UUID;
 import javax.ejb.EJB;
@@ -56,7 +56,7 @@ public class userBean implements userBeanLocal {
                 res.message = "Input Invalid";
                 return res;
             }
-            if (em.createNamedQuery("Users.findByAadharno").setParameter("aadharno", user.getAadharno()).getResultList() == null) {
+            if (em.createNamedQuery("Users.findByAadharno").setParameter("aadharno", user.getAadharCardNo()).getResultList() == null) {
                 em.persist(user);
                 res.status = true;
             } else {
@@ -81,16 +81,16 @@ public class userBean implements userBeanLocal {
                 return res;
             }
 
-            if (em.find(Users.class, user.getUserid()) != null) {
-                Users u = em.find(Users.class, user.getUserid());
+            if (em.find(Users.class, user.getUserId()) != null) {
+                Users u = em.find(Users.class, user.getUserId());
                 u.setUsername(user.getUsername());
                 u.setEmailid(user.getEmailid());
-                u.setAadharno(user.getAadharno());
-                u.setRoleid(user.getRoleid());
-                u.setContactno(user.getContactno());
+                u.setAadharCardNo(user.getAadharCardNo());
+                u.setRoleId(user.getRoleId());
+                u.setContactNo(user.getContactNo());
                 u.setGender(user.getGender());
                 u.setDob(user.getDob());
-                u.setBloodgroupid(user.getBloodgroupid());
+                u.setBloodGroupsCollection(user.getBloodGroupsCollection());
                 em.merge(u);
                 res.status = true;
             } else {
@@ -153,7 +153,7 @@ public class userBean implements userBeanLocal {
                 res.message = "Input Invalid";
                 return res;
             }
-            if (em.createNamedQuery("Addresses.findByUserid").setParameter("userid", address.getUserid()).getResultList() == null) {
+            if (em.createNamedQuery("Addresses.findByUserid").setParameter("userid", address.getUserId()).getResultList() == null) {
                 em.persist(address);
                 res.status = true;
             } else {
@@ -178,10 +178,10 @@ public class userBean implements userBeanLocal {
                 return res;
             }
 
-            if (em.createNamedQuery("Addresses.findByUserid").setParameter("userid", address.getUserid()).getResultList() != null) {
-                Addresses a = (Addresses) em.createNamedQuery("Addresses.findByUserid").setParameter("userid", address.getUserid()).getResultList();
+            if (em.createNamedQuery("Addresses.findByUserid").setParameter("userid", address.getUserId()).getResultList() != null) {
+                Addresses a = (Addresses) em.createNamedQuery("Addresses.findByUserid").setParameter("userid", address.getUserId()).getResultList();
                 a.setAddress(address.getAddress());
-                a.setPin(address.getPin());
+                a.setPincode(address.getPincode());
                 em.merge(a);
                 res.status = true;
             } else {
@@ -219,10 +219,10 @@ public class userBean implements userBeanLocal {
                 return res;
             }
 
-            if (em.find(PatientAccessMapper.class, accessMapper.getAccessid()) != null) {
-                PatientAccessMapper a = em.find(PatientAccessMapper.class, accessMapper.getAccessid());
-                a.setDoctorid(accessMapper.getDoctorid());
-                a.setIsactive(accessMapper.getIsactive());
+            if (em.find(PatientAccessMapper.class, accessMapper.getPatientAccessMapperPK()) != null) {
+                PatientAccessMapper a = em.find(PatientAccessMapper.class, accessMapper.getPatientAccessMapperPK());
+                a.setDoctorDetails(accessMapper.getDoctorDetails());
+                a.setIsActive(accessMapper.getIsActive());
                 em.merge(a);
                 res.status = true;
             } else {

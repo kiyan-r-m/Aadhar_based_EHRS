@@ -2,18 +2,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.aadhar_based_ehrs;
+package Entities;
 
 import java.io.Serializable;
+import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -21,22 +23,24 @@ import javax.validation.constraints.Size;
  * @author admin
  */
 @Entity
-@Table(name = "roles", catalog = "ehrsystem", schema = "")
+@Table(name = "roles", catalog = "ehr_system", schema = "")
 @NamedQueries({
     @NamedQuery(name = "Roles.findAll", query = "SELECT r FROM Roles r"),
-    @NamedQuery(name = "Roles.findByRoleid", query = "SELECT r FROM Roles r WHERE r.roleid = :roleid"),
-    @NamedQuery(name = "Roles.findByRolename", query = "SELECT r FROM Roles r WHERE r.rolename = :rolename")})
+    @NamedQuery(name = "Roles.findByRoleid", query = "SELECT r FROM Roles r WHERE r.roleid = :roleid")})
 public class Roles implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
+    @NotNull
     @Column(name = "roleid")
     private Integer roleid;
-    @Size(max = 20)
-    @Column(name = "rolename")
-    private String rolename;
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "role_name")
+    private String roleName;
+    @OneToMany(mappedBy = "roleId")
+    private Collection<Users> usersCollection;
 
     public Roles() {
     }
@@ -53,12 +57,20 @@ public class Roles implements Serializable {
         this.roleid = roleid;
     }
 
-    public String getRolename() {
-        return rolename;
+    public String getRoleName() {
+        return roleName;
     }
 
-    public void setRolename(String rolename) {
-        this.rolename = rolename;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public Collection<Users> getUsersCollection() {
+        return usersCollection;
+    }
+
+    public void setUsersCollection(Collection<Users> usersCollection) {
+        this.usersCollection = usersCollection;
     }
 
     @Override
@@ -83,7 +95,7 @@ public class Roles implements Serializable {
 
     @Override
     public String toString() {
-        return "com.mycompany.aadhar_based_ehrs.Roles[ roleid=" + roleid + " ]";
+        return "Entities.Roles[ roleid=" + roleid + " ]";
     }
     
 }

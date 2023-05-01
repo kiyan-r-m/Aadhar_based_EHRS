@@ -4,13 +4,13 @@
  */
 package Beans;
 
-import com.mycompany.aadhar_based_ehrs.Addresses;
-import com.mycompany.aadhar_based_ehrs.Allergies;
-import com.mycompany.aadhar_based_ehrs.Appointments;
-import com.mycompany.aadhar_based_ehrs.PatientAccessMapper;
-import com.mycompany.aadhar_based_ehrs.PatientDoctorMapper;
-import com.mycompany.aadhar_based_ehrs.ResponseModel;
-import com.mycompany.aadhar_based_ehrs.Users;
+import Entities.Addresses;
+import Entities.Allergies;
+import Entities.Appointments;
+import Entities.PatientAccessMapper;
+import Entities.PatientDoctorMapper;
+import Entities.ResponseModel;
+import Entities.Users;
 import java.util.Collection;
 import javax.ejb.Local;
 import javax.servlet.http.HttpServletRequest;

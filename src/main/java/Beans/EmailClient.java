@@ -4,7 +4,7 @@
  */
 package Beans;
 
-import com.mycompany.aadhar_based_ehrs.ResponseModel;
+import Entities.ResponseModel;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;

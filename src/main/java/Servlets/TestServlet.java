@@ -6,8 +6,8 @@ package Servlets;
 
 import Beans.EmailClientLocal;
 import Beans.userBeanLocal;
-import com.mycompany.aadhar_based_ehrs.ResponseModel;
-import com.mycompany.aadhar_based_ehrs.Users;
+import Entities.ResponseModel;
+import Entities.Users;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
