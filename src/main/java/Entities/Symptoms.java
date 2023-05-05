@@ -6,16 +6,18 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -23,16 +25,17 @@ import javax.validation.constraints.Size;
  * @author admin
  */
 @Entity
-@Table(name = "symptoms", catalog = "ehr_system", schema = "")
+@Table(name = "symptoms", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "Symptoms.findAll", query = "SELECT s FROM Symptoms s"),
-    @NamedQuery(name = "Symptoms.findBySymptomId", query = "SELECT s FROM Symptoms s WHERE s.symptomId = :symptomId")})
+    @NamedQuery(name = "Symptoms.findBySymptomId", query = "SELECT s FROM Symptoms s WHERE s.symptomId = :symptomId"),
+    @NamedQuery(name = "Symptoms.findBySymptomName", query = "SELECT s FROM Symptoms s WHERE s.symptomName = :symptomName")})
 public class Symptoms implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "symptom_id")
     private Integer symptomId;
     @Lob
@@ -40,6 +43,7 @@ public class Symptoms implements Serializable {
     @Column(name = "symptom_name")
     private String symptomName;
     @OneToMany(mappedBy = "symptomId")
+    @JsonbTransient
     private Collection<Diseases> diseasesCollection;
 
     public Symptoms() {
@@ -47,6 +51,16 @@ public class Symptoms implements Serializable {
 
     public Symptoms(Integer symptomId) {
         this.symptomId = symptomId;
+    }
+
+    public Symptoms(String symptomName) {
+        this.symptomId = 0;
+        this.symptomName = symptomName;
+    }
+
+    public Symptoms(Integer symptomId, String symptomName) {
+        this.symptomId = symptomId;
+        this.symptomName = symptomName;
     }
 
     public Integer getSymptomId() {

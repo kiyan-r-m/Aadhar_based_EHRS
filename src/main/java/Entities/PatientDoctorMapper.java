@@ -6,9 +6,12 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -22,49 +25,57 @@ import javax.persistence.TemporalType;
  * @author admin
  */
 @Entity
-@Table(name = "patient_doctor_mapper", catalog = "ehr_system", schema = "")
+@Table(name = "patient_doctor_mapper", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "PatientDoctorMapper.findAll", query = "SELECT p FROM PatientDoctorMapper p"),
-    @NamedQuery(name = "PatientDoctorMapper.findByPatientId", query = "SELECT p FROM PatientDoctorMapper p WHERE p.patientDoctorMapperPK.patientId = :patientId"),
-    @NamedQuery(name = "PatientDoctorMapper.findByDoctorId", query = "SELECT p FROM PatientDoctorMapper p WHERE p.patientDoctorMapperPK.doctorId = :doctorId"),
-    @NamedQuery(name = "PatientDoctorMapper.findByDiseaseId", query = "SELECT p FROM PatientDoctorMapper p WHERE p.patientDoctorMapperPK.diseaseId = :diseaseId"),
-    @NamedQuery(name = "PatientDoctorMapper.findByStartDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.patientDoctorMapperPK.startDate = :startDate"),
+    @NamedQuery(name = "PatientDoctorMapper.findByPatientDoctorMapperId", query = "SELECT p FROM PatientDoctorMapper p WHERE p.patientDoctorMapperId = :patientDoctorMapperId"),
+    @NamedQuery(name = "PatientDoctorMapper.findByStartDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.startDate = :startDate"),
     @NamedQuery(name = "PatientDoctorMapper.findByEndDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.endDate = :endDate")})
 public class PatientDoctorMapper implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected PatientDoctorMapperPK patientDoctorMapperPK;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "patient_doctor_mapper_id")
+    private Integer patientDoctorMapperId;
+    @Column(name = "start_date")
+    @Temporal(TemporalType.DATE)
+    private Date startDate;
     @Column(name = "end_date")
     @Temporal(TemporalType.DATE)
     private Date endDate;
-    @JoinColumn(name = "disease_id", referencedColumnName = "disease_id", insertable = false, updatable = false)
+    @JoinColumn(name = "disease_id", referencedColumnName = "disease_id")
     @ManyToOne(optional = false)
-    private Diseases diseases;
-    @JoinColumn(name = "doctor_id", referencedColumnName = "doctor_id", insertable = false, updatable = false)
+    private Diseases diseaseId;
+    @JoinColumn(name = "doctor_id", referencedColumnName = "doctor_id")
     @ManyToOne(optional = false)
-    private DoctorDetails doctorDetails;
-    @JoinColumn(name = "patient_id", referencedColumnName = "userId", insertable = false, updatable = false)
+    private DoctorDetails doctorId;
+    @JoinColumn(name = "patient_id", referencedColumnName = "userId")
     @ManyToOne(optional = false)
-    private Users users;
+    private Users patientId;
 
     public PatientDoctorMapper() {
     }
 
-    public PatientDoctorMapper(PatientDoctorMapperPK patientDoctorMapperPK) {
-        this.patientDoctorMapperPK = patientDoctorMapperPK;
+    public PatientDoctorMapper(Integer patientDoctorMapperId) {
+        this.patientDoctorMapperId = patientDoctorMapperId;
     }
 
-    public PatientDoctorMapper(int patientId, int doctorId, int diseaseId, Date startDate) {
-        this.patientDoctorMapperPK = new PatientDoctorMapperPK(patientId, doctorId, diseaseId, startDate);
+    public Integer getPatientDoctorMapperId() {
+        return patientDoctorMapperId;
     }
 
-    public PatientDoctorMapperPK getPatientDoctorMapperPK() {
-        return patientDoctorMapperPK;
+    public void setPatientDoctorMapperId(Integer patientDoctorMapperId) {
+        this.patientDoctorMapperId = patientDoctorMapperId;
     }
 
-    public void setPatientDoctorMapperPK(PatientDoctorMapperPK patientDoctorMapperPK) {
-        this.patientDoctorMapperPK = patientDoctorMapperPK;
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     public Date getEndDate() {
@@ -75,34 +86,34 @@ public class PatientDoctorMapper implements Serializable {
         this.endDate = endDate;
     }
 
-    public Diseases getDiseases() {
-        return diseases;
+    public Diseases getDiseaseId() {
+        return diseaseId;
     }
 
-    public void setDiseases(Diseases diseases) {
-        this.diseases = diseases;
+    public void setDiseaseId(Diseases diseaseId) {
+        this.diseaseId = diseaseId;
     }
 
-    public DoctorDetails getDoctorDetails() {
-        return doctorDetails;
+    public DoctorDetails getDoctorId() {
+        return doctorId;
     }
 
-    public void setDoctorDetails(DoctorDetails doctorDetails) {
-        this.doctorDetails = doctorDetails;
+    public void setDoctorId(DoctorDetails doctorId) {
+        this.doctorId = doctorId;
     }
 
-    public Users getUsers() {
-        return users;
+    public Users getPatientId() {
+        return patientId;
     }
 
-    public void setUsers(Users users) {
-        this.users = users;
+    public void setPatientId(Users patientId) {
+        this.patientId = patientId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (patientDoctorMapperPK != null ? patientDoctorMapperPK.hashCode() : 0);
+        hash += (patientDoctorMapperId != null ? patientDoctorMapperId.hashCode() : 0);
         return hash;
     }
 
@@ -113,7 +124,7 @@ public class PatientDoctorMapper implements Serializable {
             return false;
         }
         PatientDoctorMapper other = (PatientDoctorMapper) object;
-        if ((this.patientDoctorMapperPK == null && other.patientDoctorMapperPK != null) || (this.patientDoctorMapperPK != null && !this.patientDoctorMapperPK.equals(other.patientDoctorMapperPK))) {
+        if ((this.patientDoctorMapperId == null && other.patientDoctorMapperId != null) || (this.patientDoctorMapperId != null && !this.patientDoctorMapperId.equals(other.patientDoctorMapperId))) {
             return false;
         }
         return true;
@@ -121,7 +132,7 @@ public class PatientDoctorMapper implements Serializable {
 
     @Override
     public String toString() {
-        return "Entities.PatientDoctorMapper[ patientDoctorMapperPK=" + patientDoctorMapperPK + " ]";
+        return "Entities.PatientDoctorMapper[ patientDoctorMapperId=" + patientDoctorMapperId + " ]";
     }
     
 }

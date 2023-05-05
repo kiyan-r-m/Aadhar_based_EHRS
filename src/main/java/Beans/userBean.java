@@ -7,10 +7,14 @@ package Beans;
 import Entities.Addresses;
 import Entities.Allergies;
 import Entities.Appointments;
-import Entities.PatientAccessMapper;
+import Entities.BloodGroups;
+import Entities.Diseases;
+import Entities.DoctorDetails;
 import Entities.PatientDoctorMapper;
 import Entities.ResponseModel;
+import Entities.Roles;
 import Entities.Users;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 import javax.ejb.EJB;
@@ -28,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 @Stateless
 public class userBean implements userBeanLocal {
 
-    @PersistenceContext(unitName = "ehrJPU")
+    @PersistenceContext(unitName = "my_persistence")
     EntityManager em;
 
     @EJB
@@ -56,12 +60,133 @@ public class userBean implements userBeanLocal {
                 res.message = "Input Invalid";
                 return res;
             }
-            if (em.createNamedQuery("Users.findByAadharno").setParameter("aadharno", user.getAadharCardNo()).getResultList() == null) {
+            if (em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getResultList().isEmpty()) {
                 em.persist(user);
+                if(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()) != null) {
+                    user.setBloodGroupId(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()));
+                } else {
+                    user.getBloodGroupId(null);
+                }
+                if (em.find(Roles.class, user.getRoleId().getRoleid()) != null) {
+                    user.setRoleId(em.find(Roles.class, user.getRoleId().getRoleid()));
+                } else {
+                    user.setRoleId(null);
+                }
+                if (em.find(Addresses.class, user.getAddressId().getAddressId()) != null) {
+                    user.setAddressId(em.find(Addresses.class, user.getAddressId().getAddressId()));
+                } else {
+                    user.setAddressId(null);
+                }
+                Users u = (Users) em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getSingleResult();
+                Collection<Integer> dids = new ArrayList<>();
+                for (Diseases diseases : user.getDiseasesCollection()) {
+                    dids.add(diseases.getDiseaseId());
+                }
+                addChronicDiseasesToUser(u.getUserId(), dids);
+                Collection<Integer> aids = new ArrayList<>();
+                for (Allergies allergies : user.getAllergiesCollection()) {
+                    aids.add(allergies.getAllergyId());
+                }
+                addAllergiesToUser(u.getUserId(), aids);
+                res.status = true;
+            } else {
+                Collection<Users> users = em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getResultList();
+                res.status = false;
+                res.message = "User already exists";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel addChronicDiseasesToUser(int userId, Collection<Integer> dIds) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (userId == 0 && dIds.isEmpty()) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+
+            if (getUserById(userId).status) {
+                Users u = getUserById(userId).data;
+                Collection<Diseases> diseases = u.getDiseasesCollection();
+
+                for (Integer dId : dIds) {
+                    ResponseModel<Diseases> r = getDiseaseById(dId);
+                    if (r.status) {
+                        Diseases d = r.data;
+
+                        if (!diseases.contains(d)) {
+                            Collection<Users> users = d.getUsersCollection();
+                            diseases.add(d);
+                            users.add(u);
+
+                            u.setDiseasesCollection(diseases);
+                            d.setUsersCollection(users);
+
+                            em.merge(u);
+                        }
+
+                    } else {
+                        continue;
+                    }
+                }
                 res.status = true;
             } else {
                 res.status = false;
-                res.message = "User already exists";
+                res.message = "User not found";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel addAllergiesToUser(int userId, Collection<Integer> aIds) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (userId == 0 && aIds.isEmpty()) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+
+            if (getUserById(userId).status) {
+                Users u = getUserById(userId).data;
+                Collection<Allergies> allergies = u.getAllergiesCollection();
+
+                for (Integer aId : aIds) {
+                    ResponseModel<Allergies> r = getAllergyById(aId);
+                    if (r.status) {
+                        Allergies a = r.data;
+
+                        if (!allergies.contains(a)) {
+                            Collection<Users> users = a.getUsersCollection();
+                            allergies.add(a);
+                            users.add(u);
+
+                            u.setAllergiesCollection(allergies);
+                            a.setUsersCollection(users);
+
+                            em.merge(u);
+                        }
+
+                    } else {
+                        continue;
+                    }
+                }
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "User not found";
             }
 
         } catch (Exception e) {
@@ -90,7 +215,33 @@ public class userBean implements userBeanLocal {
                 u.setContactNo(user.getContactNo());
                 u.setGender(user.getGender());
                 u.setDob(user.getDob());
-                u.setBloodGroupsCollection(user.getBloodGroupsCollection());
+                if(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()) != null) {
+                    u.setBloodGroupId(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()));
+                }
+                if (em.find(Roles.class, user.getRoleId().getRoleid()) != null) {
+                    u.setRoleId(em.find(Roles.class, user.getRoleId().getRoleid()));
+                }
+                if (em.find(Addresses.class, user.getAddressId().getAddressId()) != null) {
+                    u.setAddressId(em.find(Addresses.class, user.getAddressId().getAddressId()));
+                }
+                Collection<Integer> dids = new ArrayList<>();
+                for (Diseases diseases : u.getDiseasesCollection()) {
+                    dids.add(diseases.getDiseaseId());
+                }
+                removeChronicDiseasesToUser(u.getUserId(), dids);
+                for (Diseases diseases : user.getDiseasesCollection()) {
+                    dids.add(diseases.getDiseaseId());
+                }
+                addChronicDiseasesToUser(u.getUserId(), dids);
+                Collection<Integer> aids = new ArrayList<>();
+                for (Allergies allergies : u.getAllergiesCollection()) {
+                    aids.add(allergies.getAllergyId());
+                }
+                removeAllergiesToUser(u.getUserId(), aids);
+                for (Allergies allergies : user.getAllergiesCollection()) {
+                    aids.add(allergies.getAllergyId());
+                }
+                addAllergiesToUser(u.getUserId(), aids);
                 em.merge(u);
                 res.status = true;
             } else {
@@ -101,6 +252,123 @@ public class userBean implements userBeanLocal {
         } catch (Exception e) {
             res.status = false;
             res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel removeChronicDiseasesToUser(int userId, Collection<Integer> dIds) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (userId == 0 && dIds.isEmpty()) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+
+            if (getUserById(userId).status) {
+                Users u = getUserById(userId).data;
+                Collection<Diseases> diseases = u.getDiseasesCollection();
+
+                for (Integer dId : dIds) {
+                    ResponseModel<Diseases> r = getDiseaseById(dId);
+                    if (r.status) {
+                        Diseases d = r.data;
+
+                        if (diseases.contains(d)) {
+                            Collection<Users> users = d.getUsersCollection();
+                            diseases.remove(d);
+                            users.remove(u);
+
+                            u.setDiseasesCollection(diseases);
+                            d.setUsersCollection(users);
+
+                            em.merge(u);
+                        }
+
+                    } else {
+                        continue;
+                    }
+                }
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "User not found";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel removeAllergiesToUser(int userId, Collection<Integer> aIds) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (userId == 0 && aIds.isEmpty()) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+
+            if (getUserById(userId).status) {
+                Users u = getUserById(userId).data;
+                Collection<Allergies> allergies = u.getAllergiesCollection();
+
+                for (Integer aId : aIds) {
+                    ResponseModel<Allergies> r = getAllergyById(aId);
+                    if (r.status) {
+                        Allergies a = r.data;
+
+                        if (allergies.contains(a)) {
+                            Collection<Users> users = a.getUsersCollection();
+                            allergies.remove(a);
+                            users.remove(u);
+
+                            u.setAllergiesCollection(allergies);
+                            a.setUsersCollection(users);
+
+                            em.merge(u);
+                        }
+
+                    } else {
+                        continue;
+                    }
+                }
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "User not found";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+    
+    @Override
+    public ResponseModel<Users> getUserById(int id) {
+        ResponseModel<Users> res = new ResponseModel<>();
+        try {
+            if (id == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (em.find(Users.class, id) != null) {
+                res.data = em.find(Users.class, id);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "User not found";
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
         }
         return res;
     }
@@ -122,11 +390,22 @@ public class userBean implements userBeanLocal {
     public ResponseModel<Collection<Appointments>> getAppointmentsByUserId(int userId) {
         ResponseModel<Collection<Appointments>> res = new ResponseModel<>();
         try {
-            res.data = em.createNamedQuery("Appointments.findByPatientid").setParameter("patientid", userId).getResultList();
-            res.status = true;
-        } catch (Exception e) {
+            if (userId == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            ResponseModel<Users> r = getUserById(userId);
+            if (r.status) {
+                res.data = r.data.getAppointmentsCollection();
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = r.message;
+            }
+        } catch (Exception ex) {
             res.status = false;
-            res.message = e.getMessage();
+            res.message = ex.getMessage();
         }
         return res;
     }
@@ -135,7 +414,31 @@ public class userBean implements userBeanLocal {
     public ResponseModel<Addresses> getAddressByUserId(int userId) {
         ResponseModel<Addresses> res = new ResponseModel<>();
         try {
-            res.data = (Addresses) em.createNamedQuery("Addresses.findByUserid").setParameter("userid", userId).getResultList();
+            if (userId == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            ResponseModel<Users> r = getUserById(userId);
+            if (r.status) {
+                res.data = r.data.getAddressId();
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = r.getMessage();
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+        }
+        return res;
+    }
+    
+    @Override
+    public ResponseModel<Collection<Addresses>> getAllAddresses() {
+        ResponseModel<Collection<Addresses>> res = new ResponseModel<>();
+        try {
+            res.data = em.createNamedQuery("Addresses.findAll").getResultList();
             res.status = true;
         } catch (Exception e) {
             res.status = false;
@@ -145,7 +448,7 @@ public class userBean implements userBeanLocal {
     }
 
     @Override
-    public ResponseModel addAddressForUserId(Addresses address) {
+    public ResponseModel addAddress(Addresses address) {
         ResponseModel res = new ResponseModel();
         try {
             if (address == null) {
@@ -153,7 +456,7 @@ public class userBean implements userBeanLocal {
                 res.message = "Input Invalid";
                 return res;
             }
-            if (em.createNamedQuery("Addresses.findByUserid").setParameter("userid", address.getUserId()).getResultList() == null) {
+            if (em.createNamedQuery("Addresses.findByAddress").setParameter("address", address.getAddress()).getResultList().isEmpty()) {
                 em.persist(address);
                 res.status = true;
             } else {
@@ -169,7 +472,7 @@ public class userBean implements userBeanLocal {
     }
 
     @Override
-    public ResponseModel updateAddressesForUserId(Addresses address) {
+    public ResponseModel updateAddresses(Addresses address) {
         ResponseModel res = new ResponseModel();
         try {
             if (address == null) {
@@ -178,15 +481,15 @@ public class userBean implements userBeanLocal {
                 return res;
             }
 
-            if (em.createNamedQuery("Addresses.findByUserid").setParameter("userid", address.getUserId()).getResultList() != null) {
-                Addresses a = (Addresses) em.createNamedQuery("Addresses.findByUserid").setParameter("userid", address.getUserId()).getResultList();
+            if (em.find(Addresses.class, address.getAddressId()) != null) {
+                Addresses a = em.find(Addresses.class, address.getAddressId());
                 a.setAddress(address.getAddress());
                 a.setPincode(address.getPincode());
                 em.merge(a);
                 res.status = true;
             } else {
                 res.status = false;
-                res.message = "Address for this user not found";
+                res.message = "Address not found";
             }
 
         } catch (Exception e) {
@@ -197,11 +500,23 @@ public class userBean implements userBeanLocal {
     }
 
     @Override
-    public ResponseModel<Collection<PatientAccessMapper>> getAccessMapperByUserId(int userId) {
-        ResponseModel<Collection<PatientAccessMapper>> res = new ResponseModel<>();
+    public ResponseModel<Collection<DoctorDetails>> getAccessMapperByUserId(int userId) {
+        ResponseModel<Collection<DoctorDetails>> res = new ResponseModel<>();
         try {
-            res.data = em.createNamedQuery("PatientAccessMapper.findByPatientid").setParameter("patientid", userId).getResultList();
-            res.status = true;
+            if (userId == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            
+            ResponseModel<Users> r = getUserById(userId);
+            if (r.status) {
+                res.data = r.data.getDoctorDetailsCollection();
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = r.getMessage();
+            }
         } catch (Exception e) {
             res.status = false;
             res.message = e.getMessage();
@@ -210,24 +525,123 @@ public class userBean implements userBeanLocal {
     }
 
     @Override
-    public ResponseModel updateAccessMapperForUserId(PatientAccessMapper accessMapper) {
+    public ResponseModel addAccessMapperToUser(int userId, Collection<Integer> dIds) {
         ResponseModel res = new ResponseModel();
         try {
-            if (accessMapper == null) {
+            if (userId == 0 && dIds.isEmpty()) {
                 res.status = false;
                 res.message = "Input Invalid";
                 return res;
             }
 
-            if (em.find(PatientAccessMapper.class, accessMapper.getPatientAccessMapperPK()) != null) {
-                PatientAccessMapper a = em.find(PatientAccessMapper.class, accessMapper.getPatientAccessMapperPK());
-                a.setDoctorDetails(accessMapper.getDoctorDetails());
-                a.setIsActive(accessMapper.getIsActive());
-                em.merge(a);
+            if (getUserById(userId).status) {
+                Users u = getUserById(userId).data;
+                Collection<DoctorDetails> accesses = u.getDoctorDetailsCollection();
+
+                for (Integer dId : dIds) {
+                    ResponseModel<DoctorDetails> r = getDoctorDetailById(dId);
+                    if (r.status) {
+                        DoctorDetails d = r.data;
+
+                        if (!accesses.contains(d)) {
+                            Collection<Users> users = d.getUsersCollection();
+                            accesses.add(d);
+                            users.add(u);
+
+                            u.setDoctorDetailsCollection(accesses);
+                            d.setUsersCollection(users);
+
+                            em.merge(u);
+                        }
+
+                    } else {
+                        continue;
+                    }
+                }
                 res.status = true;
             } else {
                 res.status = false;
-                res.message = "Access not found";
+                res.message = "User not found";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+    
+    @Override
+    public ResponseModel removeAccessMapperToUser(int userId, Collection<Integer> dIds) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (userId == 0 && dIds.isEmpty()) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+
+            if (getUserById(userId).status) {
+                Users u = getUserById(userId).data;
+                Collection<DoctorDetails> accesses = u.getDoctorDetailsCollection();
+
+                for (Integer dId : dIds) {
+                    ResponseModel<DoctorDetails> r = getDoctorDetailById(dId);
+                    if (r.status) {
+                        DoctorDetails d = r.data;
+
+                        if (accesses.contains(d)) {
+                            Collection<Users> users = d.getUsersCollection();
+                            accesses.remove(d);
+                            users.remove(u);
+
+                            u.setDoctorDetailsCollection(accesses);
+                            d.setUsersCollection(users);
+
+                            em.merge(u);
+                        }
+
+                    } else {
+                        continue;
+                    }
+                }
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "User not found";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+    
+    @Override
+    public ResponseModel updateAccessMapperToUser(int userId, Collection<Integer> dIds) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (userId == 0 && dIds.isEmpty()) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+
+            if (getUserById(userId).status) {
+                Users u = getUserById(userId).data;
+                Collection<DoctorDetails> accesses = u.getDoctorDetailsCollection();
+                
+                Collection<Integer> ids = new ArrayList<>();
+                for (DoctorDetails access : accesses) {
+                    ids.add(access.getDoctorId());
+                }
+                removeAccessMapperToUser(userId, ids);
+                addAccessMapperToUser(userId, dIds);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "User not found";
             }
 
         } catch (Exception e) {
@@ -241,8 +655,20 @@ public class userBean implements userBeanLocal {
     public ResponseModel<Collection<PatientDoctorMapper>> getPatientDoctorMapperByUserId(int userId) {
         ResponseModel<Collection<PatientDoctorMapper>> res = new ResponseModel<>();
         try {
-            res.data = em.createNamedQuery("PatientDoctorMapper.findByPatientid").setParameter("patientid", userId).getResultList();
-            res.status = true;
+            if (userId == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            
+            ResponseModel<Users> r = getUserById(userId);
+            if (r.status) {
+                res.data = r.data.getPatientDoctorMapperCollection();
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = r.getMessage();
+            }
         } catch (Exception e) {
             res.status = false;
             res.message = e.getMessage();
@@ -293,7 +719,7 @@ public class userBean implements userBeanLocal {
                 return res;
             }
 
-            if (em.createNamedQuery("Users.findByEmailid").setParameter("emailid", emailId).getResultList() != null) {
+            if (!em.createNamedQuery("Users.findByEmailid").setParameter("emailid", emailId).getResultList().isEmpty()) {
                 Collection<Users> u = em.createNamedQuery("Users.findByEmailid").setParameter("emailid", emailId).getResultList();
                 String otp = UUID.randomUUID().toString();
                 Cookie cookie = new Cookie("forgetPasswordOTP", otp);
@@ -368,5 +794,110 @@ public class userBean implements userBeanLocal {
             }
         }
         return null;
+    }
+
+    @Override
+    public ResponseModel<Collection<BloodGroups>> getAllBloodGroups() {
+        ResponseModel<Collection<BloodGroups>> res = new ResponseModel<>();
+        try {
+            res.data = em.createNamedQuery("BloodGroups.findAll").getResultList();
+            res.status = true;
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel<Diseases> getDiseaseById(int id) {
+        ResponseModel<Diseases> res = new ResponseModel<>();
+        try {
+            if (id != 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (em.find(Diseases.class, id) != null) {
+                res.data = em.find(Diseases.class, id);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "Disease not found";
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel<Allergies> getAllergyById(int id) {
+        ResponseModel<Allergies> res = new ResponseModel<>();
+        try {
+            if (id != 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (em.find(Allergies.class, id) != null) {
+                res.data = em.find(Allergies.class, id);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "Allergy not found";
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel<DoctorDetails> getDoctorDetailById(int id) {
+        ResponseModel<DoctorDetails> res = new ResponseModel<>();
+        try {
+            if (id != 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (em.find(DoctorDetails.class, id) != null) {
+                res.data = em.find(DoctorDetails.class, id);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "Doctor not found";
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel<BloodGroups> getBloodGroups(int id) {
+        ResponseModel<BloodGroups> res = new ResponseModel<>();
+        try {
+            if (id != 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (em.find(BloodGroups.class, id) != null) {
+                res.data = em.find(BloodGroups.class, id);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "Bloodgroup not found";
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+        }
+        return res;
     }
 }

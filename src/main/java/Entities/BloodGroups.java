@@ -6,18 +6,18 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -25,26 +25,25 @@ import javax.validation.constraints.Size;
  * @author admin
  */
 @Entity
-@Table(name = "blood_groups", catalog = "ehr_system", schema = "")
+@Table(name = "blood_groups", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "BloodGroups.findAll", query = "SELECT b FROM BloodGroups b"),
-    @NamedQuery(name = "BloodGroups.findByBloodGroupId", query = "SELECT b FROM BloodGroups b WHERE b.bloodGroupId = :bloodGroupId")})
+    @NamedQuery(name = "BloodGroups.findByBloodGroupId", query = "SELECT b FROM BloodGroups b WHERE b.bloodGroupId = :bloodGroupId"),
+    @NamedQuery(name = "BloodGroups.findByBloodGroupName", query = "SELECT b FROM BloodGroups b WHERE b.bloodGroupName = :bloodGroupName")})
 public class BloodGroups implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "blood_group_id")
     private Integer bloodGroupId;
     @Lob
     @Size(max = 65535)
     @Column(name = "blood_group_name")
     private String bloodGroupName;
-    @JoinTable(name = "patient_blood_group_mapper", joinColumns = {
-        @JoinColumn(name = "blood_group_id", referencedColumnName = "blood_group_id")}, inverseJoinColumns = {
-        @JoinColumn(name = "user_id", referencedColumnName = "userId")})
-    @ManyToMany
+    @OneToMany(mappedBy = "bloodGroupId")
+    @JsonbTransient
     private Collection<Users> usersCollection;
 
     public BloodGroups() {
@@ -52,6 +51,16 @@ public class BloodGroups implements Serializable {
 
     public BloodGroups(Integer bloodGroupId) {
         this.bloodGroupId = bloodGroupId;
+    }
+
+    public BloodGroups(String bloodGroupName) {
+        this.bloodGroupId = 0;
+        this.bloodGroupName = bloodGroupName;
+    }
+    
+    public BloodGroups(Integer bloodGroupId, String bloodGroupName) {
+        this.bloodGroupId = bloodGroupId;
+        this.bloodGroupName = bloodGroupName;
     }
 
     public Integer getBloodGroupId() {

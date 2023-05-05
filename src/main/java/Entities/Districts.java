@@ -6,16 +6,18 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -23,16 +25,17 @@ import javax.validation.constraints.Size;
  * @author admin
  */
 @Entity
-@Table(name = "districts", catalog = "ehr_system", schema = "")
+@Table(name = "districts", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "Districts.findAll", query = "SELECT d FROM Districts d"),
-    @NamedQuery(name = "Districts.findByDistrictId", query = "SELECT d FROM Districts d WHERE d.districtId = :districtId")})
+    @NamedQuery(name = "Districts.findByDistrictId", query = "SELECT d FROM Districts d WHERE d.districtId = :districtId"),
+    @NamedQuery(name = "Districts.findByDistrictName", query = "SELECT d FROM Districts d WHERE d.districtName = :districtName")})
 public class Districts implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "district_id")
     private Integer districtId;
     @Lob
@@ -40,6 +43,7 @@ public class Districts implements Serializable {
     @Column(name = "district_name")
     private String districtName;
     @OneToMany(mappedBy = "districtId")
+    @JsonbTransient
     private Collection<Pincodes> pincodesCollection;
 
     public Districts() {
@@ -47,6 +51,16 @@ public class Districts implements Serializable {
 
     public Districts(Integer districtId) {
         this.districtId = districtId;
+    }
+
+    public Districts(String districtName) {
+        this.districtId = 0;
+        this.districtName = districtName;
+    }
+
+    public Districts(Integer districtId, String districtName) {
+        this.districtId = districtId;
+        this.districtName = districtName;
     }
 
     public Integer getDistrictId() {

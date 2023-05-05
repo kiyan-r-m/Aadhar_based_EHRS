@@ -6,19 +6,23 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -26,7 +30,7 @@ import javax.validation.constraints.Size;
  * @author admin
  */
 @Entity
-@Table(name = "doctor_details", catalog = "ehr_system", schema = "")
+@Table(name = "doctor_details", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "DoctorDetails.findAll", query = "SELECT d FROM DoctorDetails d"),
     @NamedQuery(name = "DoctorDetails.findByDoctorId", query = "SELECT d FROM DoctorDetails d WHERE d.doctorId = :doctorId")})
@@ -34,14 +38,20 @@ public class DoctorDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "doctor_id")
     private Integer doctorId;
     @Lob
     @Size(max = 65535)
     @Column(name = "licence_no")
     private String licenceNo;
+    @JoinTable(name = "patient_access_mapper", joinColumns = {
+        @JoinColumn(name = "doctor_id", referencedColumnName = "doctor_id")}, inverseJoinColumns = {
+        @JoinColumn(name = "patient_id", referencedColumnName = "userId")})
+    @ManyToMany
+    @JsonbTransient
+    private Collection<Users> usersCollection;
     @OneToMany(mappedBy = "doctorId")
     private Collection<Appointments> appointmentsCollection;
     @JoinColumn(name = "degree_id", referencedColumnName = "degree_id")
@@ -56,10 +66,9 @@ public class DoctorDetails implements Serializable {
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
     @ManyToOne
     private Users userId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "doctorDetails")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "doctorId")
+    @JsonbTransient
     private Collection<PatientDoctorMapper> patientDoctorMapperCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "doctorDetails")
-    private Collection<PatientAccessMapper> patientAccessMapperCollection;
 
     public DoctorDetails() {
     }
@@ -82,6 +91,14 @@ public class DoctorDetails implements Serializable {
 
     public void setLicenceNo(String licenceNo) {
         this.licenceNo = licenceNo;
+    }
+
+    public Collection<Users> getUsersCollection() {
+        return usersCollection;
+    }
+
+    public void setUsersCollection(Collection<Users> usersCollection) {
+        this.usersCollection = usersCollection;
     }
 
     public Collection<Appointments> getAppointmentsCollection() {
@@ -130,14 +147,6 @@ public class DoctorDetails implements Serializable {
 
     public void setPatientDoctorMapperCollection(Collection<PatientDoctorMapper> patientDoctorMapperCollection) {
         this.patientDoctorMapperCollection = patientDoctorMapperCollection;
-    }
-
-    public Collection<PatientAccessMapper> getPatientAccessMapperCollection() {
-        return patientAccessMapperCollection;
-    }
-
-    public void setPatientAccessMapperCollection(Collection<PatientAccessMapper> patientAccessMapperCollection) {
-        this.patientAccessMapperCollection = patientAccessMapperCollection;
     }
 
     @Override

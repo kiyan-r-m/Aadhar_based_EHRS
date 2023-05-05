@@ -6,16 +6,18 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -23,7 +25,7 @@ import javax.validation.constraints.Size;
  * @author admin
  */
 @Entity
-@Table(name = "field_of_study", catalog = "ehr_system", schema = "")
+@Table(name = "field_of_study", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "FieldOfStudy.findAll", query = "SELECT f FROM FieldOfStudy f"),
     @NamedQuery(name = "FieldOfStudy.findByFieldId", query = "SELECT f FROM FieldOfStudy f WHERE f.fieldId = :fieldId")})
@@ -31,8 +33,8 @@ public class FieldOfStudy implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "field_id")
     private Integer fieldId;
     @Lob
@@ -40,6 +42,7 @@ public class FieldOfStudy implements Serializable {
     @Column(name = "field_name")
     private String fieldName;
     @OneToMany(mappedBy = "fieldOfStudyId")
+    @JsonbTransient
     private Collection<DoctorDetails> doctorDetailsCollection;
 
     public FieldOfStudy() {

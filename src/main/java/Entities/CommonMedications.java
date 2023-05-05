@@ -6,16 +6,18 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -23,16 +25,17 @@ import javax.validation.constraints.Size;
  * @author admin
  */
 @Entity
-@Table(name = "common_medications", catalog = "ehr_system", schema = "")
+@Table(name = "common_medications", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "CommonMedications.findAll", query = "SELECT c FROM CommonMedications c"),
-    @NamedQuery(name = "CommonMedications.findByMedicationId", query = "SELECT c FROM CommonMedications c WHERE c.medicationId = :medicationId")})
+    @NamedQuery(name = "CommonMedications.findByMedicationId", query = "SELECT c FROM CommonMedications c WHERE c.medicationId = :medicationId"),
+    @NamedQuery(name = "CommonMedications.findByMedicationName", query = "SELECT c FROM CommonMedications c WHERE c.medicationName = :medicationName")})
 public class CommonMedications implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "medication_id")
     private Integer medicationId;
     @Lob
@@ -40,6 +43,7 @@ public class CommonMedications implements Serializable {
     @Column(name = "medication_name")
     private String medicationName;
     @OneToMany(mappedBy = "commonMedicationId")
+    @JsonbTransient
     private Collection<Diseases> diseasesCollection;
 
     public CommonMedications() {
@@ -47,6 +51,16 @@ public class CommonMedications implements Serializable {
 
     public CommonMedications(Integer medicationId) {
         this.medicationId = medicationId;
+    }
+
+    public CommonMedications(String medicationName) {
+        this.medicationId = 0;
+        this.medicationName = medicationName;
+    }
+
+    public CommonMedications(Integer medicationId, String medicationName) {
+        this.medicationId = medicationId;
+        this.medicationName = medicationName;
     }
 
     public Integer getMedicationId() {

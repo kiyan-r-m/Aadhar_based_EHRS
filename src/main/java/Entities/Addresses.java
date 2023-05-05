@@ -5,17 +5,21 @@
 package Entities;
 
 import java.io.Serializable;
+import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
@@ -23,34 +27,48 @@ import javax.validation.constraints.Size;
  * @author admin
  */
 @Entity
-@Table(name = "addresses", catalog = "ehr_system", schema = "")
+@Table(name = "addresses", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "Addresses.findAll", query = "SELECT a FROM Addresses a"),
-    @NamedQuery(name = "Addresses.findByAddressId", query = "SELECT a FROM Addresses a WHERE a.addressId = :addressId")})
+    @NamedQuery(name = "Addresses.findByAddressId", query = "SELECT a FROM Addresses a WHERE a.addressId = :addressId"),
+    @NamedQuery(name = "Addresses.findByAddress", query = "SELECT a FROM Addresses a WHERE a.address = :address")})
 public class Addresses implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "address_id")
-    private Integer addressId;
     @Lob
     @Size(max = 65535)
     @Column(name = "address")
     private String address;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "address_id")
+    private Integer addressId;
     @JoinColumn(name = "pincode", referencedColumnName = "pincode")
     @ManyToOne
     private Pincodes pincode;
-    @JoinColumn(name = "user_id", referencedColumnName = "userId")
-    @ManyToOne
-    private Users userId;
+    @OneToMany(mappedBy = "addressId")
+    @JsonbTransient
+    private Collection<Users> usersCollection;
 
     public Addresses() {
     }
 
     public Addresses(Integer addressId) {
         this.addressId = addressId;
+    }
+
+    public Addresses(String address, Pincodes pincode) {
+        this.address = address;
+        this.addressId = 0;
+        this.pincode = pincode;
+    }
+
+    public Addresses(Integer addressId, String address, Pincodes pincode) {
+        this.address = address;
+        this.addressId = addressId;
+        this.pincode = pincode;
     }
 
     public Integer getAddressId() {
@@ -61,13 +79,6 @@ public class Addresses implements Serializable {
         this.addressId = addressId;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
 
     public Pincodes getPincode() {
         return pincode;
@@ -77,12 +88,12 @@ public class Addresses implements Serializable {
         this.pincode = pincode;
     }
 
-    public Users getUserId() {
-        return userId;
+    public Collection<Users> getUsersCollection() {
+        return usersCollection;
     }
 
-    public void setUserId(Users userId) {
-        this.userId = userId;
+    public void setUsersCollection(Collection<Users> usersCollection) {
+        this.usersCollection = usersCollection;
     }
 
     @Override
@@ -108,6 +119,14 @@ public class Addresses implements Serializable {
     @Override
     public String toString() {
         return "Entities.Addresses[ addressId=" + addressId + " ]";
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
     
 }
