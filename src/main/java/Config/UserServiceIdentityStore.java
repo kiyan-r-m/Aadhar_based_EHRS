@@ -4,8 +4,15 @@
  */
 package Config;
 
+import java.util.Optional;
 import javax.inject.Named;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.security.enterprise.credential.Credential;
+import javax.security.enterprise.credential.UsernamePasswordCredential;
+import javax.security.enterprise.identitystore.CredentialValidationResult;
+import javax.security.enterprise.identitystore.IdentityStore;
+import javax.xml.registry.infomodel.User;
 
 /**
  *
@@ -13,12 +20,8 @@ import javax.enterprise.context.ApplicationScoped;
  */
 @Named(value = "userServiceIdentityStore")
 @ApplicationScoped
-public class UserServiceIdentityStore {
+public class UserServiceIdentityStore implements IdentityStore{
 
-    /**
-     * Creates a new instance of UserServiceIdentityStore
-     */
-    public UserServiceIdentityStore() {
-    }
     
+
 }
