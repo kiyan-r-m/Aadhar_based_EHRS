@@ -4,14 +4,30 @@
  */
 package Config;
 
-import javax.inject.Named;
-import javax.enterprise.context.ApplicationScoped;
 
-/**
- *
- * @author krdmo
- */
-@Named(value = "applicationConfig")
+import javax.enterprise.context.ApplicationScoped;
+import javax.faces.annotation.FacesConfig;
+import javax.security.enterprise.authentication.mechanism.http.CustomFormAuthenticationMechanismDefinition;
+import javax.security.enterprise.authentication.mechanism.http.LoginToContinue;
+import javax.security.enterprise.identitystore.DatabaseIdentityStoreDefinition;
+import javax.security.enterprise.identitystore.Pbkdf2PasswordHash;
+
+
+@CustomFormAuthenticationMechanismDefinition(
+    loginToContinue = @LoginToContinue(
+        loginPage = "/login.jsf",
+        errorPage = ""
+    )
+)
+
+@DatabaseIdentityStoreDefinition(
+        dataSourceLookup = "jdbc/ehrsystem",
+        callerQuery = "select password from users where username = ?",
+        groupsQuery = "select role_name from roles r join users u on r.roleid = u.role_id where u.username = ?",
+        hashAlgorithm = Pbkdf2PasswordHash.class
+    )
+
+@FacesConfig
 @ApplicationScoped
 public class ApplicationConfig {
 

@@ -13,6 +13,10 @@ import Entities.ResponseModel;
 import Entities.Symptoms;
 import java.util.Collection;
 import javax.ejb.Local;
+import Entities.Users;
+import Entities.FieldOfStudy;
+import Entities.Pincodes;
+import Entities.States;
 
 /**
  *
@@ -72,4 +76,33 @@ public interface AdminBeanLocal {
     ResponseModel updateDisease(Diseases d);
 
     ResponseModel deleteDisease(int id);    
+
+    ResponseModel addFieldOfStudy(FieldOfStudy data);
+    ResponseModel getAllFieldsofStudy();
+    ResponseModel getFieldOfStudy(int id);
+    ResponseModel updateFieldOfStudy(FieldOfStudy data);
+    ResponseModel deleteFieldOfStudy(FieldOfStudy data);
+    ResponseModel addMedication(CommonMedications data);
+    ResponseModel getAllMedications();
+    ResponseModel getMedication(int id);
+    ResponseModel updateMedication(CommonMedications data);
+    ResponseModel deleteMedication(CommonMedications data);
+    ResponseModel addPincode (Pincodes data);
+    ResponseModel getAllPincodes();
+    ResponseModel getPincode (int pin);
+    ResponseModel updatePincode(Pincodes data);
+    ResponseModel deletePincode(Pincodes data);
+    ResponseModel addState (States data);
+    ResponseModel getAllStates();
+    ResponseModel getState (int id);
+    ResponseModel updateState(States data);
+    ResponseModel deleteState(States data);
+    ResponseModel getSymptom (int id);
+    ResponseModel deleteSymptom(Symptoms data);
+    ResponseModel addAdminUser (Users data);
+    ResponseModel getAllAdmins();
+    ResponseModel getAdmin (int id);
+    ResponseModel updateAdminUser(Users data);
+    ResponseModel deleteAdminUser(Users data);
 }
+
