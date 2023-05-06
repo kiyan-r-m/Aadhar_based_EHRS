@@ -9,21 +9,22 @@ import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
  *
- * @author admin
+ * @author krdmo
  */
 @Entity
-@Table(name = "common_medications", catalog = "ehr_system", schema = "")
+@Table(name = "common_medications", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "CommonMedications.findAll", query = "SELECT c FROM CommonMedications c"),
     @NamedQuery(name = "CommonMedications.findByMedicationId", query = "SELECT c FROM CommonMedications c WHERE c.medicationId = :medicationId")})
@@ -31,8 +32,8 @@ public class CommonMedications implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "medication_id")
     private Integer medicationId;
     @Lob

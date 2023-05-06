@@ -9,6 +9,8 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -17,14 +19,13 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
 
 /**
  *
- * @author admin
+ * @author krdmo
  */
 @Entity
-@Table(name = "appointments", catalog = "ehr_system", schema = "")
+@Table(name = "appointments", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "Appointments.findAll", query = "SELECT a FROM Appointments a"),
     @NamedQuery(name = "Appointments.findByAppointmentId", query = "SELECT a FROM Appointments a WHERE a.appointmentId = :appointmentId"),
@@ -35,8 +36,8 @@ public class Appointments implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "appointment_id")
     private Integer appointmentId;
     @Column(name = "appointment_date")

@@ -9,6 +9,8 @@ import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -17,15 +19,14 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
  *
- * @author admin
+ * @author krdmo
  */
 @Entity
-@Table(name = "allergies", catalog = "ehr_system", schema = "")
+@Table(name = "allergies", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "Allergies.findAll", query = "SELECT a FROM Allergies a"),
     @NamedQuery(name = "Allergies.findByAllergyId", query = "SELECT a FROM Allergies a WHERE a.allergyId = :allergyId")})
@@ -33,8 +34,8 @@ public class Allergies implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "allergy_id")
     private Integer allergyId;
     @Lob

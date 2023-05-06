@@ -9,21 +9,22 @@ import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
  *
- * @author admin
+ * @author krdmo
  */
 @Entity
-@Table(name = "education_level", catalog = "ehr_system", schema = "")
+@Table(name = "education_level", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "EducationLevel.findAll", query = "SELECT e FROM EducationLevel e"),
     @NamedQuery(name = "EducationLevel.findByLevelId", query = "SELECT e FROM EducationLevel e WHERE e.levelId = :levelId")})
@@ -31,8 +32,8 @@ public class EducationLevel implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "level_id")
     private Integer levelId;
     @Lob

@@ -12,6 +12,8 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
@@ -23,15 +25,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
  *
- * @author admin
+ * @author krdmo
  */
 @Entity
-@Table(name = "users", catalog = "ehr_system", schema = "")
+@Table(name = "users", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "Users.findAll", query = "SELECT u FROM Users u"),
     @NamedQuery(name = "Users.findByUserId", query = "SELECT u FROM Users u WHERE u.userId = :userId"),
@@ -42,8 +43,8 @@ public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "userId")
     private Integer userId;
     @Lob
@@ -72,22 +73,24 @@ public class Users implements Serializable {
     @ManyToMany(mappedBy = "usersCollection")
     private Collection<Diseases> diseasesCollection;
     @ManyToMany(mappedBy = "usersCollection")
-    private Collection<BloodGroups> bloodGroupsCollection;
+    private Collection<DoctorDetails> doctorDetailsCollection;
     @ManyToMany(mappedBy = "usersCollection")
     private Collection<Allergies> allergiesCollection;
-    @OneToMany(mappedBy = "userId")
-    private Collection<Addresses> addressesCollection;
     @OneToMany(mappedBy = "patientId")
     private Collection<Appointments> appointmentsCollection;
     @OneToMany(mappedBy = "userId")
-    private Collection<DoctorDetails> doctorDetailsCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
+    private Collection<DoctorDetails> doctorDetailsCollection1;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "patientId")
     private Collection<PatientDoctorMapper> patientDoctorMapperCollection;
+    @JoinColumn(name = "address_id", referencedColumnName = "address_id")
+    @ManyToOne
+    private Addresses addressId;
+    @JoinColumn(name = "blood_group_id", referencedColumnName = "blood_group_id")
+    @ManyToOne
+    private BloodGroups bloodGroupId;
     @JoinColumn(name = "role_id", referencedColumnName = "roleid")
     @ManyToOne
     private Roles roleId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
-    private Collection<PatientAccessMapper> patientAccessMapperCollection;
 
     public Users() {
     }
@@ -168,12 +171,12 @@ public class Users implements Serializable {
         this.diseasesCollection = diseasesCollection;
     }
 
-    public Collection<BloodGroups> getBloodGroupsCollection() {
-        return bloodGroupsCollection;
+    public Collection<DoctorDetails> getDoctorDetailsCollection() {
+        return doctorDetailsCollection;
     }
 
-    public void setBloodGroupsCollection(Collection<BloodGroups> bloodGroupsCollection) {
-        this.bloodGroupsCollection = bloodGroupsCollection;
+    public void setDoctorDetailsCollection(Collection<DoctorDetails> doctorDetailsCollection) {
+        this.doctorDetailsCollection = doctorDetailsCollection;
     }
 
     public Collection<Allergies> getAllergiesCollection() {
@@ -184,14 +187,6 @@ public class Users implements Serializable {
         this.allergiesCollection = allergiesCollection;
     }
 
-    public Collection<Addresses> getAddressesCollection() {
-        return addressesCollection;
-    }
-
-    public void setAddressesCollection(Collection<Addresses> addressesCollection) {
-        this.addressesCollection = addressesCollection;
-    }
-
     public Collection<Appointments> getAppointmentsCollection() {
         return appointmentsCollection;
     }
@@ -200,12 +195,12 @@ public class Users implements Serializable {
         this.appointmentsCollection = appointmentsCollection;
     }
 
-    public Collection<DoctorDetails> getDoctorDetailsCollection() {
-        return doctorDetailsCollection;
+    public Collection<DoctorDetails> getDoctorDetailsCollection1() {
+        return doctorDetailsCollection1;
     }
 
-    public void setDoctorDetailsCollection(Collection<DoctorDetails> doctorDetailsCollection) {
-        this.doctorDetailsCollection = doctorDetailsCollection;
+    public void setDoctorDetailsCollection1(Collection<DoctorDetails> doctorDetailsCollection1) {
+        this.doctorDetailsCollection1 = doctorDetailsCollection1;
     }
 
     public Collection<PatientDoctorMapper> getPatientDoctorMapperCollection() {
@@ -216,20 +211,28 @@ public class Users implements Serializable {
         this.patientDoctorMapperCollection = patientDoctorMapperCollection;
     }
 
+    public Addresses getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(Addresses addressId) {
+        this.addressId = addressId;
+    }
+
+    public BloodGroups getBloodGroupId() {
+        return bloodGroupId;
+    }
+
+    public void setBloodGroupId(BloodGroups bloodGroupId) {
+        this.bloodGroupId = bloodGroupId;
+    }
+
     public Roles getRoleId() {
         return roleId;
     }
 
     public void setRoleId(Roles roleId) {
         this.roleId = roleId;
-    }
-
-    public Collection<PatientAccessMapper> getPatientAccessMapperCollection() {
-        return patientAccessMapperCollection;
-    }
-
-    public void setPatientAccessMapperCollection(Collection<PatientAccessMapper> patientAccessMapperCollection) {
-        this.patientAccessMapperCollection = patientAccessMapperCollection;
     }
 
     @Override

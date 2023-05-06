@@ -9,21 +9,22 @@ import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
  *
- * @author admin
+ * @author krdmo
  */
 @Entity
-@Table(name = "districts", catalog = "ehr_system", schema = "")
+@Table(name = "districts", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "Districts.findAll", query = "SELECT d FROM Districts d"),
     @NamedQuery(name = "Districts.findByDistrictId", query = "SELECT d FROM Districts d WHERE d.districtId = :districtId")})
@@ -31,8 +32,8 @@ public class Districts implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "district_id")
     private Integer districtId;
     @Lob
