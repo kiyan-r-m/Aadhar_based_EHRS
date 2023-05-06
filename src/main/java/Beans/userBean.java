@@ -61,16 +61,6 @@ public class userBean implements userBeanLocal {
                 return res;
             }
             if (em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getResultList().isEmpty()) {
-                Collection<Integer> dids = new ArrayList<>();
-                for (Diseases diseases : user.getDiseasesCollection()) {
-                    dids.add(diseases.getDiseaseId());
-                }
-                Collection<Integer> aids = new ArrayList<>();
-                for (Allergies allergies : user.getAllergiesCollection()) {
-                    aids.add(allergies.getAllergyId());
-                }
-                user.setDiseasesCollection(null);
-                user.setAllergiesCollection(null);
                 em.persist(user);
                 if(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()) != null) {
                     user.setBloodGroupId(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()));
@@ -88,7 +78,15 @@ public class userBean implements userBeanLocal {
                     user.setAddressId(null);
                 }
                 Users u = (Users) em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getSingleResult();
+                Collection<Integer> dids = new ArrayList<>();
+                for (Diseases diseases : user.getDiseasesCollection()) {
+                    dids.add(diseases.getDiseaseId());
+                }
                 addChronicDiseasesToUser(u.getUserId(), dids);
+                Collection<Integer> aids = new ArrayList<>();
+                for (Allergies allergies : user.getAllergiesCollection()) {
+                    aids.add(allergies.getAllergyId());
+                }
                 addAllergiesToUser(u.getUserId(), aids);
                 res.status = true;
             } else {
@@ -815,7 +813,7 @@ public class userBean implements userBeanLocal {
     public ResponseModel<Diseases> getDiseaseById(int id) {
         ResponseModel<Diseases> res = new ResponseModel<>();
         try {
-            if (id == 0) {
+            if (id != 0) {
                 res.status = false;
                 res.message = "Input Invalid";
                 return res;
@@ -838,7 +836,7 @@ public class userBean implements userBeanLocal {
     public ResponseModel<Allergies> getAllergyById(int id) {
         ResponseModel<Allergies> res = new ResponseModel<>();
         try {
-            if (id == 0) {
+            if (id != 0) {
                 res.status = false;
                 res.message = "Input Invalid";
                 return res;
@@ -861,7 +859,7 @@ public class userBean implements userBeanLocal {
     public ResponseModel<DoctorDetails> getDoctorDetailById(int id) {
         ResponseModel<DoctorDetails> res = new ResponseModel<>();
         try {
-            if (id == 0) {
+            if (id != 0) {
                 res.status = false;
                 res.message = "Input Invalid";
                 return res;
@@ -884,7 +882,7 @@ public class userBean implements userBeanLocal {
     public ResponseModel<BloodGroups> getBloodGroups(int id) {
         ResponseModel<BloodGroups> res = new ResponseModel<>();
         try {
-            if (id == 0) {
+            if (id != 0) {
                 res.status = false;
                 res.message = "Input Invalid";
                 return res;
