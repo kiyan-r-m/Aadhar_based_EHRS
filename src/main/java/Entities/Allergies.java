@@ -6,6 +6,7 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -46,6 +47,7 @@ public class Allergies implements Serializable {
         @JoinColumn(name = "allergy_id", referencedColumnName = "allergy_id")}, inverseJoinColumns = {
         @JoinColumn(name = "user_id", referencedColumnName = "userId")})
     @ManyToMany
+    @JsonbTransient
     private Collection<Users> usersCollection;
 
     public Allergies() {

@@ -31,7 +31,8 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "Appointments.findByAppointmentId", query = "SELECT a FROM Appointments a WHERE a.appointmentId = :appointmentId"),
     @NamedQuery(name = "Appointments.findByAppointmentDate", query = "SELECT a FROM Appointments a WHERE a.appointmentDate = :appointmentDate"),
     @NamedQuery(name = "Appointments.findByDuration", query = "SELECT a FROM Appointments a WHERE a.duration = :duration"),
-    @NamedQuery(name = "Appointments.findByIsAttended", query = "SELECT a FROM Appointments a WHERE a.isAttended = :isAttended")})
+    @NamedQuery(name = "Appointments.findByIsAttended", query = "SELECT a FROM Appointments a WHERE a.isAttended = :isAttended"),
+    @NamedQuery(name = "Appointments.findByPatientId", query = "SELECT a FROM Appointments a WHERE a.patientId.userId = :patientId")})
 public class Appointments implements Serializable {
 
     private static final long serialVersionUID = 1L;

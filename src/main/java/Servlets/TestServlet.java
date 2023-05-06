@@ -4,13 +4,16 @@
  */
 package Servlets;
 
+import Beans.AdminBeanLocal;
 import Beans.EmailClientLocal;
 import Beans.userBeanLocal;
-import Entities.ResponseModel;
-import Entities.Users;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collection;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -30,9 +33,12 @@ public class TestServlet extends HttpServlet {
 
     @EJB
     EmailClientLocal mail;
+    
+    @EJB
+    AdminBeanLocal abl;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ParseException {
         response.setContentType("text/html;charset=UTF-8");
         try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
@@ -43,30 +49,51 @@ public class TestServlet extends HttpServlet {
             out.println("</head>");
             out.println("<body>");
 
-            ResponseModel<Collection<Users>> users = ubl.getAllUsers();
+//            ubl.addUser(new Users("Vesu", new Pincodes(395006)));
+//            ubl.updateAddresses(new Addresses(1, "Vesu", new Pincodes(395006)));
+            
+//            ResponseModel<Collection<Users>> cm = ubl.getAllUsers();
+//            if (cm.status) {
+//                for (Users c : cm.data) {
+//                    out.println(c.getUsername() + " " + c.getRoleId().getRoleName() + " " + c.getAddressId().getAddress() + " " + c.getBloodGroupId().getBloodGroupName() +"\n");
+//                }
+//            }
+            
+//            ResponseModel<Collection<Users>> users = ubl.getAllUsers();
 
-            if (users.status == true) {
-                for (Users user : users.data) {
-                    out.println(user.getUsername());
-                }
-            } else {
-                System.out.println(users.message);
-            }
+//            if (users.status == true) {
+//                for (Users user : users.data) {
+//                    out.println(user.getUsername());
+//                }
+//            } else {
+//                System.out.println(users.message);
+//            }
 //            out.println("<h1>Servlet TestServlet at " + request.getContextPath() + "</h1>");
 
-//            SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
-//            String datestring = "28-04-2001";
-//            Date date = new Date(28 - 04 - 2001);
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
+            String datestring = "28-04-2001";
+            Date date = sdf.parse(datestring);
+            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
 //            Users u = new Users();
+//            u.setUserId(3);
 //            u.setUsername("krmorena");
 //            u.setEmailid("krmorena@gmail.com");
 //            u.setPassword("qwer1234");
-//            u.setContactno(BigInteger.valueOf(9876987555L));
-//            u.setRoleid(1);
-//            u.setAadharno(BigInteger.valueOf(123476548765L));
+//            u.setContactNo(BigInteger.valueOf(9876987555L));
+//            u.setRoleId(new Roles(1));
+//            u.setAadharCardNo(BigInteger.valueOf(123476548756L));
 //            u.setGender("male");
-//            u.setDob(date);
-//            u.setBloodgroupid(1);
+//            u.setDob(sqlDate);
+////            Collection<BloodGroups> b = new ArrayList<>();
+////            b.add(new BloodGroups(1, "AB+"));
+//            u.setBloodGroupId(new BloodGroups(1));
+//            Collection<Diseases> d = new ArrayList<>();
+//            d.add(new Diseases(1));
+//            u.setDiseasesCollection(d);
+//            Collection<Allergies> a = new ArrayList<>();
+//            a.add(new Allergies(1));
+//            u.setAllergiesCollection(a);
+//            u.setAddressId(new Addresses(1));
 //            ResponseModel r = ubl.addUser(u);
 //            if(r.status == true) {
 //                System.out.println("User added successfully");
@@ -114,7 +141,11 @@ public class TestServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (ParseException ex) {
+            Logger.getLogger(TestServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -128,7 +159,11 @@ public class TestServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (ParseException ex) {
+            Logger.getLogger(TestServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

@@ -6,6 +6,7 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -49,6 +50,7 @@ public class DoctorDetails implements Serializable {
         @JoinColumn(name = "doctor_id", referencedColumnName = "doctor_id")}, inverseJoinColumns = {
         @JoinColumn(name = "patient_id", referencedColumnName = "userId")})
     @ManyToMany
+    @JsonbTransient
     private Collection<Users> usersCollection;
     @OneToMany(mappedBy = "doctorId")
     private Collection<Appointments> appointmentsCollection;
@@ -65,6 +67,7 @@ public class DoctorDetails implements Serializable {
     @ManyToOne
     private Users userId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "doctorId")
+    @JsonbTransient
     private Collection<PatientDoctorMapper> patientDoctorMapperCollection;
 
     public DoctorDetails() {

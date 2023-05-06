@@ -6,6 +6,7 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,7 +28,8 @@ import javax.validation.constraints.Size;
 @Table(name = "blood_groups", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "BloodGroups.findAll", query = "SELECT b FROM BloodGroups b"),
-    @NamedQuery(name = "BloodGroups.findByBloodGroupId", query = "SELECT b FROM BloodGroups b WHERE b.bloodGroupId = :bloodGroupId")})
+    @NamedQuery(name = "BloodGroups.findByBloodGroupId", query = "SELECT b FROM BloodGroups b WHERE b.bloodGroupId = :bloodGroupId"),
+    @NamedQuery(name = "BloodGroups.findByBloodGroupName", query = "SELECT b FROM BloodGroups b WHERE b.bloodGroupName = :bloodGroupName")})
 public class BloodGroups implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -41,6 +43,7 @@ public class BloodGroups implements Serializable {
     @Column(name = "blood_group_name")
     private String bloodGroupName;
     @OneToMany(mappedBy = "bloodGroupId")
+    @JsonbTransient
     private Collection<Users> usersCollection;
 
     public BloodGroups() {
@@ -48,6 +51,16 @@ public class BloodGroups implements Serializable {
 
     public BloodGroups(Integer bloodGroupId) {
         this.bloodGroupId = bloodGroupId;
+    }
+
+    public BloodGroups(String bloodGroupName) {
+        this.bloodGroupId = 0;
+        this.bloodGroupName = bloodGroupName;
+    }
+    
+    public BloodGroups(Integer bloodGroupId, String bloodGroupName) {
+        this.bloodGroupId = bloodGroupId;
+        this.bloodGroupName = bloodGroupName;
     }
 
     public Integer getBloodGroupId() {

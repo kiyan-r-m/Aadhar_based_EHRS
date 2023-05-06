@@ -30,9 +30,7 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "PatientDoctorMapper.findAll", query = "SELECT p FROM PatientDoctorMapper p"),
     @NamedQuery(name = "PatientDoctorMapper.findByPatientDoctorMapperId", query = "SELECT p FROM PatientDoctorMapper p WHERE p.patientDoctorMapperId = :patientDoctorMapperId"),
     @NamedQuery(name = "PatientDoctorMapper.findByStartDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.startDate = :startDate"),
-    @NamedQuery(name = "PatientDoctorMapper.findByEndDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.endDate = :endDate"),
-    @NamedQuery(name = "PatientDoctorMapper.findByDoctorId", query = "SELECT p FROM PatientDoctorMapper p WHERE p.doctorId = :doctorId")})
-    
+    @NamedQuery(name = "PatientDoctorMapper.findByEndDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.endDate = :endDate")})
 public class PatientDoctorMapper implements Serializable {
 
     private static final long serialVersionUID = 1L;

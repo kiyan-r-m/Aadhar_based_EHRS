@@ -6,6 +6,7 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -33,7 +34,8 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "Diseases.findAll", query = "SELECT d FROM Diseases d"),
     @NamedQuery(name = "Diseases.findByDiseaseId", query = "SELECT d FROM Diseases d WHERE d.diseaseId = :diseaseId"),
-    @NamedQuery(name = "Diseases.findByDiseaseType", query = "SELECT d FROM Diseases d WHERE d.diseaseType = :diseaseType")})
+    @NamedQuery(name = "Diseases.findByDiseaseType", query = "SELECT d FROM Diseases d WHERE d.diseaseType = :diseaseType"),
+    @NamedQuery(name = "Diseases.findByDiseaseName", query = "SELECT d FROM Diseases d WHERE d.diseaseName = :diseaseName")})
 public class Diseases implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -52,8 +54,10 @@ public class Diseases implements Serializable {
         @JoinColumn(name = "disease_id", referencedColumnName = "disease_id")}, inverseJoinColumns = {
         @JoinColumn(name = "user_id", referencedColumnName = "userId")})
     @ManyToMany
+    @JsonbTransient
     private Collection<Users> usersCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "diseaseId")
+    @JsonbTransient
     private Collection<PatientDoctorMapper> patientDoctorMapperCollection;
     @JoinColumn(name = "common_medication_id", referencedColumnName = "medication_id")
     @ManyToOne
@@ -67,6 +71,22 @@ public class Diseases implements Serializable {
 
     public Diseases(Integer diseaseId) {
         this.diseaseId = diseaseId;
+    }
+
+    public Diseases(String diseaseName, Boolean diseaseType, CommonMedications commonMedicationId, Symptoms symptomId) {
+        this.diseaseId = 0;
+        this.diseaseName = diseaseName;
+        this.diseaseType = diseaseType;
+        this.commonMedicationId = commonMedicationId;
+        this.symptomId = symptomId;
+    }
+
+    public Diseases(Integer diseaseId, String diseaseName, Boolean diseaseType, CommonMedications commonMedicationId, Symptoms symptomId) {
+        this.diseaseId = diseaseId;
+        this.diseaseName = diseaseName;
+        this.diseaseType = diseaseType;
+        this.commonMedicationId = commonMedicationId;
+        this.symptomId = symptomId;
     }
 
     public Integer getDiseaseId() {

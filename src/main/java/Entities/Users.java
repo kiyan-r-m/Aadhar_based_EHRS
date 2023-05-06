@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -38,7 +39,9 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Users.findByUserId", query = "SELECT u FROM Users u WHERE u.userId = :userId"),
     @NamedQuery(name = "Users.findByAadharCardNo", query = "SELECT u FROM Users u WHERE u.aadharCardNo = :aadharCardNo"),
     @NamedQuery(name = "Users.findByContactNo", query = "SELECT u FROM Users u WHERE u.contactNo = :contactNo"),
-    @NamedQuery(name = "Users.findByDob", query = "SELECT u FROM Users u WHERE u.dob = :dob")})
+    @NamedQuery(name = "Users.findByDob", query = "SELECT u FROM Users u WHERE u.dob = :dob"),
+    @NamedQuery(name = "Users.findByBloodGroupId", query = "SELECT u FROM Users u WHERE u.bloodGroupId.bloodGroupId = :bloodGroupId"),
+    @NamedQuery(name = "Users.findByAddressId", query = "SELECT u FROM Users u WHERE u.addressId.addressId = :addressId")})
 public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -71,16 +74,22 @@ public class Users implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date dob;
     @ManyToMany(mappedBy = "usersCollection")
+    @JsonbTransient
     private Collection<Diseases> diseasesCollection;
     @ManyToMany(mappedBy = "usersCollection")
+    @JsonbTransient
     private Collection<DoctorDetails> doctorDetailsCollection;
     @ManyToMany(mappedBy = "usersCollection")
+    @JsonbTransient
     private Collection<Allergies> allergiesCollection;
     @OneToMany(mappedBy = "patientId")
+    @JsonbTransient
     private Collection<Appointments> appointmentsCollection;
     @OneToMany(mappedBy = "userId")
+    @JsonbTransient
     private Collection<DoctorDetails> doctorDetailsCollection1;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "patientId")
+    @JsonbTransient
     private Collection<PatientDoctorMapper> patientDoctorMapperCollection;
     @JoinColumn(name = "address_id", referencedColumnName = "address_id")
     @ManyToOne
@@ -97,6 +106,22 @@ public class Users implements Serializable {
 
     public Users(Integer userId) {
         this.userId = userId;
+    }
+
+    public Users(String username, String emailid, String password, BigInteger aadharCardNo, BigInteger contactNo, String gender, Date dob, Collection<Diseases> diseasesCollection, Collection<Allergies> allergiesCollection, Addresses addressId, BloodGroups bloodGroupId, Roles roleId) {
+        this.userId = 0;
+        this.username = username;
+        this.emailid = emailid;
+        this.password = password;
+        this.aadharCardNo = aadharCardNo;
+        this.contactNo = contactNo;
+        this.gender = gender;
+        this.dob = dob;
+        this.diseasesCollection = diseasesCollection;
+        this.allergiesCollection = allergiesCollection;
+        this.addressId = addressId;
+        this.bloodGroupId = bloodGroupId;
+        this.roleId = roleId;
     }
 
     public Integer getUserId() {
@@ -258,6 +283,10 @@ public class Users implements Serializable {
     @Override
     public String toString() {
         return "Entities.Users[ userId=" + userId + " ]";
+    }
+
+    public void getBloodGroupId(Object object) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
 }

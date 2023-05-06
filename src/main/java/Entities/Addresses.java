@@ -6,6 +6,7 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,8 +30,14 @@ import javax.validation.constraints.Size;
 @Table(name = "addresses", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "Addresses.findAll", query = "SELECT a FROM Addresses a"),
-    @NamedQuery(name = "Addresses.findByAddressId", query = "SELECT a FROM Addresses a WHERE a.addressId = :addressId")})
+    @NamedQuery(name = "Addresses.findByAddressId", query = "SELECT a FROM Addresses a WHERE a.addressId = :addressId"),
+    @NamedQuery(name = "Addresses.findByAddress", query = "SELECT a FROM Addresses a WHERE a.address = :address")})
 public class Addresses implements Serializable {
+
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "address")
+    private String address;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -38,14 +45,11 @@ public class Addresses implements Serializable {
     @Basic(optional = false)
     @Column(name = "address_id")
     private Integer addressId;
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "address")
-    private String address;
     @JoinColumn(name = "pincode", referencedColumnName = "pincode")
     @ManyToOne
     private Pincodes pincode;
     @OneToMany(mappedBy = "addressId")
+    @JsonbTransient
     private Collection<Users> usersCollection;
 
     public Addresses() {
@@ -53,6 +57,18 @@ public class Addresses implements Serializable {
 
     public Addresses(Integer addressId) {
         this.addressId = addressId;
+    }
+
+    public Addresses(String address, Pincodes pincode) {
+        this.address = address;
+        this.addressId = 0;
+        this.pincode = pincode;
+    }
+
+    public Addresses(Integer addressId, String address, Pincodes pincode) {
+        this.address = address;
+        this.addressId = addressId;
+        this.pincode = pincode;
     }
 
     public Integer getAddressId() {
@@ -63,13 +79,6 @@ public class Addresses implements Serializable {
         this.addressId = addressId;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
 
     public Pincodes getPincode() {
         return pincode;
@@ -110,6 +119,14 @@ public class Addresses implements Serializable {
     @Override
     public String toString() {
         return "Entities.Addresses[ addressId=" + addressId + " ]";
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
     
 }

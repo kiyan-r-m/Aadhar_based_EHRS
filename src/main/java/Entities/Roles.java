@@ -6,6 +6,7 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,6 +42,7 @@ public class Roles implements Serializable {
     @Column(name = "role_name")
     private String roleName;
     @OneToMany(mappedBy = "roleId")
+    @JsonbTransient
     private Collection<Users> usersCollection;
 
     public Roles() {
@@ -48,6 +50,11 @@ public class Roles implements Serializable {
 
     public Roles(Integer roleid) {
         this.roleid = roleid;
+    }
+
+    public Roles(Integer roleid, String roleName) {
+        this.roleid = roleid;
+        this.roleName = roleName;
     }
 
     public Integer getRoleid() {

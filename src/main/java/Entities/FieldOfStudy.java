@@ -6,6 +6,7 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,6 +42,7 @@ public class FieldOfStudy implements Serializable {
     @Column(name = "field_name")
     private String fieldName;
     @OneToMany(mappedBy = "fieldOfStudyId")
+    @JsonbTransient
     private Collection<DoctorDetails> doctorDetailsCollection;
 
     public FieldOfStudy() {
