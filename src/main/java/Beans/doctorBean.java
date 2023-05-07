@@ -4,14 +4,11 @@
  */
 package Beans;
 
-import Entities.Allergies;
 import Entities.Appointments;
 import Entities.DoctorDetails;
-import Entities.FieldOfStudy;
 import Entities.PatientDoctorMapper;
 import Entities.ResponseModel;
 import Entities.Users;
-import com.mycompany.aadhar_based_ehrs.*;
 import java.util.Collection;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -24,7 +21,7 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class doctorBean implements doctorBeanLocal {
 
-    @PersistenceContext(unitName = "ehrJPU")
+    @PersistenceContext(unitName = "my_persistence")
     EntityManager em;
 
     @Override
