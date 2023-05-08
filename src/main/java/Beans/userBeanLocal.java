@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Local
 public interface userBeanLocal {
-    
     ResponseModel<Collection<Users>> getAllUsers();
     ResponseModel addUser(Users user);
     ResponseModel updateUser(Users user);
@@ -52,4 +51,6 @@ public interface userBeanLocal {
     ResponseModel<Allergies> getAllergyById(int id);
     ResponseModel<DoctorDetails> getDoctorDetailById(int id);
     ResponseModel<Collection<Addresses>> getAllAddresses();
+    ResponseModel getUserByAadharPassword(String aadhar, String password);
+    ResponseModel getUserByUsernamePassword(String username, String password);
 }

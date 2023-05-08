@@ -5,16 +5,25 @@
 package Servlets;
 
 import Beans.AdminBeanLocal;
-import Beans.EmailClientLocal;
 import Beans.userBeanLocal;
+import Entities.Addresses;
+import Entities.BloodGroups;
+import Entities.ResponseModel;
+import Entities.Roles;
+import Entities.Users;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.security.enterprise.identitystore.Pbkdf2PasswordHash;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -30,12 +39,14 @@ public class TestServlet extends HttpServlet {
 
     @EJB
     userBeanLocal ubl;
-
-    @EJB
-    EmailClientLocal mail;
     
     @EJB
     AdminBeanLocal abl;
+    @PersistenceContext(unitName = "my_persistence")
+    EntityManager em;
+    
+    @Inject
+    private Pbkdf2PasswordHash passwordHash;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ParseException {
@@ -74,6 +85,26 @@ public class TestServlet extends HttpServlet {
             String datestring = "28-04-2001";
             Date date = sdf.parse(datestring);
             java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+            
+            ResponseModel<Users> res = new ResponseModel<>();
+            
+            String password = passwordHash.generate( "secret12345".toCharArray());
+            out.println(password);
+            res = ubl.getUserByUsernamePassword("kiyanmorena", password);
+            out.println(res.data);
+            
+//            Users u = new Users();
+//            u.setUsername("kiyanmorena");
+//            u.setPassword("secret12345");
+//            u.setAadharCardNo(BigInteger.valueOf(123412341234L));
+//            u.setContactNo(BigInteger.valueOf(9824663176L));
+//            u.setRoleId(em.find(Roles.class, 1));
+//            u.setGender("male");
+//            u.setDob(date);
+//            u.setBloodGroupId(em.find(BloodGroups.class, 1));
+//            u.setAddressId(em.find(Addresses.class, 1));
+//            ubl.adduser1(u);
+            
 //            Users u = new Users();
 //            u.setUserId(3);
 //            u.setUsername("krmorena");

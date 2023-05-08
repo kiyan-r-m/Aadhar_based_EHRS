@@ -24,7 +24,7 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class doctorBean implements doctorBeanLocal {
 
-    @PersistenceContext(unitName = "ehrJPU")
+    @PersistenceContext(unitName = "my_persistence")
     EntityManager em;
 
     @Override

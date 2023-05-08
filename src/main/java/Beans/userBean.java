@@ -19,11 +19,13 @@ import java.util.Collection;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.security.enterprise.identitystore.Pbkdf2PasswordHash;
 
 /**
  *
@@ -35,8 +37,8 @@ public class userBean implements userBeanLocal {
     @PersistenceContext(unitName = "my_persistence")
     EntityManager em;
 
-    @EJB
-    EmailClientLocal mail;
+    @Inject
+    private Pbkdf2PasswordHash passwordHash;
 
     @Override
     public ResponseModel<Collection<Users>> getAllUsers() {
@@ -50,7 +52,7 @@ public class userBean implements userBeanLocal {
         }
         return res;
     }
-
+    
     @Override
     public ResponseModel addUser(Users user) {
         ResponseModel res = new ResponseModel();
@@ -71,6 +73,8 @@ public class userBean implements userBeanLocal {
                 }
                 user.setDiseasesCollection(null);
                 user.setAllergiesCollection(null);
+                String hashedPassword = passwordHash.generate(user.getPassword().toCharArray());
+                user.setPassword(hashedPassword);
                 em.persist(user);
                 if(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()) != null) {
                     user.setBloodGroupId(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()));
@@ -90,7 +94,9 @@ public class userBean implements userBeanLocal {
                 Users u = (Users) em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getSingleResult();
                 addChronicDiseasesToUser(u.getUserId(), dids);
                 addAllergiesToUser(u.getUserId(), aids);
+                
                 res.status = true;
+                
             } else {
                 Collection<Users> users = em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getResultList();
                 res.status = false;
@@ -729,7 +735,7 @@ public class userBean implements userBeanLocal {
                 if (u.size() == 1) {
                     Users u1 = u.iterator().next();
                     String body = "<h3>Hello " + u1.getUsername() + "!</h3><p>Your OTP for forget password is " + otp + "</p><br/><p>Enter this OTP for creating the new password</p>";
-                    mail.sendMail(u1.getEmailid(), "Forget Password OTP", body);
+                    //mail.sendMail(u1.getEmailid(), "Forget Password OTP", body);
                     res.status = true;
                 }
             } else {
@@ -901,5 +907,60 @@ public class userBean implements userBeanLocal {
             res.message = ex.getMessage();
         }
         return res;
+    }
+
+    @Override
+    public ResponseModel getUserByAadharPassword(String aadhar, String password) {
+        ResponseModel<Users> res = new ResponseModel<>();
+        try {
+            if (aadhar.isEmpty() || password.isEmpty()) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            res.data = (Users)em.createNamedQuery("Users.findByAadharPassword")
+                    .setParameter("aadharCardNo", aadhar)
+                    .setParameter("password", password).getSingleResult();
+            if (res.data != null) {
+                res.status = true;
+                return res;
+            } else {
+                res.status = false;
+                res.message = "User not found";
+                return res;
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+            return res;
+        }
+        
+    }
+
+    @Override
+    public ResponseModel getUserByUsernamePassword(String username, String password) {
+        ResponseModel<Users> res = new ResponseModel<>();
+        try {
+            if (username.isEmpty() || password.isEmpty()) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            res.data = (Users)em.createNamedQuery("Users.findByUsernamePassword")
+                    .setParameter("username", username)
+                    .setParameter("password", password).getSingleResult();
+            if (res.data != null) {
+                res.status = true;
+                return res;
+            } else {
+                res.status = false;
+                res.message = "User not found";
+                return res;
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+            return res;
+        }
     }
 }
