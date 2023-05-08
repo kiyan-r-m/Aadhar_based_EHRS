@@ -4,16 +4,7 @@
  */
 package Beans;
 
-import Entities.Addresses;
-import Entities.Allergies;
-import Entities.Appointments;
-import Entities.BloodGroups;
-import Entities.Diseases;
-import Entities.DoctorDetails;
-import Entities.PatientDoctorMapper;
-import Entities.ResponseModel;
-import Entities.Roles;
-import Entities.Users;
+import Entities.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
@@ -36,9 +27,10 @@ public class userBean implements userBeanLocal {
 
     @PersistenceContext(unitName = "my_persistence")
     EntityManager em;
-
-    @Inject
-    private Pbkdf2PasswordHash passwordHash;
+    @Inject private Pbkdf2PasswordHash PasswordHash;
+    
+    @EJB
+    EmailClientLocal mail;
 
     @Override
     public ResponseModel<Collection<Users>> getAllUsers() {
@@ -63,6 +55,8 @@ public class userBean implements userBeanLocal {
                 return res;
             }
             if (em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getResultList().isEmpty()) {
+                String hashedPassword = PasswordHash.generate(user.getPassword().toCharArray());
+                user.setPassword(hashedPassword);
                 Collection<Integer> dids = new ArrayList<>();
                 for (Diseases diseases : user.getDiseasesCollection()) {
                     dids.add(diseases.getDiseaseId());
@@ -73,8 +67,6 @@ public class userBean implements userBeanLocal {
                 }
                 user.setDiseasesCollection(null);
                 user.setAllergiesCollection(null);
-                String hashedPassword = passwordHash.generate(user.getPassword().toCharArray());
-                user.setPassword(hashedPassword);
                 em.persist(user);
                 if(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()) != null) {
                     user.setBloodGroupId(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()));
