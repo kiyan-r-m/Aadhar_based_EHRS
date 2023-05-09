@@ -4,16 +4,7 @@
  */
 package Beans;
 
-import Entities.Addresses;
-import Entities.Allergies;
-import Entities.Appointments;
-import Entities.BloodGroups;
-import Entities.Diseases;
-import Entities.DoctorDetails;
-import Entities.PatientDoctorMapper;
-import Entities.ResponseModel;
-import Entities.Roles;
-import Entities.Users;
+import Entities.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
@@ -38,7 +29,10 @@ public class userBean implements userBeanLocal {
     EntityManager em;
 
     @Inject
-    private Pbkdf2PasswordHash passwordHash;
+    private Pbkdf2PasswordHash PasswordHash;
+    
+    @EJB
+    EmailClientLocal mail;
 
     @Override
     public ResponseModel<Collection<Users>> getAllUsers() {
@@ -63,6 +57,8 @@ public class userBean implements userBeanLocal {
                 return res;
             }
             if (em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getResultList().isEmpty()) {
+                String hashedPassword = PasswordHash.generate(user.getPassword().toCharArray());
+                user.setPassword(hashedPassword);
                 Collection<Integer> dids = new ArrayList<>();
                 for (Diseases diseases : user.getDiseasesCollection()) {
                     dids.add(diseases.getDiseaseId());
@@ -73,8 +69,6 @@ public class userBean implements userBeanLocal {
                 }
                 user.setDiseasesCollection(null);
                 user.setAllergiesCollection(null);
-                String hashedPassword = passwordHash.generate(user.getPassword().toCharArray());
-                user.setPassword(hashedPassword);
                 em.persist(user);
                 if(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()) != null) {
                     user.setBloodGroupId(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()));
@@ -264,6 +258,41 @@ public class userBean implements userBeanLocal {
         return res;
     }
 
+    @Override
+    public ResponseModel removeUser(int id) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (id == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (em.find(Users.class, id) != null) {
+                Users u = em.find(Users.class, id);
+                Collection<Integer> dids = new ArrayList<>();
+                for (Diseases diseases : u.getDiseasesCollection()) {
+                    dids.add(diseases.getDiseaseId());
+                }
+                removeChronicDiseasesToUser(u.getUserId(), dids);
+                Collection<Integer> aids = new ArrayList<>();
+                for (Allergies allergies : u.getAllergiesCollection()) {
+                    aids.add(allergies.getAllergyId());
+                }
+                removeAllergiesToUser(u.getUserId(), aids);
+                em.remove(u);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "User not found";
+            }
+            
+        } catch(Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+        }
+        return res;
+    }
+    
     @Override
     public ResponseModel removeChronicDiseasesToUser(int userId, Collection<Integer> dIds) {
         ResponseModel res = new ResponseModel();
@@ -962,5 +991,18 @@ public class userBean implements userBeanLocal {
             res.message = ex.getMessage();
             return res;
         }
+    }
+
+    @Override
+    public ResponseModel<Collection<Roles>> getAllRoles() {
+        ResponseModel<Collection<Roles>> res = new ResponseModel<>();
+        try {
+            res.data = em.createNamedQuery("Roles.findAll").getResultList();
+            res.status = true;
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
     }
 }

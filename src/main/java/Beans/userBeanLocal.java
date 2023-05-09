@@ -12,6 +12,7 @@ import Entities.Diseases;
 import Entities.DoctorDetails;
 import Entities.PatientDoctorMapper;
 import Entities.ResponseModel;
+import Entities.Roles;
 import Entities.Users;
 import java.util.Collection;
 import javax.ejb.Local;
@@ -53,4 +54,8 @@ public interface userBeanLocal {
     ResponseModel<Collection<Addresses>> getAllAddresses();
     ResponseModel getUserByAadharPassword(String aadhar, String password);
     ResponseModel getUserByUsernamePassword(String username, String password);
+
+    ResponseModel removeUser(int id);
+
+    ResponseModel<Collection<Roles>> getAllRoles();
 }

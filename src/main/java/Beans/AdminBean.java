@@ -4,21 +4,11 @@
  */
 package Beans;
 
-import Entities.BloodGroups;
-import Entities.CommonMedications;
-import Entities.Degrees;
-import Entities.Diseases;
-import Entities.Districts;
-import Entities.ResponseModel;
-import Entities.Symptoms;
+import Entities.*;
 import java.util.Collection;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import Entities.Users;
-import Entities.FieldOfStudy;
-import Entities.Pincodes;
-import Entities.States;
 
 /**
  *
@@ -102,8 +92,13 @@ public class AdminBean implements AdminBeanLocal {
             }
             if (em.find(BloodGroups.class, id) != null) {
                 BloodGroups b = em.find(BloodGroups.class, id);
+                if(b.getUsersCollection().isEmpty()) {
                 em.remove(b);
                 res.status = true;
+                } else {
+                    res.status = false;
+                    res.message = "This blood group is being used!";
+                }
             } else {
                 res.status = false;
                 res.message = "Blood Group not found";

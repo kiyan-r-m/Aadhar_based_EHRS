@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <link rel="shortcut icon" href="images/favicon.ico"/>
+        <title>Facelet Title</title>
+        <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:dataTable id="userTable" widgetVar="dtUsers" var="user" value="#{adminManagedBean.getAllUsers()}" styleClass="users-table" lazy="false">
+                <f:facet name="header">
+                    <div class="user-table-header flex justify-content-between flex-wrap">
+                        <div style="font-weight: bold" class="text-3xl">Users</div>
+                        <div>
+                            <div class="filter-container ui-input-icon-left mx-3"> 
+                                <i class="pi pi-search"></i>
+                                <p:inputText id="globalFilter" onkeyup="PF('dtUsers').filter()" placeholder="Search" />
+                            </div>
+                            <p:commandButton value="New" icon="pi pi-plus" actionListener="#{adminManagedBean.openNewUser()}" oncomplete="PF('manageUserDialog').show()"
+                                             styleClass="ui-button-primary" style="margin-right: .5rem" update=":dialogs:manage-user-content" >
+                                <p:resetInput target=":dialogs:manage-user-content" />
+                            </p:commandButton>
+                        </div>
+                    </div>
+                </f:facet>
+                <p:column headerText="Id" filterStyle="display: none" sortBy="#{user.userId}" filterBy="#{user.userId}">
+                    <h:outputText value="#{user.userId}"/>
+                </p:column>
+                <p:column headerText="Name" filterStyle="display: none" sortBy="#{user.username}" filterBy="#{user.username}">
+                    <h:outputText value="#{user.username}"/>
+                </p:column>
+                <p:column headerText="Email Id" filterStyle="display: none" sortBy="#{user.emailid}" filterBy="#{user.emailid}">
+                    <h:outputText value="#{user.emailid}"/>
+                </p:column>
+                <p:column headerText="Contact No" filterStyle="display: none" sortBy="#{user.contactNo}" filterBy="#{user.contactNo}">
+                    <h:outputText value="#{user.contactNo}"/>
+                </p:column>      
+                <p:column headerText="Gender" filterStyle="display: none" sortBy="#{user.gender}" filterBy="#{user.gender}">
+                    <h:outputText value="#{user.gender}"/>
+                </p:column>
+                <p:column>
+                    <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-user-content"
+                                     oncomplete="PF('manageUserDialog').show()"
+                                     styleClass="edit-button rounded-button ui-button-primary mx-2" process="@this">
+                        <f:setPropertyActionListener value="#{user}" target="#{adminManagedBean.selectedUser}" />
+                        <p:resetInput target=":dialogs:manage-user-content" />
+                    </p:commandButton>
+                    <p:commandButton icon="pi pi-eye"
+                                     oncomplete="PF('manageUserDialog').show()"
+                                     styleClass="view-button rounded-button ui-button-success" process="@this">
+                        <f:setPropertyActionListener value="#{user}" target="#{adminManagedBean.selectedUser}" />
+                        <p:resetInput target=":dialogs:manage-user-content" />
+                    </p:commandButton>
+                    <p:growl id="message" showDetail="true"/>
+                    <p:commandButton icon="pi pi-trash" action="#{adminManagedBean.deleteUser(user.userId)}" update="message userTable" class="ui-button-danger rounded-button mx-2">
+                        <p:confirm header="Confirmation" message="Are you sure you want to delete?" icon="pi pi-exclamation-triangle"/>
+                    </p:commandButton>
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
+                    </p:confirmDialog>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <h:form id="dialogs">
+            <p:dialog header="User Details" showEffect="fade" modal="true" widgetVar="manageUserDialog"
+                      responsive="true">
+                <p:scrollPanel style="width:500px;height:500px">
+                    <p:outputPanel id="manage-user-content" class="ui-fluid p-5">
+                        <p:outputPanel rendered="#{not empty adminManagedBean.selectedUser}">
+                            <div class="field">
+                                <p:outputLabel for="username">User Name</p:outputLabel>
+                                <p:inputText id="username" value="#{adminManagedBean.selectedUser.username}" required="true" />
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="email">Email</p:outputLabel>
+                                <p:inputText id="email" value="#{adminManagedBean.selectedUser.emailid}" required="true" />
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="password">Password</p:outputLabel>
+                                <p:password id="password" value="#{adminManagedBean.selectedUser.password}" required="true" />
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="aadharcard">Aadhar-Card No</p:outputLabel>
+                                <p:inputText id="aadharcard" value="#{adminManagedBean.selectedUser.aadharCardNo}" required="true" />
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="contact">Contact No</p:outputLabel>
+                                <p:inputText id="contact" value="#{adminManagedBean.selectedUser.contactNo}" required="true" />
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="gender">Gender</p:outputLabel>
+                                <p:selectOneRadio id="gender" required="true" value="#{adminManagedBean.selectedUser.gender}" >
+                                    <f:selectItem itemLabel="Male" itemValue="Male" />
+                                    <f:selectItem itemLabel="Female" itemValue="Female" />
+                                </p:selectOneRadio>
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="dob">Date of Birth</p:outputLabel>
+                                <p:datePicker id="dob" value="#{adminManagedBean.selectedUser.dob}" required="true" />
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="disease">Diseases</p:outputLabel>
+                                <p:selectManyMenu id="disease" showCheckbox="true" filter="true" value="#{adminManagedBean.selectedUser.diseasesCollection}">
+                                    <f:selectItems value="#{adminManagedBean.diseases}" var="d" itemLabel="#{d.diseaseName}" itemValue="#{d}" />
+                                </p:selectManyMenu>
+                            </div>
+                        </p:outputPanel>
+                    </p:outputPanel>
+
+                    <div class="flex justify-content-end flex-wrap mb-5 mt-2 mx-5">
+                        <p:commandButton value="Save" icon="pi pi-check" onclick="#{adminManagedBean.getAllUsers()}" actionListener="#{adminManagedBean.saveUser()}"
+                                         update="manage-user-content" class="mx-2" process="manage-user-content @this" />
+                        <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageUserDialog').hide()"
+                                         class="ui-button-secondary" type="button" />
+                    </div>
+                </p:scrollPanel>
+            </p:dialog>
+        </h:form>
+    </h:body>
+</html>
+

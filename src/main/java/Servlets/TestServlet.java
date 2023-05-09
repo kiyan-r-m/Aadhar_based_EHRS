@@ -6,14 +6,9 @@ package Servlets;
 
 import Beans.AdminBeanLocal;
 import Beans.userBeanLocal;
-import Entities.Addresses;
-import Entities.BloodGroups;
-import Entities.ResponseModel;
-import Entities.Roles;
-import Entities.Users;
+import Entities.*;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,12 +34,12 @@ public class TestServlet extends HttpServlet {
 
     @EJB
     userBeanLocal ubl;
-    
+
     @EJB
     AdminBeanLocal abl;
     @PersistenceContext(unitName = "my_persistence")
     EntityManager em;
-    
+
     @Inject
     private Pbkdf2PasswordHash passwordHash;
 
@@ -62,16 +57,13 @@ public class TestServlet extends HttpServlet {
 
 //            ubl.addUser(new Users("Vesu", new Pincodes(395006)));
 //            ubl.updateAddresses(new Addresses(1, "Vesu", new Pincodes(395006)));
-            
 //            ResponseModel<Collection<Users>> cm = ubl.getAllUsers();
 //            if (cm.status) {
 //                for (Users c : cm.data) {
 //                    out.println(c.getUsername() + " " + c.getRoleId().getRoleName() + " " + c.getAddressId().getAddress() + " " + c.getBloodGroupId().getBloodGroupName() +"\n");
 //                }
 //            }
-            
 //            ResponseModel<Collection<Users>> users = ubl.getAllUsers();
-
 //            if (users.status == true) {
 //                for (Users user : users.data) {
 //                    out.println(user.getUsername());
@@ -80,19 +72,17 @@ public class TestServlet extends HttpServlet {
 //                System.out.println(users.message);
 //            }
 //            out.println("<h1>Servlet TestServlet at " + request.getContextPath() + "</h1>");
-
             SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
             String datestring = "28-04-2001";
             Date date = sdf.parse(datestring);
             java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-            
+
             ResponseModel<Users> res = new ResponseModel<>();
-            
-            String password = passwordHash.generate( "secret12345".toCharArray());
-            out.println(password);
-            res = ubl.getUserByUsernamePassword("kiyanmorena", password);
-            out.println(res.data);
-            
+
+//            String password = passwordHash.generate( "secret12345".toCharArray());
+//            out.println(password);
+//            res = ubl.getUserByUsernamePassword("kiyanmorena", password);
+//            out.println(res.data);
 //            Users u = new Users();
 //            u.setUsername("kiyanmorena");
 //            u.setPassword("secret12345");
@@ -104,16 +94,15 @@ public class TestServlet extends HttpServlet {
 //            u.setBloodGroupId(em.find(BloodGroups.class, 1));
 //            u.setAddressId(em.find(Addresses.class, 1));
 //            ubl.adduser1(u);
-            
 //            Users u = new Users();
 //            u.setUserId(3);
-//            u.setUsername("krmorena");
-//            u.setEmailid("krmorena@gmail.com");
-//            u.setPassword("qwer1234");
-//            u.setContactNo(BigInteger.valueOf(9876987555L));
+//            u.setUsername("Charmi Modi");
+//            u.setEmailid("charmi@gmail.com");
+//            u.setPassword("Chr@1234");
+//            u.setContactNo(BigInteger.valueOf(9016687973L));
 //            u.setRoleId(new Roles(1));
-//            u.setAadharCardNo(BigInteger.valueOf(123476548756L));
-//            u.setGender("male");
+//            u.setAadharCardNo(BigInteger.valueOf(123476548758L));
+//            u.setGender("Female");
 //            u.setDob(sqlDate);
 ////            Collection<BloodGroups> b = new ArrayList<>();
 ////            b.add(new BloodGroups(1, "AB+"));
@@ -126,7 +115,7 @@ public class TestServlet extends HttpServlet {
 //            u.setAllergiesCollection(a);
 //            u.setAddressId(new Addresses(1));
 //            ResponseModel r = ubl.addUser(u);
-//            if(r.status == true) {
+//            if (r.status == true) {
 //                System.out.println("User added successfully");
 //            } else {
 //                System.out.println(r.message);
@@ -153,8 +142,6 @@ public class TestServlet extends HttpServlet {
 //                System.out.println("Error!!");
 //                System.out.println(res.message);
 //            }
-            
-            
             out.println("</body>");
             out.println("</html>");
         }
