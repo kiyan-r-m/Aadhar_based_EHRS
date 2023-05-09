@@ -5,12 +5,13 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
-        <title>Facelet Title</title>
+        <link rel="shortcut icon" href="../images/favicon.ico"/>
+        <title>Blood groups - EHR Admin</title>
         <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
     </h:head>
     <h:body>
         <h:form>
-            <p:dataTable id="bloodGroupTable" widgetVar="dtBloodGroups" var="bloodGroup" value="#{adminManagedBean.getAllBloodGroups()}" styleClass="users-table" lazy="false">
+            <p:dataTable id="bloodGroupTable" widgetVar="dtBloodGroups" var="bloodGroup" value="#{adminManagedBean.getAllBloodGroups()}" styleClass="blood-groups-table" lazy="false">
                 <f:facet name="header">
                     <div class="bloodGroup-table-header flex justify-content-between flex-wrap">
                         <div style="font-weight: bold" class="text-3xl">Blood-Groups</div>
@@ -28,9 +29,6 @@
                         </div>
                     </div>
                 </f:facet>
-                <p:column headerText="Id" filterStyle="display: none" sortBy="#{bloodGroup.bloodGroupId}" filterBy="#{bloodGroup.bloodGroupId}">
-                    <h:outputText value="#{bloodGroup.bloodGroupId}"/>
-                </p:column>
                 <p:column headerText="Name" filterStyle="display: none" sortBy="#{bloodGroup.bloodGroupName}" filterBy="#{bloodGroup.bloodGroupName}">
                     <h:outputText value="#{bloodGroup.bloodGroupName}"/>
                 </p:column>

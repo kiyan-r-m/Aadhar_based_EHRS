@@ -465,8 +465,13 @@ public class AdminBean implements AdminBeanLocal {
             }
             if (em.find(CommonMedications.class, id) != null) {
                 CommonMedications cm = em.find(CommonMedications.class, id);
+                if(cm.getDiseasesCollection().isEmpty()) {
                 em.remove(cm);
                 res.status = true;
+                } else {
+                    res.status = false;
+                    res.message = "This Medication is being used!";
+                }
             } else {
                 res.status = false;
                 res.message = "Common Medication not found";

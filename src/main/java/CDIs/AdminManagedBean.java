@@ -56,6 +56,9 @@ public class AdminManagedBean implements Serializable {
     Degrees selectedDegree;
     Collection<Degrees> degrees = new ArrayList<>();
     
+    CommonMedications selectedMedication;
+    Collection<CommonMedications> medications = new ArrayList<>();
+    
     public AdminManagedBean() {
     }
     
@@ -298,6 +301,22 @@ public class AdminManagedBean implements Serializable {
     public void setDegrees(Collection<Degrees> degrees) {
         this.degrees = degrees;
     }
+
+    public CommonMedications getSelectedMedication() {
+        return selectedMedication;
+    }
+
+    public void setSelectedMedication(CommonMedications selectedMedication) {
+        this.selectedMedication = selectedMedication;
+    }
+
+    public Collection<CommonMedications> getMedications() {
+        return medications;
+    }
+
+    public void setMedications(Collection<CommonMedications> medications) {
+        this.medications = medications;
+    }
     
     public List<Users> getAllUsers() {
         ResponseModel<Collection<Users>> res =  ubl.getAllUsers();
@@ -433,6 +452,44 @@ public class AdminManagedBean implements Serializable {
             ResponseModel res = abl.updateDegree(selectedDegree);
             if(res.status) {
                 successMessage("Update Degree", "Record updated successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        }
+    }
+    public List<CommonMedications> getAllMedications() {
+        ResponseModel<Collection<CommonMedications>> res =  abl.getAllCommonMedications();
+        if (res.status) {
+            this.medications = res.data;
+        }
+        return (List<CommonMedications>) medications;
+    }
+    
+    public void deleteMedication(int id) {
+        ResponseModel res = abl.deleteCommonMedication(id);
+        if(res.status == true) {
+            successMessage("Delete Medication", "Record deleted successfully!");
+        } else {
+            errorMessage("Error", res.message);
+        }
+    }
+    
+    public void openNewMedication() {
+        this.selectedMedication = new CommonMedications();
+    }
+    
+    public void saveMedication() {
+        if(selectedMedication.getMedicationId() == null) {
+            ResponseModel res = abl.addCommonMedication(selectedMedication);
+            if(res.status) {
+                successMessage("Add Medication", "Record added successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        } else {
+            ResponseModel res = abl.updateCommonMedication(selectedMedication);
+            if(res.status) {
+                successMessage("Update Medication", "Record updated successfully");
             } else {
                 errorMessage("Error", res.message);
             }

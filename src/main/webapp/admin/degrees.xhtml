@@ -5,11 +5,13 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
-        <title>Facelet Title</title>
+        <link rel="shortcut icon" href="../images/favicon.ico"/>
+        <title>Degrees - EHR Admin</title>
+        <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
     </h:head>
     <h:body>
         <h:form>
-            <p:dataTable id="degreeTable" widgetVar="dtDegree" var="degree" value="#{adminManagedBean.getAllDegrees()}" styleClass="degree-table" lazy="false">
+            <p:dataTable id="degreeTable" widgetVar="dtDegree" var="degree" value="#{adminManagedBean.getAllDegrees()}" styleClass="degrees-table" lazy="false">
                 <f:facet name="header">
                     <div class="degree-table-header flex justify-content-between flex-wrap">
                         <div style="font-weight: bold" class="text-3xl">Degrees</div>
@@ -27,9 +29,6 @@
                         </div>
                     </div>
                 </f:facet>
-                <p:column headerText="Id" filterStyle="display: none" sortBy="#{degree.degreeId}" filterBy="#{degree.degreeId}">
-                    <h:outputText value="#{degree.degreeId}"/>
-                </p:column>
                 <p:column headerText="Name" filterStyle="display: none" sortBy="#{degree.degreeName}" filterBy="#{degree.degreeName}">
                     <h:outputText value="#{degree.degreeName}"/>
                 </p:column>
@@ -53,7 +52,7 @@
         </h:form>
 
         <h:form id="dialogs">
-            <p:dialog header="Blood Group Details" showEffect="fade" modal="true" widgetVar="manageDegreeDialog"
+            <p:dialog header="Degree Details" showEffect="fade" modal="true" widgetVar="manageDegreeDialog"
                       responsive="true">
                 <p:outputPanel id="manage-degree-content" class="ui-fluid">
                     <p:outputPanel rendered="#{not empty adminManagedBean.selectedDegree}">
