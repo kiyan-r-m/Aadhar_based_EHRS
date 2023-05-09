@@ -27,7 +27,9 @@ public class userBean implements userBeanLocal {
 
     @PersistenceContext(unitName = "my_persistence")
     EntityManager em;
-    @Inject private Pbkdf2PasswordHash PasswordHash;
+
+    @Inject
+    private Pbkdf2PasswordHash PasswordHash;
     
     @EJB
     EmailClientLocal mail;
@@ -256,6 +258,41 @@ public class userBean implements userBeanLocal {
         return res;
     }
 
+    @Override
+    public ResponseModel removeUser(int id) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (id == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (em.find(Users.class, id) != null) {
+                Users u = em.find(Users.class, id);
+                Collection<Integer> dids = new ArrayList<>();
+                for (Diseases diseases : u.getDiseasesCollection()) {
+                    dids.add(diseases.getDiseaseId());
+                }
+                removeChronicDiseasesToUser(u.getUserId(), dids);
+                Collection<Integer> aids = new ArrayList<>();
+                for (Allergies allergies : u.getAllergiesCollection()) {
+                    aids.add(allergies.getAllergyId());
+                }
+                removeAllergiesToUser(u.getUserId(), aids);
+                em.remove(u);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "User not found";
+            }
+            
+        } catch(Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+        }
+        return res;
+    }
+    
     @Override
     public ResponseModel removeChronicDiseasesToUser(int userId, Collection<Integer> dIds) {
         ResponseModel res = new ResponseModel();
@@ -954,5 +991,18 @@ public class userBean implements userBeanLocal {
             res.message = ex.getMessage();
             return res;
         }
+    }
+
+    @Override
+    public ResponseModel<Collection<Roles>> getAllRoles() {
+        ResponseModel<Collection<Roles>> res = new ResponseModel<>();
+        try {
+            res.data = em.createNamedQuery("Roles.findAll").getResultList();
+            res.status = true;
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
     }
 }

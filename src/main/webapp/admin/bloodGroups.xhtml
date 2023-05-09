@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Facelet Title</title>
+        <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:dataTable id="bloodGroupTable" widgetVar="dtBloodGroups" var="bloodGroup" value="#{adminManagedBean.getAllBloodGroups()}" styleClass="users-table" lazy="false">
+                <f:facet name="header">
+                    <div class="bloodGroup-table-header flex justify-content-between flex-wrap">
+                        <div style="font-weight: bold" class="text-3xl">Blood-Groups</div>
+                        <div>
+                            <div class="filter-container ui-input-icon-left mx-3"> 
+                                <i class="pi pi-search"></i>
+                                <p:inputText id="globalFilter" onkeyup="PF('dtBloodGroups').filter()" placeholder="Search" />
+                            </div>
+                            <p:commandButton value="New" icon="pi pi-plus" actionListener="#{adminManagedBean.openNewBloodGroup()}" oncomplete="PF('manageBloodGroupDialog').show()"
+                                             styleClass="ui-button-primary" style="margin-right: .5rem" update=":dialogs:manage-blood-group-content" >
+                                <p:resetInput target=":dialogs:manage-blood-group-content" />
+                            </p:commandButton>
+                            <p:commandButton value="Logout" icon="pi pi-sign-out" styleClass="ui-button-primary" action="#{logout.submit()}" style="margin-right: .5rem">
+                            </p:commandButton>
+                        </div>
+                    </div>
+                </f:facet>
+                <p:column headerText="Id" filterStyle="display: none" sortBy="#{bloodGroup.bloodGroupId}" filterBy="#{bloodGroup.bloodGroupId}">
+                    <h:outputText value="#{bloodGroup.bloodGroupId}"/>
+                </p:column>
+                <p:column headerText="Name" filterStyle="display: none" sortBy="#{bloodGroup.bloodGroupName}" filterBy="#{bloodGroup.bloodGroupName}">
+                    <h:outputText value="#{bloodGroup.bloodGroupName}"/>
+                </p:column>
+                <p:column>
+                    <p:growl id="message" showDetail="true"/>
+                    <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-blood-group-content"
+                                     oncomplete="PF('manageBloodGroupDialog').show()"
+                                     styleClass="edit-button rounded-button ui-button-primary" process="@this">
+                        <f:setPropertyActionListener value="#{bloodGroup}" target="#{adminManagedBean.selectedBloodGroup}" />
+                        <p:resetInput target=":dialogs:manage-blood-group-content" />
+                    </p:commandButton>
+                    <p:commandButton icon="pi pi-trash" action="#{adminManagedBean.deleteBloodGroup(bloodGroup.bloodGroupId)}" update="message bloodGroupTable" class="ui-button-danger rounded-button mx-2">
+                        <p:confirm header="Confirmation" message="Are you sure you want to delete?" icon="pi pi-exclamation-triangle"/>
+                    </p:commandButton>
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
+                    </p:confirmDialog>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <h:form id="dialogs">
+            <p:dialog header="Blood Group Details" showEffect="fade" modal="true" widgetVar="manageBloodGroupDialog"
+                      responsive="true">
+                <p:outputPanel id="manage-blood-group-content" class="ui-fluid">
+                    <p:outputPanel rendered="#{not empty adminManagedBean.selectedBloodGroup}">
+                        <div class="field">
+                            <p:outputLabel for="bloodGroupName">Blood Group Name</p:outputLabel>
+                            <p:inputText id="bloodGroupName" required="true" requiredMessage="Please enter blood group" value="#{adminManagedBean.selectedBloodGroup.bloodGroupName}" />
+                            <p:message for="bloodGroupName" />
+                        </div>
+                    </p:outputPanel>
+                </p:outputPanel>
+                <f:facet name="footer">
+                    <p:commandButton validateClient="true" value="Save" icon="pi pi-check" onclick="#{adminManagedBean.getAllBloodGroups()}" actionListener="#{adminManagedBean.saveBloodGroup()}"
+                                     update="manage-blood-group-content message1" process="manage-blood-group-content @this" />
+                    <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageBloodGroupDialog').hide()"
+                                     class="ui-button-secondary" type="button" />
+                </f:facet>
+            </p:dialog>
+            <p:growl id="message1" showDetail="true"/>
+        </h:form>
+
+    </h:body>
+</html>
+

@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Login - EHR</title>
+        <link rel="shortcut icon" href="images/favicon.ico"/>
+        <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />   
+        <h:outputStylesheet library="css" name="main.css"/>
+    </h:head>
+        <h:body class="login">
+        <center>
+                <p:card style="width: 40rem;">
+                    <h:graphicImage value="images/logo.png" width="60" alt="logo"/>
+                    <div class="py-2">  
+                        <h:outputText value="Login" class="text-4xl"/>
+                    </div>
+                    <h:form class="px-4">
+                        <span class="ui-float-label my-5">
+                            <p:inputText id="username" style="width: 100%" value="#{login.email}" />
+                            <p:outputLabel for="@previous" value="Username" class="text-lg p-0"/>
+                        </span>
+                        <span class="ui-float-label my-5">
+                            <p:password id="password" style="width: 100%" value="#{login.password}" />
+                            <p:outputLabel for="@previous" value="Password" class="text-lg"/>
+                        </span>
+                        <p:commandButton class="mb-2" value="Login" style="width: 100%" action="#{login.submit()}" />
+                        <h:commandLink action="register.jsf" value="Don't have an account? Sign up" />
+                    </h:form>
+                </p:card>
+        </center>
+    </h:body>
+</html>
+
