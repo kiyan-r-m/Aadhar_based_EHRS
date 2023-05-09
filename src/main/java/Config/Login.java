@@ -4,9 +4,11 @@
  */
 package Config;
 
+import java.io.Serializable;
 import java.util.Set;
 import javax.inject.Named;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -31,8 +33,8 @@ import javax.validation.constraints.Size;
  * @author krdmo
  */
 @Named(value = "login")
-@RequestScoped
-public class Login {
+@SessionScoped
+public class Login implements Serializable{
 
     /**
      * Creates a new instance of Login
