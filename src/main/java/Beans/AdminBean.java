@@ -182,8 +182,13 @@ public class AdminBean implements AdminBeanLocal {
             }
             if (em.find(Degrees.class, id) != null) {
                 Degrees b = em.find(Degrees.class, id);
+                if(b.getDoctorDetailsCollection().isEmpty()) {
                 em.remove(b);
                 res.status = true;
+                } else {
+                    res.status = false;
+                    res.message = "This degree is being used!";
+                }
             } else {
                 res.status = false;
                 res.message = "Degree not found";
