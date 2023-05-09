@@ -7,6 +7,8 @@ package Beans;
 import Entities.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.UUID;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -29,8 +31,8 @@ public class userBean implements userBeanLocal {
     @Inject
     private Pbkdf2PasswordHash PasswordHash;
     
-//    @EJB
-//    EmailClientLocal mail;
+    @EJB
+    EmailClientLocal mail;
 
     @Override
     public ResponseModel<Collection<Users>> getAllUsers() {
@@ -744,38 +746,38 @@ public class userBean implements userBeanLocal {
         return res;
     }
 
-//    @Override
-//    public ResponseModel SendMailForForgetPassword(String emailId, HttpServletResponse response) {
-//        ResponseModel res = new ResponseModel();
-//        try {
-//            if (emailId.isEmpty()) {
-//                res.status = false;
-//                res.message = "Input Invalid";
-//                return res;
-//            }
-//
-//            if (!em.createNamedQuery("Users.findByEmailid").setParameter("emailid", emailId).getResultList().isEmpty()) {
-//                Collection<Users> u = em.createNamedQuery("Users.findByEmailid").setParameter("emailid", emailId).getResultList();
-//                String otp = UUID.randomUUID().toString();
-//                Cookie cookie = new Cookie("forgetPasswordOTP", otp);
-//                response.addCookie(cookie);
-//                if (u.size() == 1) {
-//                    Users u1 = u.iterator().next();
-//                    String body = "<h3>Hello " + u1.getUsername() + "!</h3><p>Your OTP for forget password is " + otp + "</p><br/><p>Enter this OTP for creating the new password</p>";
-//                    //mail.sendMail(u1.getEmailid(), "Forget Password OTP", body);
-//                    res.status = true;
-//                }
-//            } else {
-//                res.status = false;
-//                res.message = "User not found";
-//            }
-//
-//        } catch (Exception e) {
-//            res.status = false;
-//            res.message = e.getMessage();
-//        }
-//        return res;
-//    }
+    @Override
+    public ResponseModel SendMailForForgetPassword(String emailId, HttpServletResponse response) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (emailId.isEmpty()) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+
+            if (!em.createNamedQuery("Users.findByEmailid").setParameter("emailid", emailId).getResultList().isEmpty()) {
+                Collection<Users> u = em.createNamedQuery("Users.findByEmailid").setParameter("emailid", emailId).getResultList();
+                String otp = UUID.randomUUID().toString();
+                Cookie cookie = new Cookie("forgetPasswordOTP", otp);
+                response.addCookie(cookie);
+                if (u.size() == 1) {
+                    Users u1 = u.iterator().next();
+                    String body = "<h3>Hello " + u1.getUsername() + "!</h3><p>Your OTP for forget password is " + otp + "</p><br/><p>Enter this OTP for creating the new password</p>";
+                    //mail.sendMail(u1.getEmailid(), "Forget Password OTP", body);
+                    res.status = true;
+                }
+            } else {
+                res.status = false;
+                res.message = "User not found";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
 
     @Override
     public ResponseModel ForgetPassword(HttpServletRequest request, HttpServletResponse response, int userId, String OTP, String newPassword) {
