@@ -39,7 +39,7 @@ public interface userBeanLocal {
     ResponseModel updateAccessMapperToUser(int userId, Collection<Integer> dIds);
     ResponseModel<Collection<PatientDoctorMapper>> getPatientDoctorMapperByUserId(int userId);
     ResponseModel ChangePassword(int userId, String oldPassword, String newPassword);
-    ResponseModel SendMailForForgetPassword(String emailId, HttpServletResponse response);
+//    ResponseModel SendMailForForgetPassword(String emailId, HttpServletResponse response);
     ResponseModel ForgetPassword(HttpServletRequest request, HttpServletResponse response, int userId, String OTP, String newPassword);
     ResponseModel<Collection<BloodGroups>> getAllBloodGroups();
     ResponseModel<BloodGroups> getBloodGroups(int id);
