@@ -53,12 +53,34 @@ public class AdminManagedBean implements Serializable {
     int bloodGroupId;
     String bloodGroupName;
     
+    Degrees selectedDegree;
+    Collection<Degrees> degrees = new ArrayList<>();
+    
     public AdminManagedBean() {
     }
     
     @PostConstruct
     public void init() {
-        getAll();
+        ResponseModel<Collection<Diseases>> res = abl.getAllDiseases();
+        if(res.status) {
+            diseases = res.data;
+        }
+        ResponseModel<Collection<Allergies>> res1 = ubl.getAllAllergies();
+        if(res1.status) {
+            allergies = res1.data;
+        }
+        ResponseModel<Collection<Addresses>> res2 = ubl.getAllAddresses();
+        if(res2.status) {
+            addresses = res2.data;
+        }
+        ResponseModel<Collection<BloodGroups>> res3 = ubl.getAllBloodGroups();
+        if(res3.status) {
+            bloodGroups = res3.data;
+        }
+        ResponseModel<Collection<Roles>> res4 = ubl.getAllRoles();
+        if(res4.status) {
+            roles = res4.data;
+        }
     }
 
     public int getUserId() {
@@ -260,6 +282,22 @@ public class AdminManagedBean implements Serializable {
     public void setBloodGroupName(String bloodGroupName) {
         this.bloodGroupName = bloodGroupName;
     }
+
+    public Degrees getSelectedDegree() {
+        return selectedDegree;
+    }
+
+    public void setSelectedDegree(Degrees selectedDegree) {
+        this.selectedDegree = selectedDegree;
+    }
+
+    public Collection<Degrees> getDegrees() {
+        return degrees;
+    }
+
+    public void setDegrees(Collection<Degrees> degrees) {
+        this.degrees = degrees;
+    }
     
     public List<Users> getAllUsers() {
         ResponseModel<Collection<Users>> res =  ubl.getAllUsers();
@@ -362,27 +400,42 @@ public class AdminManagedBean implements Serializable {
             }
         }
     }
+    public List<Degrees> getAllDegrees() {
+        ResponseModel<Collection<Degrees>> res =  abl.getAllDegrees();
+        if (res.status) {
+            this.degrees = res.data;
+        }
+        return (List<Degrees>) degrees;
+    }
     
-    public void getAll() {
-        ResponseModel<Collection<Diseases>> res = abl.getAllDiseases();
-        if(res.status) {
-            diseases = res.data;
+    public void deleteDegree(int id) {
+        ResponseModel res = abl.deleteDegree(id);
+        if(res.status == true) {
+            successMessage("Delete Degree", "Record deleted successfully!");
+        } else {
+            errorMessage("Error", res.message);
         }
-        ResponseModel<Collection<Allergies>> res1 = ubl.getAllAllergies();
-        if(res1.status) {
-            allergies = res1.data;
-        }
-        ResponseModel<Collection<Addresses>> res2 = ubl.getAllAddresses();
-        if(res2.status) {
-            addresses = res2.data;
-        }
-        ResponseModel<Collection<BloodGroups>> res3 = ubl.getAllBloodGroups();
-        if(res3.status) {
-            bloodGroups = res3.data;
-        }
-        ResponseModel<Collection<Roles>> res4 = ubl.getAllRoles();
-        if(res4.status) {
-            roles = res4.data;
+    }
+    
+    public void openNewDegree() {
+        this.selectedDegree = new Degrees();
+    }
+    
+    public void saveDegree() {
+        if(selectedDegree.getDegreeId() == null) {
+            ResponseModel res = abl.addDegree(selectedDegree);
+            if(res.status) {
+                successMessage("Add Degree", "Record added successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        } else {
+            ResponseModel res = abl.updateDegree(selectedDegree);
+            if(res.status) {
+                successMessage("Update Degree", "Record updated successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
         }
     }
 }
