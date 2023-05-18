@@ -14,9 +14,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -42,8 +42,9 @@ public class Symptoms implements Serializable {
     @Size(max = 65535)
     @Column(name = "symptom_name")
     private String symptomName;
-    @OneToMany(mappedBy = "symptomId")
     @JsonbTransient
+    @ManyToMany(mappedBy = "symptomsCollection")
+    
     private Collection<Diseases> diseasesCollection;
 
     public Symptoms() {

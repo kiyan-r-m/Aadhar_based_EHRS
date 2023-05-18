@@ -2,7 +2,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
         <title>Login - EHR</title>
         <link rel="shortcut icon" href="images/favicon.ico"/>
@@ -17,15 +18,20 @@
                         <h:outputText value="Login" class="text-4xl"/>
                     </div>
                     <h:form class="px-4">
-                        <span class="ui-float-label my-5">
-                            <p:inputText id="username" style="width: 100%" value="#{login.email}" />
-                            <p:outputLabel for="@previous" value="Username" class="text-lg p-0"/>
-                        </span>
-                        <span class="ui-float-label my-5">
-                            <p:password id="password" style="width: 100%" value="#{login.password}" />
-                            <p:outputLabel for="@previous" value="Password" class="text-lg"/>
-                        </span>
-                        <p:commandButton class="mb-2" value="Login" style="width: 100%" action="#{login.submit()}" />
+                        <p:growl id="msgs" showDetail="true" rendered="#{not facesContext.validationFailed}"/>
+                        <!--<span class="ui-float-label">-->
+                        <div align="left" class="pb-2"><p:outputLabel for="username" value="Username" styleClass="text-lg" /></div>
+                            <p:inputText id="username" style="width: 100%" required="true" requiredMessage="Please enter username" value="#{login.email}" />
+                        <!--</span>-->
+                        <p:message for="username" style="width: 98%;" class="my-2" />
+                        <!--<span class="ui-float-label">-->
+                        <div align="left" class="pb-2"><p:outputLabel for="password" value="Password" styleClass="text-lg" /></div>
+                        <p:password id="password" style="width: 100%" required="true" validatorMessage="Please enter password properly" requiredMessage="Please enter password" value="#{login.password}" >
+                            <f:validateRegex pattern="^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,}$"  />
+                        </p:password>
+                        <!--</span>-->
+                        <p:message for="password" style="width: 98%;" class="my-2" />
+                        <p:commandButton class="mt-2 mb-2" update="@form" value="Login" style="width: 100%" action="#{login.submit()}" />
                     </h:form>
                     <h:form>
                         <h:commandLink action="register.jsf" value="Don't have an account? Sign up" />

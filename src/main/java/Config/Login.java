@@ -7,7 +7,6 @@ package Config;
 import java.io.Serializable;
 import java.util.Set;
 import javax.inject.Named;
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
@@ -18,7 +17,6 @@ import javax.security.enterprise.SecurityContext;
 import javax.security.enterprise.authentication.mechanism.http.AuthenticationParameters;
 import javax.security.enterprise.credential.UsernamePasswordCredential;
 import javax.security.enterprise.identitystore.CredentialValidationResult;
-import javax.security.enterprise.identitystore.IdentityStore;
 import javax.security.enterprise.identitystore.IdentityStoreHandler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,8 +59,8 @@ public class Login implements Serializable{
                 facesContext.responseComplete();
                 break;
             case SEND_FAILURE:
-                facesContext.addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, "Login failed", null));
+                facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Username or Password is wrong"));
+//                PrimeFaces.current().dialog().showMessageDynamic(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Username or Password is wrong"));
                 break;
             case SUCCESS:
                 try {

@@ -18,7 +18,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -27,7 +26,7 @@ import javax.validation.constraints.Size;
 
 /**
  *
- * @author krdmo
+ * @author admin
  */
 @Entity
 @Table(name = "diseases", catalog = "ehrsystem", schema = "")
@@ -56,37 +55,44 @@ public class Diseases implements Serializable {
     @ManyToMany
     @JsonbTransient
     private Collection<Users> usersCollection;
+    @JoinTable(name = "disease_medication_mapper", joinColumns = {
+        @JoinColumn(name = "disease_id", referencedColumnName = "disease_id")}, inverseJoinColumns = {
+        @JoinColumn(name = "medication_id", referencedColumnName = "medication_id")})
+    @ManyToMany
+    private Collection<CommonMedications> commonMedicationsCollection;
+    @JoinTable(name = "disease_symptom_mapper", joinColumns = {
+        @JoinColumn(name = "disease_id", referencedColumnName = "disease_id")}, inverseJoinColumns = {
+        @JoinColumn(name = "symptom_id", referencedColumnName = "symptom_id")})
+    @ManyToMany
+    private Collection<Symptoms> symptomsCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "diseaseId")
     @JsonbTransient
     private Collection<PatientDoctorMapper> patientDoctorMapperCollection;
-    @JoinColumn(name = "common_medication_id", referencedColumnName = "medication_id")
-    @ManyToOne
-    private CommonMedications commonMedicationId;
-    @JoinColumn(name = "symptom_id", referencedColumnName = "symptom_id")
-    @ManyToOne
-    private Symptoms symptomId;
 
     public Diseases() {
+        diseaseType = false;
+    }
+
+    public Diseases(String diseaseName, Boolean diseaseType, Collection<Users> usersCollection, Collection<CommonMedications> commonMedicationsCollection, Collection<Symptoms> symptomsCollection) {
+        this.diseaseId = 0;
+        this.diseaseName = diseaseName;
+        this.diseaseType = diseaseType;
+        this.usersCollection = usersCollection;
+        this.commonMedicationsCollection = commonMedicationsCollection;
+        this.symptomsCollection = symptomsCollection;
+    }
+    
+    public Diseases(Integer diseaseId, String diseaseName, Boolean diseaseType, Collection<Users> usersCollection, Collection<CommonMedications> commonMedicationsCollection, Collection<Symptoms> symptomsCollection) {
+        this.diseaseId = diseaseId;
+        this.diseaseName = diseaseName;
+        this.diseaseType = diseaseType;
+        this.usersCollection = usersCollection;
+        this.commonMedicationsCollection = commonMedicationsCollection;
+        this.symptomsCollection = symptomsCollection;
     }
 
     public Diseases(Integer diseaseId) {
         this.diseaseId = diseaseId;
-    }
-
-    public Diseases(String diseaseName, Boolean diseaseType, CommonMedications commonMedicationId, Symptoms symptomId) {
-        this.diseaseId = 0;
-        this.diseaseName = diseaseName;
-        this.diseaseType = diseaseType;
-        this.commonMedicationId = commonMedicationId;
-        this.symptomId = symptomId;
-    }
-
-    public Diseases(Integer diseaseId, String diseaseName, Boolean diseaseType, CommonMedications commonMedicationId, Symptoms symptomId) {
-        this.diseaseId = diseaseId;
-        this.diseaseName = diseaseName;
-        this.diseaseType = diseaseType;
-        this.commonMedicationId = commonMedicationId;
-        this.symptomId = symptomId;
     }
 
     public Integer getDiseaseId() {
@@ -121,28 +127,28 @@ public class Diseases implements Serializable {
         this.usersCollection = usersCollection;
     }
 
+    public Collection<CommonMedications> getCommonMedicationsCollection() {
+        return commonMedicationsCollection;
+    }
+
+    public void setCommonMedicationsCollection(Collection<CommonMedications> commonMedicationsCollection) {
+        this.commonMedicationsCollection = commonMedicationsCollection;
+    }
+
+    public Collection<Symptoms> getSymptomsCollection() {
+        return symptomsCollection;
+    }
+
+    public void setSymptomsCollection(Collection<Symptoms> symptomsCollection) {
+        this.symptomsCollection = symptomsCollection;
+    }
+
     public Collection<PatientDoctorMapper> getPatientDoctorMapperCollection() {
         return patientDoctorMapperCollection;
     }
 
     public void setPatientDoctorMapperCollection(Collection<PatientDoctorMapper> patientDoctorMapperCollection) {
         this.patientDoctorMapperCollection = patientDoctorMapperCollection;
-    }
-
-    public CommonMedications getCommonMedicationId() {
-        return commonMedicationId;
-    }
-
-    public void setCommonMedicationId(CommonMedications commonMedicationId) {
-        this.commonMedicationId = commonMedicationId;
-    }
-
-    public Symptoms getSymptomId() {
-        return symptomId;
-    }
-
-    public void setSymptomId(Symptoms symptomId) {
-        this.symptomId = symptomId;
     }
 
     @Override

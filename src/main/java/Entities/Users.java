@@ -286,9 +286,5 @@ public class Users implements Serializable {
     public String toString() {
         return "Entities.Users[ userId=" + userId + " ]";
     }
-
-    public void getBloodGroupId(Object object) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
     
 }
