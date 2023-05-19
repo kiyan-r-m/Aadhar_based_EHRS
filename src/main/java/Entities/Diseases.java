@@ -23,7 +23,7 @@ import javax.validation.constraints.Size;
 
 /**
  *
- * @author krdmo
+ * @author admin
  */
 @Entity
 @Table(name = "diseases", catalog = "ehrsystem", schema = "")
@@ -52,14 +52,42 @@ public class Diseases implements Serializable {
         @JoinColumn(name = "disease_id", referencedColumnName = "disease_id")}, inverseJoinColumns = {
         @JoinColumn(name = "disease_id", referencedColumnName = "symptom_id")})
     @ManyToMany
-    private Collection<Symptoms> symptomsCollection;
+    @JsonbTransient
+    private Collection<Users> usersCollection;
     @JoinTable(name = "disease_medication_mapper", joinColumns = {
         @JoinColumn(name = "disease_id", referencedColumnName = "disease_id")}, inverseJoinColumns = {
-        @JoinColumn(name = "disease_id", referencedColumnName = "medication_id")})
+        @JoinColumn(name = "medication_id", referencedColumnName = "medication_id")})
     @ManyToMany
     private Collection<CommonMedications> commonMedicationsCollection;
+    @JoinTable(name = "disease_symptom_mapper", joinColumns = {
+        @JoinColumn(name = "disease_id", referencedColumnName = "disease_id")}, inverseJoinColumns = {
+        @JoinColumn(name = "symptom_id", referencedColumnName = "symptom_id")})
+    @ManyToMany
+    private Collection<Symptoms> symptomsCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "diseaseId")
+    @JsonbTransient
+    private Collection<PatientDoctorMapper> patientDoctorMapperCollection;
 
     public Diseases() {
+        diseaseType = false;
+    }
+
+    public Diseases(String diseaseName, Boolean diseaseType, Collection<Users> usersCollection, Collection<CommonMedications> commonMedicationsCollection, Collection<Symptoms> symptomsCollection) {
+        this.diseaseId = 0;
+        this.diseaseName = diseaseName;
+        this.diseaseType = diseaseType;
+        this.usersCollection = usersCollection;
+        this.commonMedicationsCollection = commonMedicationsCollection;
+        this.symptomsCollection = symptomsCollection;
+    }
+    
+    public Diseases(Integer diseaseId, String diseaseName, Boolean diseaseType, Collection<Users> usersCollection, Collection<CommonMedications> commonMedicationsCollection, Collection<Symptoms> symptomsCollection) {
+        this.diseaseId = diseaseId;
+        this.diseaseName = diseaseName;
+        this.diseaseType = diseaseType;
+        this.usersCollection = usersCollection;
+        this.commonMedicationsCollection = commonMedicationsCollection;
+        this.symptomsCollection = symptomsCollection;
     }
 
     public Diseases(Integer diseaseId) {

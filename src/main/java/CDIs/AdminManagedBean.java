@@ -14,11 +14,14 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import org.primefaces.PrimeFaces;
 
 /**
  *
@@ -37,10 +40,12 @@ public class AdminManagedBean implements Serializable {
     Addresses userAddressId = new Addresses();
     BloodGroups userBloodGroupId = new BloodGroups();
     Roles userRoleId = new Roles();
-    
-    @EJB AdminBeanLocal abl;
-    @EJB userBeanLocal ubl;
-    
+
+    @EJB
+    AdminBeanLocal abl;
+    @EJB
+    userBeanLocal ubl;
+
     Collection<Diseases> diseases = new ArrayList<>();
     Collection<Allergies> allergies = new ArrayList<>();
     Collection<Addresses> addresses = new ArrayList<>();
@@ -48,17 +53,58 @@ public class AdminManagedBean implements Serializable {
     Collection<Roles> roles = new ArrayList<>();
     Collection<Users> users = new ArrayList<>();
     Users selectedUser;
-    
+
     BloodGroups selectedBloodGroup;
     int bloodGroupId;
     String bloodGroupName;
-    
+
+    Degrees selectedDegree;
+    Collection<Degrees> degrees = new ArrayList<>();
+
+    CommonMedications selectedMedication;
+    Collection<CommonMedications> medications = new ArrayList<>();
+
+    Symptoms selectedSymptom;
+    Collection<Symptoms> symptoms = new ArrayList<>();
+
+    Districts selectedDistrict;
+    Collection<Districts> districts = new ArrayList<>();
+
+    Diseases selectedDisease;
+
     public AdminManagedBean() {
     }
-    
+
     @PostConstruct
     public void init() {
-        getAll();
+        ResponseModel<Collection<Diseases>> res = abl.getAllDiseases();
+        if (res.status) {
+            diseases = res.data;
+        }
+        ResponseModel<Collection<Allergies>> res1 = ubl.getAllAllergies();
+        if (res1.status) {
+            allergies = res1.data;
+        }
+        ResponseModel<Collection<Addresses>> res2 = ubl.getAllAddresses();
+        if (res2.status) {
+            addresses = res2.data;
+        }
+        ResponseModel<Collection<BloodGroups>> res3 = ubl.getAllBloodGroups();
+        if (res3.status) {
+            bloodGroups = res3.data;
+        }
+        ResponseModel<Collection<Roles>> res4 = ubl.getAllRoles();
+        if (res4.status) {
+            roles = res4.data;
+        }
+        ResponseModel<Collection<Symptoms>> res5 = abl.getAllSymptoms();
+        if (res5.status) {
+            symptoms = res5.data;
+        }
+        ResponseModel<Collection<CommonMedications>> res6 = abl.getAllCommonMedications();
+        if (res6.status) {
+            medications = res6.data;
+        }
     }
 
     public int getUserId() {
@@ -260,30 +306,105 @@ public class AdminManagedBean implements Serializable {
     public void setBloodGroupName(String bloodGroupName) {
         this.bloodGroupName = bloodGroupName;
     }
-    
+
+    public Degrees getSelectedDegree() {
+        return selectedDegree;
+    }
+
+    public void setSelectedDegree(Degrees selectedDegree) {
+        this.selectedDegree = selectedDegree;
+    }
+
+    public Collection<Degrees> getDegrees() {
+        return degrees;
+    }
+
+    public void setDegrees(Collection<Degrees> degrees) {
+        this.degrees = degrees;
+    }
+
+    public CommonMedications getSelectedMedication() {
+        return selectedMedication;
+    }
+
+    public void setSelectedMedication(CommonMedications selectedMedication) {
+        this.selectedMedication = selectedMedication;
+    }
+
+    public Collection<CommonMedications> getMedications() {
+        return medications;
+    }
+
+    public void setMedications(Collection<CommonMedications> medications) {
+        this.medications = medications;
+    }
+
+    public Symptoms getSelectedSymptom() {
+        return selectedSymptom;
+    }
+
+    public void setSelectedSymptom(Symptoms selectedSymptom) {
+        this.selectedSymptom = selectedSymptom;
+    }
+
+    public Collection<Symptoms> getSymptoms() {
+        return symptoms;
+    }
+
+    public void setSymptoms(Collection<Symptoms> symptoms) {
+        this.symptoms = symptoms;
+    }
+
+    public Districts getSelectedDistrict() {
+        return selectedDistrict;
+    }
+
+    public void setSelectedDistrict(Districts selectedDistrict) {
+        this.selectedDistrict = selectedDistrict;
+    }
+
+    public Collection<Districts> getDistricts() {
+        return districts;
+    }
+
+    public void setDistricts(Collection<Districts> districts) {
+        this.districts = districts;
+    }
+
+    public Diseases getSelectedDisease() {
+        return selectedDisease;
+    }
+
+    public void setSelectedDisease(Diseases selectedDisease) {
+        this.selectedDisease = selectedDisease;
+    }
+
     public List<Users> getAllUsers() {
-        ResponseModel<Collection<Users>> res =  ubl.getAllUsers();
+        ResponseModel<Collection<Users>> res = ubl.getAllUsers();
         if (res.status) {
             users = res.data;
         }
         return (List<Users>) users;
     }
-    
+
     public void deleteUser(int id) {
         ResponseModel res = ubl.removeUser(id);
-        if(res.status == true) {
+        if (res.status == true) {
             successMessage("Delete User", "Record deleted successfully!");
         } else {
             errorMessage("Error", res.message);
         }
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "userTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
     }
-    
+
     public void openNewUser() {
         this.selectedUser = new Users();
     }
-    
+
     public void saveUser() {
-        if(selectedUser.getUserId() == null) {
+        if (selectedUser.getUserId() == null) {
             diseasesCollection = selectedUser.getDiseasesCollection();
             Collection<Diseases> d = new ArrayList<>();
             for (Diseases diseases1 : diseasesCollection) {
@@ -299,38 +420,45 @@ public class AdminManagedBean implements Serializable {
             userAddressId = selectedUser.getAddressId();
             selectedUser.setAddressId(new Addresses(userAddressId.getAddressId()));
             ResponseModel res = ubl.addUser(this.selectedUser);
-            if(res.status) {
+            if (res.status) {
                 successMessage("Add User", "Record added successfully");
             } else {
                 errorMessage("Error", res.message);
             }
         } else {
             ResponseModel res = ubl.updateUser(this.selectedUser);
-            if(res.status) {
+            if (res.status) {
                 successMessage("Update User", "Record updated successfully");
             } else {
                 errorMessage("Error", res.message);
             }
         }
+        PrimeFaces.current().executeScript("PF('manageUserDialog').hide();");
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "userTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
     }
-    
+
     public List<BloodGroups> getAllBloodGroups() {
-        ResponseModel<Collection<BloodGroups>> res =  abl.getAllBloodGroups();
+        ResponseModel<Collection<BloodGroups>> res = abl.getAllBloodGroups();
         if (res.status) {
             bloodGroups = res.data;
         }
         return (List<BloodGroups>) bloodGroups;
     }
-    
+
     public void deleteBloodGroup(int id) {
         ResponseModel res = abl.deleteBloodGroup(id);
-        if(res.status == true) {
+        if (res.status == true) {
             successMessage("Delete Blood Group", "Record deleted successfully!");
         } else {
             errorMessage("Error", res.message);
         }
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "bloodGroupTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
     }
-    
+
     public void successMessage(String summary, String detail) {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
         FacesContext.getCurrentInstance().addMessage(null, message);
@@ -340,49 +468,276 @@ public class AdminManagedBean implements Serializable {
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail);
         FacesContext.getCurrentInstance().addMessage(null, message);
     }
-    
+
     public void openNewBloodGroup() {
         this.selectedBloodGroup = new BloodGroups();
     }
-    
+
     public void saveBloodGroup() {
-        if(selectedBloodGroup.getBloodGroupId() == null) {
+        if (selectedBloodGroup.getBloodGroupId() == null) {
             ResponseModel res = abl.addBloodGroup(selectedBloodGroup);
-            if(res.status) {
+            if (res.status) {
                 successMessage("Add Blood Group", "Record added successfully");
             } else {
                 errorMessage("Error", res.message);
             }
         } else {
             ResponseModel res = abl.updateBloodGroup(selectedBloodGroup);
-            if(res.status) {
+            if (res.status) {
                 successMessage("Update Blood Group", "Record updated successfully");
             } else {
                 errorMessage("Error", res.message);
             }
         }
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "bloodGroupTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
+        PrimeFaces.current().executeScript("PF('manageBloodGroupDialog').hide();");
     }
-    
-    public void getAll() {
+
+    private UIComponent findComponentById(UIComponent base, String id) {
+        if (id.equals(base.getId())) {
+            return base;
+        } else {
+            Iterator<UIComponent> children = base.getFacetsAndChildren();
+            while (children.hasNext()) {
+                UIComponent child = children.next();
+                UIComponent foundComponent = findComponentById(child, id);
+                if (foundComponent != null) {
+                    return foundComponent;
+                }
+            }
+            return null;
+        }
+    }
+
+    public List<Degrees> getAllDegrees() {
+        ResponseModel<Collection<Degrees>> res = abl.getAllDegrees();
+        if (res.status) {
+            this.degrees = res.data;
+        }
+        return (List<Degrees>) degrees;
+    }
+
+    public void deleteDegree(int id) {
+        ResponseModel res = abl.deleteDegree(id);
+        if (res.status == true) {
+            successMessage("Delete Degree", "Record deleted successfully!");
+        } else {
+            errorMessage("Error", res.message);
+        }
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "degreeTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public void openNewDegree() {
+        this.selectedDegree = new Degrees();
+    }
+
+    public void saveDegree() {
+        if (selectedDegree.getDegreeId() == null) {
+            ResponseModel res = abl.addDegree(selectedDegree);
+            if (res.status) {
+                successMessage("Add Degree", "Record added successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        } else {
+            ResponseModel res = abl.updateDegree(selectedDegree);
+            if (res.status) {
+                successMessage("Update Degree", "Record updated successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        }
+        PrimeFaces.current().executeScript("PF('manageDegreeDialog').hide();");
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "degreeTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public List<CommonMedications> getAllMedications() {
+        ResponseModel<Collection<CommonMedications>> res = abl.getAllCommonMedications();
+        if (res.status) {
+            this.medications = res.data;
+        }
+        return (List<CommonMedications>) medications;
+    }
+
+    public void deleteMedication(int id) {
+        ResponseModel res = abl.deleteCommonMedication(id);
+        if (res.status == true) {
+            successMessage("Delete Medication", "Record deleted successfully!");
+        } else {
+            errorMessage("Error", res.message);
+        }
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "medicationTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public void openNewMedication() {
+        this.selectedMedication = new CommonMedications();
+    }
+
+    public void saveMedication() {
+        if (selectedMedication.getMedicationId() == null) {
+            ResponseModel res = abl.addCommonMedication(selectedMedication);
+            if (res.status) {
+                successMessage("Add Medication", "Record added successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        } else {
+            ResponseModel res = abl.updateCommonMedication(selectedMedication);
+            if (res.status) {
+                successMessage("Update Medication", "Record updated successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        }
+        PrimeFaces.current().executeScript("PF('manageMedicationDialog').hide();");
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "medicationTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public List<Symptoms> getAllSymptoms() {
+        ResponseModel<Collection<Symptoms>> res = abl.getAllSymptoms();
+        if (res.status) {
+            this.symptoms = res.data;
+        }
+        return (List<Symptoms>) symptoms;
+    }
+
+    public void deleteSymptom(int id) {
+        ResponseModel res = abl.deleteSymptom(id);
+        if (res.status == true) {
+            successMessage("Delete Symptom", "Record deleted successfully!");
+        } else {
+            errorMessage("Error", res.message);
+        }
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "symptomTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public void openNewSymptom() {
+        this.selectedSymptom = new Symptoms();
+    }
+
+    public void saveSymptom() {
+        if (selectedSymptom.getSymptomId() == null) {
+            ResponseModel res = abl.addSymptom(selectedSymptom);
+            if (res.status) {
+                successMessage("Add Symptom", "Record added successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        } else {
+            ResponseModel res = abl.updateSymptom(selectedSymptom);
+            if (res.status) {
+                successMessage("Update Symptom", "Record updated successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        }
+        PrimeFaces.current().executeScript("PF('manageSymptomDialog').hide();");
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "symptomTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public List<Districts> getAllDistricts() {
+        ResponseModel<Collection<Districts>> res = abl.getAllDistricts();
+        if (res.status) {
+            this.districts = res.data;
+        }
+        return (List<Districts>) districts;
+    }
+
+    public void deleteDistrict(int id) {
+        ResponseModel res = abl.deleteDistrict(id);
+        if (res.status == true) {
+            successMessage("Delete District", "Record deleted successfully!");
+        } else {
+            errorMessage("Error", res.message);
+        }
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "districtTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public void openNewDistrict() {
+        this.selectedDistrict = new Districts();
+    }
+
+    public void saveDistrict() {
+        if (selectedDistrict.getDistrictId() == null) {
+            ResponseModel res = abl.addDistrict(selectedDistrict);
+            if (res.status) {
+                successMessage("Add District", "Record added successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        } else {
+            ResponseModel res = abl.updateDistrict(selectedDistrict);
+            if (res.status) {
+                successMessage("Update District", "Record updated successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        }
+        PrimeFaces.current().executeScript("PF('manageDistrictDialog').hide();");
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "districtTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public List<Diseases> getAllDiseases() {
         ResponseModel<Collection<Diseases>> res = abl.getAllDiseases();
-        if(res.status) {
-            diseases = res.data;
+        if (res.status) {
+            this.diseases = res.data;
         }
-        ResponseModel<Collection<Allergies>> res1 = ubl.getAllAllergies();
-        if(res1.status) {
-            allergies = res1.data;
+        return (List<Diseases>) diseases;
+    }
+
+    public void deleteDisease(int id) {
+        ResponseModel res = abl.deleteDisease(id);
+        if (res.status == true) {
+            successMessage("Delete Disease", "Record deleted successfully!");
+        } else {
+            errorMessage("Error", res.message);
         }
-        ResponseModel<Collection<Addresses>> res2 = ubl.getAllAddresses();
-        if(res2.status) {
-            addresses = res2.data;
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "diseaseTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public void openNewDisease() {
+        this.selectedDisease = new Diseases();
+    }
+
+    public void saveDisease() {
+        if (selectedDisease.getDiseaseId() == null) {
+            ResponseModel res = abl.addDisease(selectedDisease);
+            if (res.status) {
+                successMessage("Add Disease", "Record added successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        } else {
+            ResponseModel res = abl.updateDisease(selectedDisease);
+            if (res.status) {
+                successMessage("Update Disease", "Record updated successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
         }
-        ResponseModel<Collection<BloodGroups>> res3 = ubl.getAllBloodGroups();
-        if(res3.status) {
-            bloodGroups = res3.data;
-        }
-        ResponseModel<Collection<Roles>> res4 = ubl.getAllRoles();
-        if(res4.status) {
-            roles = res4.data;
-        }
+        PrimeFaces.current().executeScript("PF('manageDiseaseDialog').hide();");
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "diseaseTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
     }
 }

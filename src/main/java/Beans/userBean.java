@@ -73,7 +73,7 @@ public class userBean implements userBeanLocal {
                 if(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()) != null) {
                     user.setBloodGroupId(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()));
                 } else {
-                    user.getBloodGroupId(null);
+                    user.setBloodGroupId(null);
                 }
                 if (em.find(Roles.class, user.getRoleId().getRoleid()) != null) {
                     user.setRoleId(em.find(Roles.class, user.getRoleId().getRoleid()));

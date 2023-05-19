@@ -21,7 +21,7 @@ import javax.validation.constraints.Size;
 
 /**
  *
- * @author krdmo
+ * @author admin
  */
 @Entity
 @Table(name = "common_medications", catalog = "ehrsystem", schema = "")
@@ -41,6 +41,7 @@ public class CommonMedications implements Serializable {
     @Column(name = "medication_name")
     private String medicationName;
     @ManyToMany(mappedBy = "commonMedicationsCollection")
+    @JsonbTransient
     private Collection<Diseases> diseasesCollection;
 
     public CommonMedications() {

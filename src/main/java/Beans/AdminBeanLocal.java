@@ -104,5 +104,7 @@ public interface AdminBeanLocal {
     ResponseModel getAdmin (int id);
     ResponseModel updateAdminUser(Users data);
     ResponseModel deleteAdminUser(Users data);
+
+    ResponseModel<Diseases> getDiseaseById(int id);
 }
 

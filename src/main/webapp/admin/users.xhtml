@@ -5,8 +5,8 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
-        <link rel="shortcut icon" href="images/favicon.ico"/>
-        <title>Facelet Title</title>
+        <link rel="shortcut icon" href="../images/favicon.ico"/>
+        <title>Users - EHR Admin</title>
         <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
     </h:head>
     <h:body>
@@ -27,9 +27,6 @@
                         </div>
                     </div>
                 </f:facet>
-                <p:column headerText="Id" filterStyle="display: none" sortBy="#{user.userId}" filterBy="#{user.userId}">
-                    <h:outputText value="#{user.userId}"/>
-                </p:column>
                 <p:column headerText="Name" filterStyle="display: none" sortBy="#{user.username}" filterBy="#{user.username}">
                     <h:outputText value="#{user.username}"/>
                 </p:column>
