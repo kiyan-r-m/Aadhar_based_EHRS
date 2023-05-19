@@ -6,9 +6,7 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Collection;
-import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,10 +16,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -34,8 +30,8 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "Diseases.findAll", query = "SELECT d FROM Diseases d"),
     @NamedQuery(name = "Diseases.findByDiseaseId", query = "SELECT d FROM Diseases d WHERE d.diseaseId = :diseaseId"),
-    @NamedQuery(name = "Diseases.findByDiseaseType", query = "SELECT d FROM Diseases d WHERE d.diseaseType = :diseaseType"),
-    @NamedQuery(name = "Diseases.findByDiseaseName", query = "SELECT d FROM Diseases d WHERE d.diseaseName = :diseaseName")})
+    @NamedQuery(name = "Diseases.findByCommonMedicationId", query = "SELECT d FROM Diseases d WHERE d.commonMedicationId = :commonMedicationId"),
+    @NamedQuery(name = "Diseases.findByDiseaseType", query = "SELECT d FROM Diseases d WHERE d.diseaseType = :diseaseType")})
 public class Diseases implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -48,45 +44,26 @@ public class Diseases implements Serializable {
     @Size(max = 65535)
     @Column(name = "disease_name")
     private String diseaseName;
+    @Column(name = "common_medication_id")
+    private Integer commonMedicationId;
     @Column(name = "disease_type")
     private Boolean diseaseType;
-    @JoinTable(name = "patient_chronic_mapper", joinColumns = {
+    @JoinTable(name = "disease_symptom_mapper", joinColumns = {
         @JoinColumn(name = "disease_id", referencedColumnName = "disease_id")}, inverseJoinColumns = {
-        @JoinColumn(name = "user_id", referencedColumnName = "userId")})
+        @JoinColumn(name = "disease_id", referencedColumnName = "symptom_id")})
     @ManyToMany
-    @JsonbTransient
-    private Collection<Users> usersCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "diseaseId")
-    @JsonbTransient
-    private Collection<PatientDoctorMapper> patientDoctorMapperCollection;
-    @JoinColumn(name = "common_medication_id", referencedColumnName = "medication_id")
-    @ManyToOne
-    private CommonMedications commonMedicationId;
-    @JoinColumn(name = "symptom_id", referencedColumnName = "symptom_id")
-    @ManyToOne
-    private Symptoms symptomId;
+    private Collection<Symptoms> symptomsCollection;
+    @JoinTable(name = "disease_medication_mapper", joinColumns = {
+        @JoinColumn(name = "disease_id", referencedColumnName = "disease_id")}, inverseJoinColumns = {
+        @JoinColumn(name = "disease_id", referencedColumnName = "medication_id")})
+    @ManyToMany
+    private Collection<CommonMedications> commonMedicationsCollection;
 
     public Diseases() {
     }
 
     public Diseases(Integer diseaseId) {
         this.diseaseId = diseaseId;
-    }
-
-    public Diseases(String diseaseName, Boolean diseaseType, CommonMedications commonMedicationId, Symptoms symptomId) {
-        this.diseaseId = 0;
-        this.diseaseName = diseaseName;
-        this.diseaseType = diseaseType;
-        this.commonMedicationId = commonMedicationId;
-        this.symptomId = symptomId;
-    }
-
-    public Diseases(Integer diseaseId, String diseaseName, Boolean diseaseType, CommonMedications commonMedicationId, Symptoms symptomId) {
-        this.diseaseId = diseaseId;
-        this.diseaseName = diseaseName;
-        this.diseaseType = diseaseType;
-        this.commonMedicationId = commonMedicationId;
-        this.symptomId = symptomId;
     }
 
     public Integer getDiseaseId() {
@@ -105,6 +82,14 @@ public class Diseases implements Serializable {
         this.diseaseName = diseaseName;
     }
 
+    public Integer getCommonMedicationId() {
+        return commonMedicationId;
+    }
+
+    public void setCommonMedicationId(Integer commonMedicationId) {
+        this.commonMedicationId = commonMedicationId;
+    }
+
     public Boolean getDiseaseType() {
         return diseaseType;
     }
@@ -113,36 +98,20 @@ public class Diseases implements Serializable {
         this.diseaseType = diseaseType;
     }
 
-    public Collection<Users> getUsersCollection() {
-        return usersCollection;
+    public Collection<Symptoms> getSymptomsCollection() {
+        return symptomsCollection;
     }
 
-    public void setUsersCollection(Collection<Users> usersCollection) {
-        this.usersCollection = usersCollection;
+    public void setSymptomsCollection(Collection<Symptoms> symptomsCollection) {
+        this.symptomsCollection = symptomsCollection;
     }
 
-    public Collection<PatientDoctorMapper> getPatientDoctorMapperCollection() {
-        return patientDoctorMapperCollection;
+    public Collection<CommonMedications> getCommonMedicationsCollection() {
+        return commonMedicationsCollection;
     }
 
-    public void setPatientDoctorMapperCollection(Collection<PatientDoctorMapper> patientDoctorMapperCollection) {
-        this.patientDoctorMapperCollection = patientDoctorMapperCollection;
-    }
-
-    public CommonMedications getCommonMedicationId() {
-        return commonMedicationId;
-    }
-
-    public void setCommonMedicationId(CommonMedications commonMedicationId) {
-        this.commonMedicationId = commonMedicationId;
-    }
-
-    public Symptoms getSymptomId() {
-        return symptomId;
-    }
-
-    public void setSymptomId(Symptoms symptomId) {
-        this.symptomId = symptomId;
+    public void setCommonMedicationsCollection(Collection<CommonMedications> commonMedicationsCollection) {
+        this.commonMedicationsCollection = commonMedicationsCollection;
     }
 
     @Override
