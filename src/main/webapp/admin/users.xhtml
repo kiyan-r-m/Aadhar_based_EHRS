@@ -11,7 +11,7 @@
     </h:head>
     <h:body>
         <h:form>
-            <p:dataTable id="userTable" widgetVar="dtUsers" var="user" value="#{adminManagedBean.getAllUsers()}" styleClass="users-table" lazy="false">
+            <p:dataTable id="userTable" widgetVar="dtUsers" var="user" value="#{adminManagedBean.getAllUsers()}" styleClass="users-table">
                 <f:facet name="header">
                     <div class="user-table-header flex justify-content-between flex-wrap">
                         <div style="font-weight: bold" class="text-3xl">Users</div>
@@ -20,9 +20,11 @@
                                 <i class="pi pi-search"></i>
                                 <p:inputText id="globalFilter" onkeyup="PF('dtUsers').filter()" placeholder="Search" />
                             </div>
-                            <p:commandButton value="New" icon="pi pi-plus" actionListener="#{adminManagedBean.openNewUser()}" oncomplete="PF('manageUserDialog').show()"
+                            <p:commandButton value="New" icon="pi pi-plus" actionListener="#{adminManagedBean.openNewUser()}" oncomplete="PF('manageUserDialog').show();PF('submitButton').enable()"
                                              styleClass="ui-button-primary" style="margin-right: .5rem" update=":dialogs:manage-user-content" >
                                 <p:resetInput target=":dialogs:manage-user-content" />
+                            </p:commandButton>
+                            <p:commandButton value="Logout" icon="pi pi-sign-out" styleClass="ui-button-primary" action="#{logout.submit()}" style="margin-right: .5rem">
                             </p:commandButton>
                         </div>
                     </div>
@@ -35,25 +37,25 @@
                 </p:column>
                 <p:column headerText="Contact No" filterStyle="display: none" sortBy="#{user.contactNo}" filterBy="#{user.contactNo}">
                     <h:outputText value="#{user.contactNo}"/>
-                </p:column>      
+                </p:column>
                 <p:column headerText="Gender" filterStyle="display: none" sortBy="#{user.gender}" filterBy="#{user.gender}">
                     <h:outputText value="#{user.gender}"/>
                 </p:column>
                 <p:column>
                     <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-user-content"
-                                     oncomplete="PF('manageUserDialog').show()"
+                                     oncomplete="PF('manageUserDialog').show();PF('submitButton').enable()"
                                      styleClass="edit-button rounded-button ui-button-primary mx-2" process="@this">
-                        <f:setPropertyActionListener value="#{user}" target="#{adminManagedBean.selectedUser}" />
+                        <f:ajax listener="#{adminManagedBean.updateUserProp(user, true)}" />
                         <p:resetInput target=":dialogs:manage-user-content" />
                     </p:commandButton>
-                    <p:commandButton icon="pi pi-eye"
-                                     oncomplete="PF('manageUserDialog').show()"
+                    <p:commandButton icon="pi pi-eye" update=":dialogs:manage-user-content"
+                                     oncomplete="PF('manageUserDialog').show();PF('submitButton').disable()"
                                      styleClass="view-button rounded-button ui-button-success" process="@this">
-                        <f:setPropertyActionListener value="#{user}" target="#{adminManagedBean.selectedUser}" />
+                        <f:ajax listener="#{adminManagedBean.updateUserProp(user, false)}" />
                         <p:resetInput target=":dialogs:manage-user-content" />
                     </p:commandButton>
                     <p:growl id="message" showDetail="true"/>
-                    <p:commandButton icon="pi pi-trash" action="#{adminManagedBean.deleteUser(user.userId)}" update="message userTable" class="ui-button-danger rounded-button mx-2">
+                    <p:commandButton icon="pi pi-trash" action="#{adminManagedBean.deleteUser(user.userId)}" update="message" class="ui-button-danger rounded-button mx-2">
                         <p:confirm header="Confirmation" message="Are you sure you want to delete?" icon="pi pi-exclamation-triangle"/>
                     </p:commandButton>
                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
@@ -65,59 +67,122 @@
         </h:form>
 
         <h:form id="dialogs">
-            <p:dialog header="User Details" showEffect="fade" modal="true" widgetVar="manageUserDialog"
+            <p:dialog header="User Details" width="35rem" showEffect="fade" modal="true" widgetVar="manageUserDialog"
                       responsive="true">
-                <p:scrollPanel style="width:500px;height:500px">
+                <p:scrollPanel style="height:600px">
                     <p:outputPanel id="manage-user-content" class="ui-fluid p-5">
                         <p:outputPanel rendered="#{not empty adminManagedBean.selectedUser}">
                             <div class="field">
-                                <p:outputLabel for="username">User Name</p:outputLabel>
-                                <p:inputText id="username" value="#{adminManagedBean.selectedUser.username}" required="true" />
+                                <p:outputLabel for="userName">User Name</p:outputLabel>
+                                <div><p:inputText style="width: 100% !important " id="userName" required="true" requiredMessage="Please enter user name" value="#{adminManagedBean.selectedUser.username}" /></div>
+                                <div><p:message for="userName" styleClass="my-2" /></div>
                             </div>
                             <div class="field">
-                                <p:outputLabel for="email">Email</p:outputLabel>
-                                <p:inputText id="email" value="#{adminManagedBean.selectedUser.emailid}" required="true" />
+                                <p:outputLabel for="email">Email Id</p:outputLabel>
+                                <div>
+                                    <p:inputText style="width: 100% !important " id="email" required="true" requiredMessage="Please enter email" validatorMessage="Please enter email properly" value="#{adminManagedBean.selectedUser.emailid}" >
+                                        <f:validateRegex pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$" />
+                                    </p:inputText>
+                                </div>
+                                <div><p:message for="email" styleClass="my-2" /></div>
                             </div>
                             <div class="field">
-                                <p:outputLabel for="password">Password</p:outputLabel>
-                                <p:password id="password" value="#{adminManagedBean.selectedUser.password}" required="true" />
-                            </div>
-                            <div class="field">
-                                <p:outputLabel for="aadharcard">Aadhar-Card No</p:outputLabel>
-                                <p:inputText id="aadharcard" value="#{adminManagedBean.selectedUser.aadharCardNo}" required="true" />
+                                <p:outputLabel for="aadharCard">Aadhar-Card No</p:outputLabel>
+                                <div>
+                                    <p:inputText style="width: 100% !important " id="aadharCard" required="true" requiredMessage="Please enter aadhar card no" validatorMessage="Please enter valid aadhar card no" value="#{adminManagedBean.selectedUser.aadharCardNo}" >
+                                        <f:validateLongRange maximum="999999999999" minimum="120000000000" />
+                                    </p:inputText>
+                                </div>
+                                <div><p:message for="aadharCard" styleClass="my-2" /></div>
                             </div>
                             <div class="field">
                                 <p:outputLabel for="contact">Contact No</p:outputLabel>
-                                <p:inputText id="contact" value="#{adminManagedBean.selectedUser.contactNo}" required="true" />
+                                <div>
+                                    <p:inputText style="width: 100% !important " id="contact" required="true" requiredMessage="Please select gender" validatorMessage="Please enter valid mobile no" value="#{adminManagedBean.selectedUser.contactNo}" >
+                                        <f:validateLongRange maximum="9999999999" minimum="1000000000" />
+                                    </p:inputText>
+                                </div>
+                                <div><p:message for="contact" styleClass="my-2" /></div>
                             </div>
                             <div class="field">
                                 <p:outputLabel for="gender">Gender</p:outputLabel>
-                                <p:selectOneRadio id="gender" required="true" value="#{adminManagedBean.selectedUser.gender}" >
-                                    <f:selectItem itemLabel="Male" itemValue="Male" />
-                                    <f:selectItem itemLabel="Female" itemValue="Female" />
-                                </p:selectOneRadio>
+                                <div>
+                                    <p:selectOneRadio id="gender" value="#{adminManagedBean.selectedUser.gender}" required="true" requiredMessage="Please select gender">
+                                        <f:selectItem itemValue="Male" itemLabel="Male" />
+                                        <f:selectItem itemValue="Female" itemLabel="Female" />
+                                    </p:selectOneRadio>
+                                </div>
+                                <div><p:message for="gender" styleClass="my-2" /></div>
                             </div>
                             <div class="field">
                                 <p:outputLabel for="dob">Date of Birth</p:outputLabel>
-                                <p:datePicker id="dob" value="#{adminManagedBean.selectedUser.dob}" required="true" />
+                                <div><p:datePicker style="width: 100% !important " id="dob" value="#{adminManagedBean.selectedUser.dob}" monthNavigator="true" yearNavigator="true" showWeek="true" required="true" requiredMessage="Please select date of birth"/></div>
+                                <div><p:message for="dob" styleClass="my-2" /></div>
                             </div>
                             <div class="field">
-                                <p:outputLabel for="disease">Diseases</p:outputLabel>
-                                <p:selectManyMenu id="disease" showCheckbox="true" filter="true" value="#{adminManagedBean.selectedUser.diseasesCollection}">
-                                    <f:selectItems value="#{adminManagedBean.diseases}" var="d" itemLabel="#{d.diseaseName}" itemValue="#{d}" />
-                                </p:selectManyMenu>
+                                <p:outputLabel for="address">Address</p:outputLabel>
+                                <div><p:inputText style="width: 100% !important " id="address" required="true" requiredMessage="Please enter address" value="#{adminManagedBean.selectedUser.addressId.address}" /></div>
+                                <div><p:message for="address" styleClass="my-2" /></div>
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="pincode">Pin-Code</p:outputLabel>
+                                <div>
+                                    <p:selectOneMenu filter="true" value="#{adminManagedBean.pincode}" id="pincode" style="width: 100% !important" required="true" requiredMessage="Please select pincode" >
+                                        <f:selectItem itemLabel="Select pincode" itemValue="" noSelectionOption="true" />
+                                        <f:selectItems value="#{adminManagedBean.pc}" />
+                                        <f:ajax listener="#{adminManagedBean.onPincodeSelect()}" />
+                                    </p:selectOneMenu>
+                                </div>
+                                <div><p:message for="pincode" styleClass="my-2" /></div>
+                            </div>
+                            <div class="field">
+                                <div class="flex justify-content-between flex-wrap">
+                                    <div>
+                                        <p:outputLabel for="district">District</p:outputLabel>
+                                        <div>
+                                            <p:inputText disabled="true" widgetVar="district1" id="district" value="#{adminManagedBean.selectedUser.addressId.pincode.district}" />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p:outputLabel for="state" class="py-2">State</p:outputLabel>
+                                        <div>
+                                            <p:inputText disabled="true" id="state" widgetVar="state1" value="#{adminManagedBean.selectedUser.addressId.pincode.state}" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="bloodGroup">Blood Group</p:outputLabel>
+                                <div>
+                                    <p:selectOneMenu id="bloodGroup" value="#{adminManagedBean.bloodGroupId}" filter="true" required="true" requiredMessage="Please select blood group">
+                                        <f:selectItem itemLabel="Select blood-group" itemValue="" noSelectionOption="true"/>
+                                        <f:selectItems value="#{adminManagedBean.bloodGroups}" var="bg1" itemValue="#{bg1.bloodGroupId.toString()}" itemLabel="#{bg1.bloodGroupName}" />
+                                    </p:selectOneMenu>
+                                </div>
+                                <div><p:message for="bloodGroup" styleClass="my-2" /></div>
+                            </div>
+                            <div class="field">
+                                <p:outputLabel for="role">Role</p:outputLabel>
+                                <div>
+                                    <p:selectOneMenu id="role" value="#{adminManagedBean.roleId}" filter="true" required="true" requiredMessage="Please select role">
+                                        <f:selectItem itemLabel="Select role" itemValue="" noSelectionOption="true"/>
+                                        <f:selectItems value="#{adminManagedBean.roles}" var="r1" itemValue="#{r1.roleid.toString()}" itemLabel="#{r1.roleName}" />
+                                    </p:selectOneMenu>
+                                </div>
+                                <div><p:message for="role" styleClass="my-2" /></div>
                             </div>
                         </p:outputPanel>
                     </p:outputPanel>
-
                     <div class="flex justify-content-end flex-wrap mb-5 mt-2 mx-5">
-                        <p:commandButton value="Save" icon="pi pi-check" onclick="#{adminManagedBean.getAllUsers()}" actionListener="#{adminManagedBean.saveUser()}"
-                                         update="manage-user-content" class="mx-2" process="manage-user-content @this" />
+                        <p:commandButton  value="Save" icon="pi pi-check" actionListener="#{adminManagedBean.saveUser()}"
+                                          update="manage-user-content message1" class="mx-2" widgetVar="submitButton" process="manage-user-content @this">
+                        </p:commandButton>
                         <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageUserDialog').hide()"
                                          class="ui-button-secondary" type="button" />
                     </div>
                 </p:scrollPanel>
             </p:dialog>
+            <p:growl id="message1" showDetail="true" rendered="#{not facesContext.validationFailed}"/>
         </h:form>
     </h:body>
 </html>

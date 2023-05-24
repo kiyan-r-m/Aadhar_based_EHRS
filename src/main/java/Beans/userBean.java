@@ -30,7 +30,7 @@ public class userBean implements userBeanLocal {
 
     @Inject
     private Pbkdf2PasswordHash PasswordHash;
-    
+
     @EJB
     EmailClientLocal mail;
 
@@ -46,7 +46,7 @@ public class userBean implements userBeanLocal {
         }
         return res;
     }
-    
+
     @Override
     public ResponseModel addUser(Users user) {
         ResponseModel res = new ResponseModel();
@@ -57,20 +57,25 @@ public class userBean implements userBeanLocal {
                 return res;
             }
             if (em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getResultList().isEmpty()) {
-                String hashedPassword = PasswordHash.generate(user.getPassword().toCharArray());
-                user.setPassword(hashedPassword);
-                Collection<Integer> dids = new ArrayList<>();
-                for (Diseases diseases : user.getDiseasesCollection()) {
-                    dids.add(diseases.getDiseaseId());
+                if (user.getPassword() != null) {
+                    String hashedPassword = PasswordHash.generate(user.getPassword().toCharArray());
+                    user.setPassword(hashedPassword);
                 }
+                Collection<Integer> dids = new ArrayList<>();
                 Collection<Integer> aids = new ArrayList<>();
-                for (Allergies allergies : user.getAllergiesCollection()) {
-                    aids.add(allergies.getAllergyId());
+                if (!user.getDiseasesCollection().isEmpty()) {
+                    for (Diseases diseases : user.getDiseasesCollection()) {
+                        dids.add(diseases.getDiseaseId());
+                    }
+                }
+                if (!user.getAllergiesCollection().isEmpty()) {
+                    for (Allergies allergies : user.getAllergiesCollection()) {
+                        aids.add(allergies.getAllergyId());
+                    }
                 }
                 user.setDiseasesCollection(null);
                 user.setAllergiesCollection(null);
-                em.persist(user);
-                if(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()) != null) {
+                if (em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()) != null) {
                     user.setBloodGroupId(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()));
                 } else {
                     user.setBloodGroupId(null);
@@ -80,19 +85,23 @@ public class userBean implements userBeanLocal {
                 } else {
                     user.setRoleId(null);
                 }
-                if (em.find(Addresses.class, user.getAddressId().getAddressId()) != null) {
-                    user.setAddressId(em.find(Addresses.class, user.getAddressId().getAddressId()));
-                } else {
-                    user.setAddressId(null);
+                ResponseModel addr = addAddress(user.getAddressId());
+                if (addr.status) {
+                    Addresses a = (Addresses) em.createNamedQuery("Addresses.findByAddress").setParameter("address", user.getAddressId().getAddress()).getSingleResult();
+                    user.setAddressId(a);
                 }
+                em.persist(user);
+
                 Users u = (Users) em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getSingleResult();
-                addChronicDiseasesToUser(u.getUserId(), dids);
-                addAllergiesToUser(u.getUserId(), aids);
-                
+                if (!dids.isEmpty()) {
+                    addChronicDiseasesToUser(u.getUserId(), dids);
+                }
+                if (!aids.isEmpty()) {
+                    addAllergiesToUser(u.getUserId(), aids);
+                }
                 res.status = true;
-                
+
             } else {
-                Collection<Users> users = em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getResultList();
                 res.status = false;
                 res.message = "User already exists";
             }
@@ -213,19 +222,16 @@ public class userBean implements userBeanLocal {
                 u.setUsername(user.getUsername());
                 u.setEmailid(user.getEmailid());
                 u.setAadharCardNo(user.getAadharCardNo());
-                u.setRoleId(user.getRoleId());
                 u.setContactNo(user.getContactNo());
                 u.setGender(user.getGender());
                 u.setDob(user.getDob());
-                if(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()) != null) {
+                if (em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()) != null) {
                     u.setBloodGroupId(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()));
                 }
                 if (em.find(Roles.class, user.getRoleId().getRoleid()) != null) {
                     u.setRoleId(em.find(Roles.class, user.getRoleId().getRoleid()));
                 }
-                if (em.find(Addresses.class, user.getAddressId().getAddressId()) != null) {
-                    u.setAddressId(em.find(Addresses.class, user.getAddressId().getAddressId()));
-                }
+                ResponseModel addr = updateAddresses(user.getAddressId());
                 Collection<Integer> dids = new ArrayList<>();
                 for (Diseases diseases : u.getDiseasesCollection()) {
                     dids.add(diseases.getDiseaseId());
@@ -285,14 +291,14 @@ public class userBean implements userBeanLocal {
                 res.status = false;
                 res.message = "User not found";
             }
-            
-        } catch(Exception ex) {
+
+        } catch (Exception ex) {
             res.status = false;
             res.message = ex.getMessage();
         }
         return res;
     }
-    
+
     @Override
     public ResponseModel removeChronicDiseasesToUser(int userId, Collection<Integer> dIds) {
         ResponseModel res = new ResponseModel();
@@ -386,7 +392,7 @@ public class userBean implements userBeanLocal {
         }
         return res;
     }
-    
+
     @Override
     public ResponseModel<Users> getUserById(int id) {
         ResponseModel<Users> res = new ResponseModel<>();
@@ -470,7 +476,7 @@ public class userBean implements userBeanLocal {
         }
         return res;
     }
-    
+
     @Override
     public ResponseModel<Collection<Addresses>> getAllAddresses() {
         ResponseModel<Collection<Addresses>> res = new ResponseModel<>();
@@ -545,7 +551,7 @@ public class userBean implements userBeanLocal {
                 res.message = "Input Invalid";
                 return res;
             }
-            
+
             ResponseModel<Users> r = getUserById(userId);
             if (r.status) {
                 res.data = r.data.getDoctorDetailsCollection();
@@ -607,7 +613,7 @@ public class userBean implements userBeanLocal {
         }
         return res;
     }
-    
+
     @Override
     public ResponseModel removeAccessMapperToUser(int userId, Collection<Integer> dIds) {
         ResponseModel res = new ResponseModel();
@@ -654,7 +660,7 @@ public class userBean implements userBeanLocal {
         }
         return res;
     }
-    
+
     @Override
     public ResponseModel updateAccessMapperToUser(int userId, Collection<Integer> dIds) {
         ResponseModel res = new ResponseModel();
@@ -668,7 +674,7 @@ public class userBean implements userBeanLocal {
             if (getUserById(userId).status) {
                 Users u = getUserById(userId).data;
                 Collection<DoctorDetails> accesses = u.getDoctorDetailsCollection();
-                
+
                 Collection<Integer> ids = new ArrayList<>();
                 for (DoctorDetails access : accesses) {
                     ids.add(access.getDoctorId());
@@ -697,7 +703,7 @@ public class userBean implements userBeanLocal {
                 res.message = "Input Invalid";
                 return res;
             }
-            
+
             ResponseModel<Users> r = getUserById(userId);
             if (r.status) {
                 res.data = r.data.getPatientDoctorMapperCollection();
@@ -755,18 +761,14 @@ public class userBean implements userBeanLocal {
                 res.message = "Input Invalid";
                 return res;
             }
-
-            if (!em.createNamedQuery("Users.findByEmailid").setParameter("emailid", emailId).getResultList().isEmpty()) {
-                Collection<Users> u = em.createNamedQuery("Users.findByEmailid").setParameter("emailid", emailId).getResultList();
+            if (!em.createNamedQuery("Users.findByEmailId").setParameter("emailId", emailId).getResultList().isEmpty()) {
+                Users u = (Users) em.createNamedQuery("Users.findByEmailId").setParameter("emailId", emailId).getSingleResult();
                 String otp = UUID.randomUUID().toString();
                 Cookie cookie = new Cookie("forgetPasswordOTP", otp);
                 response.addCookie(cookie);
-                if (u.size() == 1) {
-                    Users u1 = u.iterator().next();
-                    String body = "<h3>Hello " + u1.getUsername() + "!</h3><p>Your OTP for forget password is " + otp + "</p><br/><p>Enter this OTP for creating the new password</p>";
-                    //mail.sendMail(u1.getEmailid(), "Forget Password OTP", body);
-                    res.status = true;
-                }
+                String body = "<h3>Hello " + u.getUsername() + "!</h3><p>Your OTP for forget password is " + otp + "</p><br/><p>Enter this OTP for creating the new password</p>";
+                mail.sendMail(u.getEmailid(), "Forget Password OTP - EHR", body);
+                res.status = true;
             } else {
                 res.status = false;
                 res.message = "User not found";
@@ -947,7 +949,7 @@ public class userBean implements userBeanLocal {
                 res.message = "Input Invalid";
                 return res;
             }
-            res.data = (Users)em.createNamedQuery("Users.findByAadharPassword")
+            res.data = (Users) em.createNamedQuery("Users.findByAadharPassword")
                     .setParameter("aadharCardNo", aadhar)
                     .setParameter("password", password).getSingleResult();
             if (res.data != null) {
@@ -963,7 +965,7 @@ public class userBean implements userBeanLocal {
             res.message = ex.getMessage();
             return res;
         }
-        
+
     }
 
     @Override
@@ -975,7 +977,7 @@ public class userBean implements userBeanLocal {
                 res.message = "Input Invalid";
                 return res;
             }
-            res.data = (Users)em.createNamedQuery("Users.findByUsernamePassword")
+            res.data = (Users) em.createNamedQuery("Users.findByUsernamePassword")
                     .setParameter("username", username)
                     .setParameter("password", password).getSingleResult();
             if (res.data != null) {

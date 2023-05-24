@@ -5,11 +5,18 @@
 package Beans;
 
 import Entities.*;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.security.enterprise.identitystore.Pbkdf2PasswordHash;
+import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  *
@@ -20,6 +27,12 @@ public class AdminBean implements AdminBeanLocal {
 
     @PersistenceContext(unitName = "my_persistence")
     private EntityManager em;
+
+    @Inject
+    private Pbkdf2PasswordHash PasswordHash;
+
+    @EJB
+    EmailClientLocal mail;
 
     @Override
     public ResponseModel<Collection<BloodGroups>> getAllBloodGroups() {
@@ -211,101 +224,100 @@ public class AdminBean implements AdminBeanLocal {
         return res;
     }
 
-    @Override
-    public ResponseModel<Collection<Districts>> getAllDistricts() {
-        ResponseModel<Collection<Districts>> res = new ResponseModel<>();
-        try {
-            res.data = em.createNamedQuery("Districts.findAll").getResultList();
-            res.status = true;
-        } catch (Exception ex) {
-            res.status = false;
-            res.message = ex.getMessage();
-        }
-        return res;
-    }
-
-    @Override
-    public ResponseModel addDistrict(Districts d) {
-        ResponseModel res = new ResponseModel();
-        try {
-            if (d == null) {
-                res.status = false;
-                res.message = "Input Invalid";
-                return res;
-            }
-            if (em.createNamedQuery("Districts.findByDistrictName").setParameter("districtName", d.getDistrictName()).getResultList().isEmpty()) {
-                em.persist(d);
-                res.status = true;
-            } else {
-                res.status = false;
-                res.message = "District already exists";
-            }
-        } catch (Exception ex) {
-            res.status = false;
-            res.message = ex.getMessage();
-        }
-        return res;
-    }
-
-    @Override
-    public ResponseModel updateDistrict(Districts d) {
-        ResponseModel res = new ResponseModel();
-        try {
-            if (d == null) {
-                res.status = false;
-                res.message = "Input Invalid";
-                return res;
-            }
-            if (em.createNamedQuery("Districts.findByDistrictName").setParameter("districtName", d.getDistrictName()).getResultList().isEmpty()) {
-                if (em.find(Districts.class, d.getDistrictId()) != null) {
-                    Districts district = em.find(Districts.class, d.getDistrictId());
-                    district.setDistrictName(d.getDistrictName());
-                    em.merge(district);
-                    res.status = true;
-                } else {
-                    res.status = false;
-                    res.message = "District not found";
-                }
-            } else {
-                res.status = false;
-                res.message = "District already exists";
-            }
-        } catch (Exception ex) {
-            res.status = false;
-            res.message = ex.getMessage();
-        }
-        return res;
-    }
-
-    @Override
-    public ResponseModel deleteDistrict(int id) {
-        ResponseModel res = new ResponseModel();
-        try {
-            if (id == 0) {
-                res.status = false;
-                res.message = "Input Invalid";
-                return res;
-            }
-            if (em.find(Districts.class, id) != null) {
-                Districts b = em.find(Districts.class, id);
-                if (b.getPincodesCollection().isEmpty()) {
-                    em.remove(b);
-                    res.status = true;
-                } else {
-                    res.status = false;
-                    res.message = "This district is being used";
-                }
-            } else {
-                res.status = false;
-                res.message = "Degree not found";
-            }
-        } catch (Exception ex) {
-            res.status = false;
-            res.message = ex.getMessage();
-        }
-        return res;
-    }
-
+//    @Override
+//    public ResponseModel<Collection<Districts>> getAllDistricts() {
+//        ResponseModel<Collection<Districts>> res = new ResponseModel<>();
+//        try {
+//            res.data = em.createNamedQuery("Districts.findAll").getResultList();
+//            res.status = true;
+//        } catch (Exception ex) {
+//            res.status = false;
+//            res.message = ex.getMessage();
+//        }
+//        return res;
+//    }
+//
+//    @Override
+//    public ResponseModel addDistrict(Districts d) {
+//        ResponseModel res = new ResponseModel();
+//        try {
+//            if (d == null) {
+//                res.status = false;
+//                res.message = "Input Invalid";
+//                return res;
+//            }
+//            if (em.createNamedQuery("Districts.findByDistrictName").setParameter("districtName", d.getDistrictName()).getResultList().isEmpty()) {
+//                em.persist(d);
+//                res.status = true;
+//            } else {
+//                res.status = false;
+//                res.message = "District already exists";
+//            }
+//        } catch (Exception ex) {
+//            res.status = false;
+//            res.message = ex.getMessage();
+//        }
+//        return res;
+//    }
+//
+//    @Override
+//    public ResponseModel updateDistrict(Districts d) {
+//        ResponseModel res = new ResponseModel();
+//        try {
+//            if (d == null) {
+//                res.status = false;
+//                res.message = "Input Invalid";
+//                return res;
+//            }
+//            if (em.createNamedQuery("Districts.findByDistrictName").setParameter("districtName", d.getDistrictName()).getResultList().isEmpty()) {
+//                if (em.find(Districts.class, d.getDistrictId()) != null) {
+//                    Districts district = em.find(Districts.class, d.getDistrictId());
+//                    district.setDistrictName(d.getDistrictName());
+//                    em.merge(district);
+//                    res.status = true;
+//                } else {
+//                    res.status = false;
+//                    res.message = "District not found";
+//                }
+//            } else {
+//                res.status = false;
+//                res.message = "District already exists";
+//            }
+//        } catch (Exception ex) {
+//            res.status = false;
+//            res.message = ex.getMessage();
+//        }
+//        return res;
+//    }
+//
+//    @Override
+//    public ResponseModel deleteDistrict(int id) {
+//        ResponseModel res = new ResponseModel();
+//        try {
+//            if (id == 0) {
+//                res.status = false;
+//                res.message = "Input Invalid";
+//                return res;
+//            }
+//            if (em.find(Districts.class, id) != null) {
+//                Districts b = em.find(Districts.class, id);
+//                if (b.getPincodesCollection().isEmpty()) {
+//                    em.remove(b);
+//                    res.status = true;
+//                } else {
+//                    res.status = false;
+//                    res.message = "This district is being used";
+//                }
+//            } else {
+//                res.status = false;
+//                res.message = "Degree not found";
+//            }
+//        } catch (Exception ex) {
+//            res.status = false;
+//            res.message = ex.getMessage();
+//        }
+//        return res;
+//    }
     @Override
     public ResponseModel<Collection<Symptoms>> getAllSymptoms() {
         ResponseModel<Collection<Symptoms>> res = new ResponseModel<>();
@@ -1116,8 +1128,8 @@ public class AdminBean implements AdminBeanLocal {
 
             if (em.find(Pincodes.class, data.getPincode()) != null) {
                 Pincodes pin = em.find(Pincodes.class, data.getPincode());
-                pin.setDistrictId(data.getDistrictId());
-                pin.setStateId(data.getStateId());
+                pin.setDistrict(data.getDistrict());
+                pin.setState(data.getState());
                 em.merge(pin);
                 res.status = true;
             } else {
@@ -1153,96 +1165,95 @@ public class AdminBean implements AdminBeanLocal {
         return res;
     }
 
-    @Override
-    public ResponseModel addState(States data) {
-        ResponseModel res = new ResponseModel();
-        try {
-            if (data == null) {
-                res.status = false;
-                res.message = "input invalid";
-                return res;
-            } else {
-                em.persist(data);
-                res.status = true;
-                res.message = "input success";
-            }
-        } catch (Exception e) {
-            res.message = e.getMessage();
-            res.status = false;
-        }
-        return res;
-    }
-
-    @Override
-    public ResponseModel getAllStates() {
-        ResponseModel<Collection<States>> res = new ResponseModel<>();
-        try {
-            res.data = em.createNamedQuery("States.findAll").getResultList();
-            res.status = true;
-        } catch (Exception e) {
-            res.status = false;
-            res.message = e.getMessage();
-        }
-        return res;
-    }
-
-    @Override
-    public ResponseModel getState(int id) {
-        ResponseModel res = new ResponseModel();
-        res.data = em.find(States.class, id);
-        res.status = res.data != null;
-        return res;
-    }
-
-    @Override
-    public ResponseModel updateState(States data) {
-        ResponseModel res = new ResponseModel();
-        try {
-            if (data == null) {
-                res.status = false;
-                res.message = "Input Invalid";
-                return res;
-            }
-
-            if (em.find(States.class, data.getStateId()) != null) {
-                States state = em.find(States.class, data.getStateId());
-                state.setStateName(data.getStateName());
-
-                em.merge(state);
-                res.status = true;
-            } else {
-                res.status = false;
-                res.message = "User not found";
-            }
-
-        } catch (Exception e) {
-            res.status = false;
-            res.message = e.getMessage();
-        }
-        return res;
-    }
-
-    @Override
-    public ResponseModel deleteState(States data) {
-        ResponseModel res = new ResponseModel();
-        States deletedata = em.find(States.class, data.getStateId());
-        try {
-            if (deletedata == null) {
-                res.status = false;
-                res.message = "input invalid";
-            } else {
-
-                em.remove(deletedata);
-                res.status = true;
-                res.message = "Delete success";
-            }
-        } catch (Exception e) {
-            res.message = e.getMessage();
-            res.status = false;
-        }
-        return res;
-    }
-
+//    @Override
+//    public ResponseModel addState(States data) {
+//        ResponseModel res = new ResponseModel();
+//        try {
+//            if (data == null) {
+//                res.status = false;
+//                res.message = "input invalid";
+//                return res;
+//            } else {
+//                em.persist(data);
+//                res.status = true;
+//                res.message = "input success";
+//            }
+//        } catch (Exception e) {
+//            res.message = e.getMessage();
+//            res.status = false;
+//        }
+//        return res;
+//    }
+//
+//    @Override
+//    public ResponseModel getAllStates() {
+//        ResponseModel<Collection<States>> res = new ResponseModel<>();
+//        try {
+//            res.data = em.createNamedQuery("States.findAll").getResultList();
+//            res.status = true;
+//        } catch (Exception e) {
+//            res.status = false;
+//            res.message = e.getMessage();
+//        }
+//        return res;
+//    }
+//
+//    @Override
+//    public ResponseModel getState(int id) {
+//        ResponseModel res = new ResponseModel();
+//        res.data = em.find(States.class, id);
+//        res.status = res.data != null;
+//        return res;
+//    }
+//
+//    @Override
+//    public ResponseModel updateState(States data) {
+//        ResponseModel res = new ResponseModel();
+//        try {
+//            if (data == null) {
+//                res.status = false;
+//                res.message = "Input Invalid";
+//                return res;
+//            }
+//
+//            if (em.find(States.class, data.getStateId()) != null) {
+//                States state = em.find(States.class, data.getStateId());
+//                state.setStateName(data.getStateName());
+//
+//                em.merge(state);
+//                res.status = true;
+//            } else {
+//                res.status = false;
+//                res.message = "User not found";
+//            }
+//
+//        } catch (Exception e) {
+//            res.status = false;
+//            res.message = e.getMessage();
+//        }
+//        return res;
+//    }
+//
+//    @Override
+//    public ResponseModel deleteState(States data) {
+//        ResponseModel res = new ResponseModel();
+//        States deletedata = em.find(States.class, data.getStateId());
+//        try {
+//            if (deletedata == null) {
+//                res.status = false;
+//                res.message = "input invalid";
+//            } else {
+//
+//                em.remove(deletedata);
+//                res.status = true;
+//                res.message = "Delete success";
+//            }
+//        } catch (Exception e) {
+//            res.message = e.getMessage();
+//            res.status = false;
+//        }
+//        return res;
+//    }
     @Override
     public ResponseModel getSymptom(int id) {
         ResponseModel res = new ResponseModel();
@@ -1295,5 +1306,321 @@ public class AdminBean implements AdminBeanLocal {
     @Override
     public ResponseModel deleteAdminUser(Users data) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public ResponseModel<Roles> getRoleById(int id) {
+        ResponseModel<Roles> res = new ResponseModel<>();
+        try {
+            if (id == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (em.find(Roles.class, id) != null) {
+                res.data = em.find(Roles.class, id);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "Role not found";
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel<BloodGroups> getBloodGroupById(int id) {
+        ResponseModel<BloodGroups> res = new ResponseModel<>();
+        try {
+            if (id == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (em.find(BloodGroups.class, id) != null) {
+                res.data = em.find(BloodGroups.class, id);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "BloodGroup not found";
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel addUser(Users user) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (user == null) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getResultList().isEmpty()) {
+                String password = generatePassword();
+                String hashedPassword = PasswordHash.generate(password.toCharArray());
+                user.setPassword(hashedPassword);
+                Collection<Integer> dids = new ArrayList<>();
+                Collection<Integer> aids = new ArrayList<>();
+                if (!user.getDiseasesCollection().isEmpty()) {
+                    for (Diseases diseases : user.getDiseasesCollection()) {
+                        dids.add(diseases.getDiseaseId());
+                    }
+                }
+                if (!user.getAllergiesCollection().isEmpty()) {
+                    for (Allergies allergies : user.getAllergiesCollection()) {
+                        aids.add(allergies.getAllergyId());
+                    }
+                }
+                user.setDiseasesCollection(null);
+                user.setAllergiesCollection(null);
+                if (em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()) != null) {
+                    user.setBloodGroupId(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()));
+                } else {
+                    user.setBloodGroupId(null);
+                }
+                if (em.find(Roles.class, user.getRoleId().getRoleid()) != null) {
+                    user.setRoleId(em.find(Roles.class, user.getRoleId().getRoleid()));
+                } else {
+                    user.setRoleId(null);
+                }
+                ResponseModel addr = addAddress(user.getAddressId());
+                if (addr.status) {
+                    Addresses a = (Addresses) em.createNamedQuery("Addresses.findByAddress").setParameter("address", user.getAddressId().getAddress()).getSingleResult();
+                    user.setAddressId(a);
+                }
+                em.persist(user);
+                SendMailForSendingPasswordToUser(user.getAadharCardNo(), password);
+                Users u = (Users) em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getSingleResult();
+                if (!dids.isEmpty()) {
+                    addChronicDiseasesToUser(u.getUserId(), dids);
+                }
+                if (!aids.isEmpty()) {
+                    addAllergiesToUser(u.getUserId(), aids);
+                }
+                res.status = true;
+
+            } else {
+                res.status = false;
+                res.message = "User already exists";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel addAddress(Addresses address) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (address == null) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (em.createNamedQuery("Addresses.findByAddress").setParameter("address", address.getAddress()).getResultList().isEmpty()) {
+                em.persist(address);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "Address already exists";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel addChronicDiseasesToUser(int userId, Collection<Integer> dIds) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (userId == 0 && dIds.isEmpty()) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+
+            if (getUserById(userId).status) {
+                Users u = getUserById(userId).data;
+                Collection<Diseases> diseases = u.getDiseasesCollection();
+
+                for (Integer dId : dIds) {
+                    ResponseModel<Diseases> r = getDiseaseById(dId);
+                    if (r.status) {
+                        Diseases d = r.data;
+
+                        if (!diseases.contains(d)) {
+                            Collection<Users> users = d.getUsersCollection();
+                            diseases.add(d);
+                            users.add(u);
+
+                            u.setDiseasesCollection(diseases);
+                            d.setUsersCollection(users);
+
+                            em.merge(u);
+                        }
+
+                    } else {
+                        continue;
+                    }
+                }
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "User not found";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel addAllergiesToUser(int userId, Collection<Integer> aIds) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (userId == 0 && aIds.isEmpty()) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+
+            if (getUserById(userId).status) {
+                Users u = getUserById(userId).data;
+                Collection<Allergies> allergies = u.getAllergiesCollection();
+
+                for (Integer aId : aIds) {
+                    ResponseModel<Allergies> r = getAllergyById(aId);
+                    if (r.status) {
+                        Allergies a = r.data;
+
+                        if (!allergies.contains(a)) {
+                            Collection<Users> users = a.getUsersCollection();
+                            allergies.add(a);
+                            users.add(u);
+
+                            u.setAllergiesCollection(allergies);
+                            a.setUsersCollection(users);
+
+                            em.merge(u);
+                        }
+
+                    } else {
+                        continue;
+                    }
+                }
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "User not found";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel<Users> getUserById(int id) {
+        ResponseModel<Users> res = new ResponseModel<>();
+        try {
+            if (id == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (em.find(Users.class, id) != null) {
+                res.data = em.find(Users.class, id);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "User not found";
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel<Allergies> getAllergyById(int id) {
+        ResponseModel<Allergies> res = new ResponseModel<>();
+        try {
+            if (id == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (em.find(Allergies.class, id) != null) {
+                res.data = em.find(Allergies.class, id);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "Allergy not found";
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+        }
+        return res;
+    }
+
+    public String generatePassword() {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@!#$%&";
+        String password = RandomStringUtils.random(8, characters);
+
+        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@!#$%&])(?=\\S+$).{8,}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(password);
+
+        if (matcher.matches()) {
+            return password;
+        } else {
+            return generatePassword(); // recursion
+        }
+    }
+
+    private ResponseModel SendMailForSendingPasswordToUser(BigInteger aadharNo, String password) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (aadharNo.toString().length() != 12) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+
+            if (!em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", aadharNo).getResultList().isEmpty()) {
+                Users u = (Users) em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", aadharNo).getSingleResult();
+                String body = "<h3>Hello " + u.getUsername() + "!</h3><p>You have been registered as a user in EHR by Admin. </p><div><h3>Credentials</h3><div><h4>Username : " + u.getUsername() + "</h4><h4>Password : " + password + "</h4></div><p>You can log into the EHR using this credential.</p>";
+                mail.sendMail(u.getEmailid(), "User Credential - EHR", body);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "User not found";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
     }
 }

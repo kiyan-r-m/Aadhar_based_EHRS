@@ -5,24 +5,21 @@
 package Entities;
 
 import java.io.Serializable;
-import java.util.Collection;
-import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 /**
  *
- * @author krdmo
+ * @author admin
  */
 @Entity
 @Table(name = "pincodes", catalog = "ehrsystem", schema = "")
@@ -37,15 +34,14 @@ public class Pincodes implements Serializable {
     @Basic(optional = false)
     @Column(name = "pincode")
     private Integer pincode;
-    @OneToMany(mappedBy = "pincode")
-    @JsonbTransient
-    private Collection<Addresses> addressesCollection;
-    @JoinColumn(name = "district_id", referencedColumnName = "district_id")
-    @ManyToOne
-    private Districts districtId;
-    @JoinColumn(name = "state_id", referencedColumnName = "state_id")
-    @ManyToOne
-    private States stateId;
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "district")
+    private String district;
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "state")
+    private String state;
 
     public Pincodes() {
     }
@@ -62,28 +58,20 @@ public class Pincodes implements Serializable {
         this.pincode = pincode;
     }
 
-    public Collection<Addresses> getAddressesCollection() {
-        return addressesCollection;
+    public String getDistrict() {
+        return district;
     }
 
-    public void setAddressesCollection(Collection<Addresses> addressesCollection) {
-        this.addressesCollection = addressesCollection;
+    public void setDistrict(String district) {
+        this.district = district;
     }
 
-    public Districts getDistrictId() {
-        return districtId;
+    public String getState() {
+        return state;
     }
 
-    public void setDistrictId(Districts districtId) {
-        this.districtId = districtId;
-    }
-
-    public States getStateId() {
-        return stateId;
-    }
-
-    public void setStateId(States stateId) {
-        this.stateId = stateId;
+    public void setState(String state) {
+        this.state = state;
     }
 
     @Override
