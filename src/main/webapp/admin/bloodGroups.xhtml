@@ -7,14 +7,15 @@
     <h:head>
         <link rel="shortcut icon" href="../images/favicon.ico"/>
         <title>Blood groups - EHR Admin</title>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
     </h:head>
     <h:body>
         <h:form>
-            <p:dataTable id="bloodGroupTable" widgetVar="dtBloodGroups" var="bloodGroup" value="#{adminManagedBean.getAllBloodGroups()}" styleClass="blood-groups-table">
+            <p:dataTable id="bloodGroupTable" widgetVar="dtBloodGroups" var="bloodGroup" value="#{adminManagedBean.getAllBloodGroups()}" styleClass="blood-groups-table" lazy="true" paginator="true" rows="7" paginatorPosition="bottom">
                 <f:facet name="header">
                     <div class="bloodGroup-table-header flex justify-content-between flex-wrap">
-                        <div style="font-weight: bold" class="text-3xl">Blood-Groups</div>
+                        <div style="font-weight: bold" class="text-2xl">Blood-Groups</div>
                         <div>
                             <div class="filter-container ui-input-icon-left mx-3"> 
                                 <i class="pi pi-search"></i>

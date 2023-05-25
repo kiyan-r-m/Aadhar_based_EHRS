@@ -894,17 +894,19 @@ public class AdminBean implements AdminBeanLocal {
     @Override
     public ResponseModel addFieldOfStudy(FieldOfStudy data) {
         ResponseModel res = new ResponseModel();
-        FieldOfStudy addData = em.find(FieldOfStudy.class, data.getFieldId());
         try {
             if (data == null) {
                 res.status = false;
                 res.message = "input invalid";
                 return res;
             } else {
-                if (addData == null) {
+                if (em.createNamedQuery("FieldOfStudy.findByFieldName").setParameter("fieldName", data.getFieldName()).getResultList().isEmpty()) {
                     em.persist(data);
                     res.status = true;
                     res.message = "input success";
+                } else {
+                    res.status = false;
+                    res.message = "Record already exists";
                 }
             }
         } catch (Exception e) {
@@ -973,10 +975,14 @@ public class AdminBean implements AdminBeanLocal {
                 res.status = false;
                 res.message = "input invalid";
             } else {
-
+                if(deletedata.getDoctorDetailsCollection().isEmpty()) {
                 em.remove(deletedata);
                 res.status = true;
                 res.message = "Delete success";
+                } else {
+                    res.status = false;
+                    res.message = "This field of study is being used";
+                }
             }
         } catch (Exception e) {
             res.message = e.getMessage();

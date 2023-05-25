@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import org.primefaces.PrimeFaces;
@@ -72,8 +71,9 @@ public class AdminManagedBean implements Serializable {
 
 //    Districts selectedDistrict;
 //    Collection<Districts> districts = new ArrayList<>();
-
     Diseases selectedDisease;
+
+    FieldOfStudy selectedFieldOfStudy;
 
     public AdminManagedBean() {
     }
@@ -387,7 +387,6 @@ public class AdminManagedBean implements Serializable {
 //    public void setDistricts(Collection<Districts> districts) {
 //        this.districts = districts;
 //    }
-
     public Diseases getSelectedDisease() {
         return selectedDisease;
     }
@@ -411,7 +410,14 @@ public class AdminManagedBean implements Serializable {
     public void setRoleId(int roleId) {
         this.roleId = roleId;
     }
-    
+
+    public FieldOfStudy getSelectedFieldOfStudy() {
+        return selectedFieldOfStudy;
+    }
+
+    public void setSelectedFieldOfStudy(FieldOfStudy selectedFieldOfStudy) {
+        this.selectedFieldOfStudy = selectedFieldOfStudy;
+    }
 
     public List<Users> getAllUsers() {
         ResponseModel<Collection<Users>> res = ubl.getAllUsers();
@@ -502,7 +508,7 @@ public class AdminManagedBean implements Serializable {
         this.Pincode = u.getAddressId().getPincode().getPincode().toString();
         onPincodeSelect();
     }
-    
+
     public List<BloodGroups> getAllBloodGroups() {
         ResponseModel<Collection<BloodGroups>> res = abl.getAllBloodGroups();
         if (res.status) {
@@ -524,13 +530,15 @@ public class AdminManagedBean implements Serializable {
     }
 
     public void successMessage(String summary, String detail) {
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
-        FacesContext.getCurrentInstance().addMessage(null, message);
+//        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
+//        FacesContext.getCurrentInstance().addMessage(null, message);
+        PrimeFaces.current().executeScript("Swal.fire({title: '" + summary + "', text: '" + detail + "', icon: 'success', timer: 1500, showConfirmButton: false});");
     }
 
     private void errorMessage(String summary, String detail) {
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail);
-        FacesContext.getCurrentInstance().addMessage(null, message);
+//        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail);
+//        FacesContext.getCurrentInstance().addMessage(null, message);
+        PrimeFaces.current().executeScript("Swal.fire({title : '" + summary + "', text: '" + detail + "', icon: 'error', timer: 1500, showConfirmButton: false});");
     }
 
     public void openNewBloodGroup() {
@@ -758,7 +766,6 @@ public class AdminManagedBean implements Serializable {
 //        UIComponent datatable = findComponentById(baseComponent, "districtTable");
 //        PrimeFaces.current().ajax().update(datatable.getClientId());
 //    }
-
     public List<Diseases> getAllDiseases() {
         ResponseModel<Collection<Diseases>> res = abl.getAllDiseases();
         if (res.status) {
@@ -802,6 +809,52 @@ public class AdminManagedBean implements Serializable {
         PrimeFaces.current().executeScript("PF('manageDiseaseDialog').hide();");
         UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
         UIComponent datatable = findComponentById(baseComponent, "diseaseTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public List<FieldOfStudy> getAllFieldOfStudies() {
+        ResponseModel<Collection<FieldOfStudy>> res = abl.getAllFieldsofStudy();
+        if (true) {
+            return (List<FieldOfStudy>) res.data;
+        }
+        return null;
+    }
+
+    public void deleteFieldOfStudy(int id) {
+        ResponseModel res = abl.deleteFieldOfStudy(new FieldOfStudy(id));
+        if (res.status == true) {
+            successMessage("Delete Field Of Study", "Record deleted successfully!");
+        } else {
+            errorMessage("Error", res.message);
+        }
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "fieldOfStudyTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public void openNewFieldOfStudy() {
+        this.selectedFieldOfStudy = new FieldOfStudy();
+    }
+
+    public void saveFieldOfStudy() {
+        if (selectedFieldOfStudy.getFieldId() == null) {
+            ResponseModel res = abl.addFieldOfStudy(selectedFieldOfStudy);
+            if (res.status) {
+                successMessage("Add Field Of Study", "Record added successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        } else {
+            ResponseModel res = abl.updateFieldOfStudy(selectedFieldOfStudy);
+            if (res.status) {
+                successMessage("Update Field Of Study", "Record updated successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        }
+        PrimeFaces.current().executeScript("PF('manageFieldOfStudyDialog').hide();");
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "fieldOfStudyTable");
         PrimeFaces.current().ajax().update(datatable.getClientId());
     }
 }

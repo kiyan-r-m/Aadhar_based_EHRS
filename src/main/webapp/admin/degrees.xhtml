@@ -7,14 +7,15 @@
     <h:head>
         <link rel="shortcut icon" href="../images/favicon.ico"/>
         <title>Degrees - EHR Admin</title>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
     </h:head>
     <h:body>
         <h:form>
-            <p:dataTable id="degreeTable" widgetVar="dtDegree" var="degree" value="#{adminManagedBean.getAllDegrees()}" styleClass="degrees-table">
+            <p:dataTable id="degreeTable" widgetVar="dtDegree" var="degree" value="#{adminManagedBean.getAllDegrees()}" styleClass="degrees-table" lazy="true" paginator="true" rows="7" paginatorPosition="bottom">
                 <f:facet name="header">
                     <div class="degree-table-header flex justify-content-between flex-wrap">
-                        <div style="font-weight: bold" class="text-3xl">Degrees</div>
+                        <div style="font-weight: bold" class="text-2xl">Degrees</div>
                         <div>
                             <div class="filter-container ui-input-icon-left mx-3"> 
                                 <i class="pi pi-search"></i>
