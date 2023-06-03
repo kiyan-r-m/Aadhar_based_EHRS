@@ -10,33 +10,37 @@
         <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />   
         <h:outputStylesheet library="css" name="main.css"/>
     </h:head>
-        <h:body class="login">
+    <h:body class="login">
         <center>
-                <p:card style="width: 40rem;">
-                    <h:graphicImage value="images/logo.png" width="60" alt="logo"/>
-                    <div class="py-2">  
-                        <h:outputText value="Login" class="text-4xl"/>
+            <p:card style="width: 38rem; background: rgba(244, 244, 244, 0.9); border-radius: 3rem">
+                <!--<h:graphicImage value="images/logo.png" width="60" alt="logo"/>-->
+                <div class="pt-2 pb-4">  
+                    <h:outputText value="Login" style="color: #233565; font-weight: bold;" class="text-4xl"/>
+                </div>
+                <h:form class="px-6">
+                    <p:growl id="msgs" showDetail="true" rendered="#{not facesContext.validationFailed}"/>
+                    <!--<span class="ui-float-label">-->
+                    <div align="left" class="pb-2">
+                        <p:outputLabel for="username" value="Username" styleClass="text-lg" style="font-weight: bold" />
                     </div>
-                    <h:form class="px-4">
-                        <p:growl id="msgs" showDetail="true" rendered="#{not facesContext.validationFailed}"/>
-                        <!--<span class="ui-float-label">-->
-                        <div align="left" class="pb-2"><p:outputLabel for="username" value="Username" styleClass="text-lg" /></div>
-                            <p:inputText id="username" style="width: 100%" required="true" requiredMessage="Please enter username" value="#{login.email}" />
-                        <!--</span>-->
-                        <p:message for="username" style="width: 98%;" class="my-2" />
-                        <!--<span class="ui-float-label">-->
-                        <div align="left" class="pb-2"><p:outputLabel for="password" value="Password" styleClass="text-lg" /></div>
-                        <p:password id="password" style="width: 100%" required="true" validatorMessage="Please enter password properly" requiredMessage="Please enter password" value="#{login.password}" >
-                            <f:validateRegex pattern="^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,}$"  />
-                        </p:password>
-                        <!--</span>-->
-                        <p:message for="password" style="width: 98%;" class="my-2" />
-                        <p:commandButton class="mt-2 mb-2" ajax="false" update="@form" value="Login" style="width: 100%" action="#{login.submit()}"  />
-                    </h:form>
-                    <h:form>
-                        <h:commandLink action="register.jsf" value="Don't have an account? Sign up" />
-                    </h:form>
-                </p:card>
+                    <p:inputText id="username" style="width: 100%;" required="true" requiredMessage="Please enter username" value="#{login.email}" />
+                    <!--</span>-->
+                    <p:message for="username" style="width: 98%;" class="my-2" />
+                    <!--<span class="ui-float-label">-->
+                    <div class="pb-2 flex flex-wrap justify-content-between">
+                        <p:outputLabel for="password" value="Password" styleClass="text-lg" style="font-weight: bold" />
+                        <a href="forgetPassword.jsf" >Forgot Password?</a>                        
+                    </div>
+                    <p:password id="password" style="width: 100%" required="true" validatorMessage="Please enter password properly" requiredMessage="Please enter password" value="#{login.password}" >
+                        <f:validateRegex pattern="^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,}$"  />
+                    </p:password>
+                    <p:message for="password" style="width: 98%;" class="my-2" />
+                    <p:commandButton class="mt-2 mb-2" ajax="false" update="@form" value="Login" style="width: 100%; background: #233565; border: #233565" actionListener="#{login.submit()}"  />
+                </h:form>
+                <h:form>
+                    <div class="mt-2"><p:outputLabel value="Don't have an account? " /><h:commandLink action="#{adminManagedBean.redirectTo('register.jsf')}" value="Sign up" /></div>
+                </h:form>
+            </p:card>
         </center>
     </h:body>
 </html>

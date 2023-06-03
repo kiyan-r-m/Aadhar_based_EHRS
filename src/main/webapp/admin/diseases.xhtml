@@ -12,113 +12,118 @@
         <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
     </h:head>
     <h:body>
-        <h:form>
-            <p:dataTable id="diseaseTable" widgetVar="dtDiseases" var="disease" value="#{adminManagedBean.getAllDiseases()}" styleClass="diseases-table" lazy="true" paginator="true" rows="7" paginatorPosition="bottom">
-                <f:facet name="header">
-                    <div class="disease-table-header flex justify-content-between flex-wrap">
-                        <div style="font-weight: bold" class="text-2xl">Diseases</div>
-                        <div>
-                            <div class="filter-container ui-input-icon-left mx-3"> 
-                                <i class="pi pi-search"></i>
-                                <p:inputText id="globalFilter" onkeyup="PF('dtDiseases').filter()" placeholder="Search by name" />
-                            </div>
-                            <p:commandButton value="New" icon="pi pi-plus" actionListener="#{adminManagedBean.openNewDisease()}" oncomplete="PF('manageDiseaseDialog').show()"
-                                             styleClass="ui-button-primary" style="margin-right: .5rem" update=":dialogs:manage-disease-content" >
-                                <p:resetInput target=":dialogs:manage-disease-content" />
-                            </p:commandButton>
-                            <p:commandButton value="Logout" icon="pi pi-sign-out" styleClass="ui-button-primary" action="#{logout.submit()}" style="margin-right: .5rem">
-                            </p:commandButton>
-                        </div>
-                    </div>
-                </f:facet>
-                <p:column headerText="Name" filterStyle="display: none" sortBy="#{disease.diseaseName}" filterBy="#{disease.diseaseName}">
-                    <h:outputText value="#{disease.diseaseName}"/>
-                </p:column>
-                <p:column headerText="Type" filterStyle="display: none" sortBy="#{disease.diseaseType.toString()}" filterBy="#{disease.diseaseType.toString()}">
-                    <h:outputText rendered="#{disease.diseaseType}" value="Chronic"/>
-                    <h:outputText rendered="#{!disease.diseaseType}" value="Acute"/>
-                </p:column>
-                <p:column headerText="Symptoms">
-                    <ui:repeat value="#{disease.symptomsCollection}" var="s" varStatus="status">
-                        #{s.symptomName}<h:outputText value=", " rendered="#{!status.last}" />
-                    </ui:repeat>
-                </p:column>
-                <p:column headerText="Common Medications">
-                    <ui:repeat value="#{disease.commonMedicationsCollection}" var="c" varStatus="status1">
-                        #{c.medicationName}<h:outputText value=", " rendered="#{!status1.last}" />
-                    </ui:repeat>
-                </p:column>
-                <p:column>
-                    <p:growl id="message" showDetail="true"/>
-                    <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-disease-content"
-                                     oncomplete="PF('manageDiseaseDialog').show()"
-                                     styleClass="edit-button rounded-button ui-button-primary" process="@this">
-                        <f:setPropertyActionListener value="#{disease}" target="#{adminManagedBean.selectedDisease}" />
-                        <p:resetInput target=":dialogs:manage-disease-content" />
-                    </p:commandButton>
-                    <p:commandButton icon="pi pi-trash" action="#{adminManagedBean.deleteDisease(disease.diseaseId)}" update="message" class="ui-button-danger rounded-button mx-2">
-                        <p:confirm header="Confirmation" message="Are you sure you want to delete?" icon="pi pi-exclamation-triangle"/>
-                    </p:commandButton>
-                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
-                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
-                    </p:confirmDialog>
-                </p:column>
-            </p:dataTable>
-        </h:form>
+        <ui:composition template="home.xhtml">
+            <ui:define name="content">
+                <div class="container">
+                    <h:form>
+                        <p:dataTable id="diseaseTable" widgetVar="dtDiseases" var="disease" value="#{adminManagedBean.getAllDiseases()}" styleClass="diseases-table" paginator="true" rows="7" paginatorPosition="bottom">
+                            <f:facet name="header">
+                                <div class="disease-table-header card p-3">
+                                    <div class="flex justify-content-between flex-wrap">
+                                        <div style="font-weight: bold" class="text-2xl">Diseases</div>
+                                        <div>
+                                            <div class="filter-container ui-input-icon-left mx-3"> 
+                                                <i class="pi pi-search"></i>
+                                                <p:inputText id="globalFilter" onkeyup="PF('dtDiseases').filter()" placeholder="Search by name" />
+                                            </div>
+                                            <p:commandButton icon="pi pi-plus" actionListener="#{adminManagedBean.openNewDisease()}" oncomplete="PF('manageDiseaseDialog').show()"
+                                                             styleClass="rounded-button ui-button-primary" style="margin-right: .5rem; background-color: #233565; border: #233565" update=":dialogs:manage-disease-content" >
+                                                <p:resetInput target=":dialogs:manage-disease-content" />
+                                            </p:commandButton>
+                                        </div>
+                                    </div>
+                                </div>
+                            </f:facet>
+                            <p:column headerText="Name" style="padding-left: 3rem" filterStyle="display: none" sortBy="#{disease.diseaseName}" filterBy="#{disease.diseaseName}">
+                                <h:outputText value="#{disease.diseaseName}"/>
+                            </p:column>
+                            <p:column headerText="Type" filterStyle="display: none" sortBy="#{disease.diseaseType.toString()}" filterBy="#{disease.diseaseType.toString()}">
+                                <h:outputText rendered="#{disease.diseaseType}" value="Chronic"/>
+                                <h:outputText rendered="#{!disease.diseaseType}" value="Acute"/>
+                            </p:column>
+                            <p:column headerText="Symptoms">
+                                <ui:repeat value="#{disease.symptomsCollection}" var="s" varStatus="status">
+                                    #{s.symptomName}<h:outputText value=", " rendered="#{!status.last}" />
+                                </ui:repeat>
+                            </p:column>
+                            <p:column headerText="Common Medications">
+                                <ui:repeat value="#{disease.commonMedicationsCollection}" var="c" varStatus="status1">
+                                    #{c.medicationName}<h:outputText value=", " rendered="#{!status1.last}" />
+                                </ui:repeat>
+                            </p:column>
+                            <p:column style="text-align: right; padding-right: 3rem">
+                                <p:growl id="message" showDetail="true"/>
+                                <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-disease-content"
+                                                 oncomplete="PF('manageDiseaseDialog').show()" style="background-color: #233565; border: #233565"
+                                                 styleClass="edit-button rounded-button ui-button-primary" process="@this">
+                                    <f:setPropertyActionListener value="#{disease}" target="#{adminManagedBean.selectedDisease}" />
+                                    <p:resetInput target=":dialogs:manage-disease-content" />
+                                </p:commandButton>
+                                <p:commandButton icon="pi pi-trash" action="#{adminManagedBean.deleteDisease(disease.diseaseId)}" update="message" class="ui-button-danger rounded-button mx-2">
+                                    <p:confirm header="Confirmation" message="Are you sure you want to delete?" icon="pi pi-exclamation-triangle"/>
+                                </p:commandButton>
+                                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
+                                </p:confirmDialog>
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
 
-        <h:form id="dialogs">
-            <p:dialog header="Blood Group Details" width="35rem" showEffect="fade" modal="true" widgetVar="manageDiseaseDialog"
-                      responsive="true">
-                <p:scrollPanel style="height:500px">
-                    <p:outputPanel id="manage-disease-content" class="ui-fluid p-5">
-                        <p:outputPanel rendered="#{not empty adminManagedBean.selectedDisease}">
-                            <div class="field">
-                                <p:outputLabel for="diseaseName">Disease Name</p:outputLabel>
-                                <div><p:inputText style="width: 100% !important" id="diseaseName" required="true" requiredMessage="Please enter disease" value="#{adminManagedBean.selectedDisease.diseaseName}" /></div>
-                                <div><p:message for="diseaseName" styleClass="my-2" /></div>
-                            </div>
-                            <div class="field">
-                                <p:outputLabel for="diseaseType">Disease Type</p:outputLabel>
-                                <div>
-                                    <p:selectOneRadio id="diseaseType" value="#{adminManagedBean.selectedDisease.diseaseType}" required="true" requiredMessage="Please select disease type">
-                                        <f:selectItem itemValue="false" itemLabel="Acute" />
-                                        <f:selectItem itemValue="true" itemLabel="Chronic" />
-                                    </p:selectOneRadio>
+                    <h:form id="dialogs">
+                        <p:dialog header="Blood Group Details" width="35rem" showEffect="fade" modal="true" widgetVar="manageDiseaseDialog"
+                                  responsive="true">
+                            <p:scrollPanel style="height:500px">
+                                <p:outputPanel id="manage-disease-content" class="ui-fluid p-5">
+                                    <p:outputPanel rendered="#{not empty adminManagedBean.selectedDisease}">
+                                        <div class="field">
+                                            <p:outputLabel for="diseaseName">Disease Name</p:outputLabel>
+                                            <div><p:inputText style="width: 100% !important" id="diseaseName" required="true" requiredMessage="Please enter disease" value="#{adminManagedBean.selectedDisease.diseaseName}" /></div>
+                                            <div><p:message for="diseaseName" styleClass="my-2" /></div>
+                                        </div>
+                                        <div class="field">
+                                            <p:outputLabel for="diseaseType">Disease Type</p:outputLabel>
+                                            <div>
+                                                <p:selectOneRadio id="diseaseType" value="#{adminManagedBean.selectedDisease.diseaseType}" required="true" requiredMessage="Please select disease type">
+                                                    <f:selectItem itemValue="false" itemLabel="Acute" />
+                                                    <f:selectItem itemValue="true" itemLabel="Chronic" />
+                                                </p:selectOneRadio>
+                                            </div>
+                                            <div><p:message for="diseaseType" styleClass="my-2" /></div>
+                                        </div>
+                                        <div class="field">
+                                            <p:outputLabel for="symptoms">Symptoms</p:outputLabel>
+                                            <div>
+                                                <p:selectManyMenu id="symptoms" value="#{adminManagedBean.selectedDisease.symptomsCollection}" filter="true" showCheckbox="true" converter="#{symptomConverter}">
+                                                    <f:selectItems value="#{adminManagedBean.symptoms}" var="s1" itemValue="#{s1}" itemLabel="#{s1.symptomName}" />
+                                                </p:selectManyMenu>
+                                            </div>
+                                            <div><p:message for="symptoms" styleClass="my-2" /></div>
+                                        </div>
+                                        <div class="field">
+                                            <p:outputLabel for="medications">Medications</p:outputLabel>
+                                            <div>
+                                                <p:selectManyMenu id="medications" value="#{adminManagedBean.selectedDisease.commonMedicationsCollection}" filter="true" showCheckbox="true" converter="#{medicationConverter}">
+                                                    <f:selectItems value="#{adminManagedBean.medications}" var="m1" itemValue="#{m1}" itemLabel="#{m1.medicationName}" />
+                                                </p:selectManyMenu>
+                                            </div>
+                                            <div><p:message for="medications" styleClass="my-2" /></div>
+                                        </div>
+                                    </p:outputPanel>
+                                </p:outputPanel>
+                                <div class="flex justify-content-end flex-wrap mb-5 mt-2 mx-5">
+                                    <p:commandButton value="Save" icon="pi pi-check" actionListener="#{adminManagedBean.saveDisease()}"
+                                                     update="manage-disease-content message1" class="mx-2" process="manage-disease-content @this" />
+                                    <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageDiseaseDialog').hide()"
+                                                     class="ui-button-secondary" type="button" />
                                 </div>
-                                <div><p:message for="diseaseType" styleClass="my-2" /></div>
-                            </div>
-                            <div class="field">
-                                <p:outputLabel for="symptoms">Symptoms</p:outputLabel>
-                                <div>
-                                    <p:selectManyMenu id="symptoms" value="#{adminManagedBean.selectedDisease.symptomsCollection}" filter="true" showCheckbox="true" converter="#{symptomConverter}">
-                                        <f:selectItems value="#{adminManagedBean.symptoms}" var="s1" itemValue="#{s1}" itemLabel="#{s1.symptomName}" />
-                                    </p:selectManyMenu>
-                                </div>
-                                <div><p:message for="symptoms" styleClass="my-2" /></div>
-                            </div>
-                            <div class="field">
-                                <p:outputLabel for="medications">Medications</p:outputLabel>
-                                <div>
-                                    <p:selectManyMenu id="medications" value="#{adminManagedBean.selectedDisease.commonMedicationsCollection}" filter="true" showCheckbox="true" converter="#{medicationConverter}">
-                                        <f:selectItems value="#{adminManagedBean.medications}" var="m1" itemValue="#{m1}" itemLabel="#{m1.medicationName}" />
-                                    </p:selectManyMenu>
-                                </div>
-                                <div><p:message for="medications" styleClass="my-2" /></div>
-                            </div>
-                        </p:outputPanel>
-                    </p:outputPanel>
-                    <div class="flex justify-content-end flex-wrap mb-5 mt-2 mx-5">
-                        <p:commandButton value="Save" icon="pi pi-check" actionListener="#{adminManagedBean.saveDisease()}"
-                                         update="manage-disease-content message1" class="mx-2" process="manage-disease-content @this" />
-                        <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageDiseaseDialog').hide()"
-                                         class="ui-button-secondary" type="button" />
-                    </div>
-                </p:scrollPanel>
-            </p:dialog>
-            <p:growl id="message1" showDetail="true" rendered="#{not facesContext.validationFailed}" />
-        </h:form>
-
+                            </p:scrollPanel>
+                        </p:dialog>
+                        <p:growl id="message1" showDetail="true" rendered="#{not facesContext.validationFailed}" />
+                    </h:form>
+                </div>
+            </ui:define>
+        </ui:composition>
     </h:body>
 </html>
 

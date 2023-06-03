@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <link rel="shortcut icon" href="../images/favicon.ico"/>
+        <title>Home - EHR Admin</title>
+        <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous" />
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js" integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE" crossorigin="anonymous"></script>
+        <style>
+            body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active>.ui-menuitem-link {
+                background: #233565;
+            }
+            body .ui-menu.ui-menubar {
+                border: none;
+                padding: 0;
+            }
+            .user-bedge > a > span{
+               color: white !important;
+               font-weight: bold;
+            }
+            .user-bedge > a > .ui-menuitem-icon {
+                font-size: 2rem;
+            }
+            body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active>.ui-menuitem-link .ui-menuitem-text {
+                color: #FFFFFF;
+            }
+            body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active>.ui-menuitem-link .ui-menuitem-icon {
+                color: #FFFFFF;
+            }
+        </style>
+    </h:head>
+    <h:body>
+        <nav class="navbar navbar-expand-lg" style="background: #233565; padding: 0.5rem 3rem 0.5rem 2rem; margin-bottom: 2rem">
+            <div class="container-fluid flex justify-content-between">
+                <button id="sb" value="sidebar" title="sidebar" onclick="PF('sidebar').show()" style="background: #233565; color: #FFFFFF" class="btn" ><i class="pi pi-bars" style="font-size: 1.6rem"></i></button>
+                <!--<div class="text-white fw-bold"> <i class="fa fa-user-circle fs-3 p-2 " /> Welcome, ${adminManagedBean.username} </div>-->
+                <h:form>
+                    <p:menubar style="background: #233565">
+                        <p:submenu class="user-bedge" label="Welcome, #{login.email}" icon="pi-fw fa fa-user-circle">
+                            <p:menuitem value="Change Password" icon="pi-fw fa fa-light fa-key"/>
+                            <p:menuitem value="Log out" action="#{logout.submit()}" icon="pi pi-fw pi-sign-out"/>
+                        </p:submenu>
+                    </p:menubar>
+                </h:form>
+            </div>
+        </nav>
+        <ui:insert name="content" />
+        <p:sidebar widgetVar="sidebar" style="margin:0;padding:0;background-color: #233565">
+            <div style="padding: 0.8rem 0 0.1rem 0.1rem;">
+                <p:graphicImage value="../images/sidebar.png" height="65"/>
+                <h:form style="margin-top: 2rem">
+                    <div style="margin: 0 0 0 3rem">
+                        <p:commandLink action="#{adminManagedBean.redirectTo('users.jsf')}" class="text-white">
+                            <i class="pi pi-user fs-5 pr-2 py-2" />
+                            <p:outputLabel class="fs-6 py-2" value="users" />
+                        </p:commandLink>
+                    </div>
+                    <div style="margin: 0 0 0 3rem">
+                        <p:commandLink action="#{adminManagedBean.redirectTo('diseases.jsf')}" class="text-white">
+                            <i class="fa fa-viruses fs-5 pr-2 py-2" />
+                            <p:outputLabel class="fs-6 py-2" value="diseases" />
+                        </p:commandLink>
+                    </div>
+                    <div style="margin: 0 0 0 2.7rem">
+                        <p:commandLink action="#{adminManagedBean.redirectTo('symptoms.jsf')}" class="text-white">
+                            <p:graphicImage value="../images/symptoms.svg"/>
+                            <p:outputLabel class="fs-6 pl-1 py-2" value="symptoms" />
+                        </p:commandLink>
+                    </div>
+                    <div style="margin: 0 0 0 3rem">
+                        <p:commandLink action="#{adminManagedBean.redirectTo('medications.jsf')}" class="text-white">
+                            <i class="fas fa-pills fs-5 pr-2 py-2" />
+                            <p:outputLabel class="fs-6 py-2" value="medications" />
+                        </p:commandLink>
+                    </div>
+                    <div style="margin: 0 0 0 3rem">
+                        <p:commandLink action="#{adminManagedBean.redirectTo('bloodGroups.jsf')}" class="text-white">
+                            <i class="fa fa-droplet fs-5 pr-2 py-2" />
+                            <p:outputLabel class="fs-6 py-2" value="blood-groups"/>
+                        </p:commandLink>
+                    </div>
+                    <div style="margin: 0 0 0 3rem">
+                        <p:commandLink action="#{adminManagedBean.redirectTo('fieldOfStudies.jsf')}" class="text-white">
+                            <i class="fa fa-graduation-cap fs-5 pr-2 py-2" />
+                            <p:outputLabel class="fs-6 py-2" value="field-of-study"/>
+                        </p:commandLink>
+                    </div>
+                </h:form>
+            </div>
+        </p:sidebar>
+    </h:body>
+</html>
+

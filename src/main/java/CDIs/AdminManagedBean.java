@@ -6,7 +6,9 @@ package CDIs;
 
 import Beans.AdminBeanLocal;
 import Beans.userBeanLocal;
+import Config.Login;
 import Entities.*;
+import java.io.IOException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -16,10 +18,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.security.enterprise.identitystore.IdentityStoreHandler;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -74,6 +80,11 @@ public class AdminManagedBean implements Serializable {
     Diseases selectedDisease;
 
     FieldOfStudy selectedFieldOfStudy;
+
+    @Inject
+    IdentityStoreHandler identitystore;
+    @Inject
+    Login login;
 
     public AdminManagedBean() {
     }
@@ -856,5 +867,13 @@ public class AdminManagedBean implements Serializable {
         UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
         UIComponent datatable = findComponentById(baseComponent, "fieldOfStudyTable");
         PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public void redirectTo(String page) {
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect(page);
+        } catch (IOException ex) {
+            Logger.getLogger(AdminManagedBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

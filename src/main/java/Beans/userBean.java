@@ -731,8 +731,8 @@ public class userBean implements userBeanLocal {
 
             if (em.find(Users.class, userId) != null) {
                 Users u = em.find(Users.class, userId);
-                if (u.getPassword().equals(oldPassword)) {
-                    u.setPassword(newPassword);
+                if (PasswordHash.verify(oldPassword.toCharArray(), u.getPassword())) {
+                    u.setPassword(PasswordHash.generate(newPassword.toCharArray()));
                     em.merge(u);
                     res.status = true;
                 } else {
@@ -793,9 +793,9 @@ public class userBean implements userBeanLocal {
             if (em.find(Users.class, userId) != null) {
                 Cookie cookie = getCookie("forgetPasswordOTP", request);
                 if (cookie != null) {
-                    if (cookie.getValue().toString().equals(OTP)) {
+                    if (cookie.getValue().equals(OTP)) {
                         Users u = em.find(Users.class, userId);
-                        u.setPassword(newPassword);
+                        u.setPassword(PasswordHash.generate(newPassword.toCharArray()));
                         em.merge(u);
                         res.status = true;
                         cookie.setMaxAge(0);

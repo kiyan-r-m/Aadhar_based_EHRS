@@ -128,7 +128,6 @@ public class TestServlet extends HttpServlet {
 //                System.out.println("Mail Sent");
 //                System.out.println(res.message);
 //            }
-
 //            // Forget Password
 //            ResponseModel res = ubl.SendMailForForgetPassword("charmimodi242@gmail.com", response);
 //            if (res.status == true) {
@@ -142,6 +141,9 @@ public class TestServlet extends HttpServlet {
 //                System.out.println("Error!!");
 //                System.out.println(res.message);
 //            }
+//            ubl.SendMailForForgetPassword("charmimodi242@gmail.com", response);
+//            ubl.ForgetPassword(request, response, 16, "6b824236-cea2-4c3d-8cf9-c940fafdc8ac", "Chr@1234");
+//            ubl.ChangePassword(16, "Chr@1234", "Krm@1234");
             out.println("</body>");
             out.println("</html>");
         }
