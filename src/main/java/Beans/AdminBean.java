@@ -5,11 +5,21 @@
 package Beans;
 
 import Entities.*;
+import ReportModels.BloodGroupFrequency;
+import ReportModels.DiseaseToFrequency;
+import ReportModels.DateWiseCaseFrequency;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.StoredProcedureQuery;
 
 /**
  *
@@ -953,9 +963,9 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public ResponseModel deleteFieldOfStudy(FieldOfStudy data) {
+    public ResponseModel deleteFieldOfStudy(int data) {
         ResponseModel res = new ResponseModel();
-        FieldOfStudy deletedata = em.find(FieldOfStudy.class, data.getFieldId());
+        FieldOfStudy deletedata = em.find(FieldOfStudy.class, data);
         try {
             if (deletedata == null) {
                 res.status = false;
@@ -1295,5 +1305,71 @@ public class AdminBean implements AdminBeanLocal {
     @Override
     public ResponseModel deleteAdminUser(Users data) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Collection<BloodGroupFrequency> getBloodGroupFrequency() {
+        Collection<BloodGroupFrequency> res = new ArrayList<>();
+        StoredProcedureQuery qry = em.createStoredProcedureQuery("getBloodGroupFrequency");
+        qry.execute();
+        List<Object[]> datalist = qry.getResultList();
+        for (Object[] data : datalist) {
+            BloodGroupFrequency bg = new BloodGroupFrequency();
+            bg.setBlood_group_name(data[0].toString());
+            bg.setFrequency(Long.parseLong(data[1].toString()));
+            res.add(bg);
+
+        }
+        return res;
+    }
+
+    @Override
+    public long getAllUsersFrequency(int userid) {
+        StoredProcedureQuery qry = em.createNamedStoredProcedureQuery("countUsers");
+        qry.setParameter("userType", userid);
+        qry.execute();
+        List<Object[]> result = qry.getResultList();
+        Long count = 0L;
+        for (Object[] data : result) {
+            count = Long.valueOf(data[0].toString());
+        }
+        return count;
+    }
+
+    @Override
+    public Collection<DateWiseCaseFrequency> getCasesFrequency(String disease, LocalDate startDate, String state) {
+        Collection<DateWiseCaseFrequency> res = new ArrayList<>();
+
+        StoredProcedureQuery qry = em.createNamedStoredProcedureQuery("frequencyByDiseaseDateState");
+        qry.setParameter("diseaseval", disease);
+
+        qry.setParameter("dateval", startDate);
+
+        qry.setParameter("stateval", state);
+        qry.execute();
+        List<Object[]> datalist = qry.getResultList();
+        for (Object[] data : datalist) {
+            DateWiseCaseFrequency cf = new DateWiseCaseFrequency();
+            cf.setFrequencyDate(LocalDate.parse(data[0].toString(), DateTimeFormatter.ISO_DATE));
+            cf.setFrequency(Long.valueOf(data[1].toString()));
+            res.add(cf);
+        }
+        return res;
+    }
+
+    @Override
+    public Collection<DiseaseToFrequency> getTopCases() {
+        Collection<DiseaseToFrequency> res = new ArrayList<>();
+        StoredProcedureQuery qry = em.createStoredProcedureQuery("topTenDiseasesByCases");
+        qry.execute();
+        List<Object[]> datalist = qry.getResultList();
+        for (Object[] data : datalist) {
+            DiseaseToFrequency cf = new DiseaseToFrequency();
+            cf.setDiseaseName(data[0].toString());
+            cf.setFrequency(Long.valueOf(data[1].toString()));
+            res.add(cf);
+
+        }
+        return res;
     }
 }

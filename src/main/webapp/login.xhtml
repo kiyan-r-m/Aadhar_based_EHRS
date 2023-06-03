@@ -27,11 +27,11 @@
                         <!--<span class="ui-float-label">-->
                         <div align="left" class="pb-2"><p:outputLabel for="password" value="Password" styleClass="text-lg" /></div>
                         <p:password id="password" style="width: 100%" required="true" validatorMessage="Please enter password properly" requiredMessage="Please enter password" value="#{login.password}" >
-                            <f:validateRegex pattern="^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,}$"  />
+<!--                            <f:validateRegex pattern="^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,}$"  />-->
                         </p:password>
                         <!--</span>-->
                         <p:message for="password" style="width: 98%;" class="my-2" />
-                        <p:commandButton class="mt-2 mb-2" update="@form" value="Login" style="width: 100%" action="#{login.submit()}" />
+                        <p:commandButton class="mt-2 mb-2" update="@form" value="Login" style="width: 100%" action="#{login.submit()}" ajax="false"/>
                     </h:form>
                     <h:form>
                         <h:commandLink action="register.jsf" value="Don't have an account? Sign up" />

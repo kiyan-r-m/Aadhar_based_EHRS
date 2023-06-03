@@ -22,7 +22,10 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -44,6 +47,13 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Users.findByAddressId", query = "SELECT u FROM Users u WHERE u.addressId.addressId = :addressId"),
     @NamedQuery(name = "Users.findByAadharPassword", query = "SELECT u FROM Users u where u.aadharCardNo = :aadharCardNo AND u.password = :password"),
     @NamedQuery(name = "Users.findByUsernamePassword", query = "SELECT u FROM Users u where u.username = :username AND u.password = :password")})
+@NamedStoredProcedureQuery(
+    name = "countUsers", 
+    procedureName = "ehrsystem.countUsers", 
+    parameters = { 
+        @StoredProcedureParameter(mode = ParameterMode.IN, name="userType", type = Integer.class)
+    }
+)
 public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;

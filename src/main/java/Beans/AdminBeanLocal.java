@@ -17,6 +17,11 @@ import Entities.Users;
 import Entities.FieldOfStudy;
 import Entities.Pincodes;
 import Entities.States;
+import ReportModels.BloodGroupFrequency;
+import ReportModels.DiseaseToFrequency;
+import ReportModels.DateWiseCaseFrequency;
+import java.time.LocalDate;
+import java.util.Date;
 
 /**
  *
@@ -81,7 +86,7 @@ public interface AdminBeanLocal {
     ResponseModel getAllFieldsofStudy();
     ResponseModel getFieldOfStudy(int id);
     ResponseModel updateFieldOfStudy(FieldOfStudy data);
-    ResponseModel deleteFieldOfStudy(FieldOfStudy data);
+    ResponseModel deleteFieldOfStudy(int id);
     ResponseModel addMedication(CommonMedications data);
     ResponseModel getAllMedications();
     ResponseModel getMedication(int id);
@@ -106,5 +111,9 @@ public interface AdminBeanLocal {
     ResponseModel deleteAdminUser(Users data);
 
     ResponseModel<Diseases> getDiseaseById(int id);
+    Collection<BloodGroupFrequency>getBloodGroupFrequency();
+    long getAllUsersFrequency(int userid);
+    Collection<DateWiseCaseFrequency>getCasesFrequency(String disease, LocalDate startDate, String state);
+    Collection<DiseaseToFrequency>getTopCases();
 }
 

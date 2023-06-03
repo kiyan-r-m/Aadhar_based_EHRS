@@ -50,6 +50,7 @@ public class AdminManagedBean implements Serializable {
     Collection<Allergies> allergies = new ArrayList<>();
     Collection<Addresses> addresses = new ArrayList<>();
     Collection<BloodGroups> bloodGroups = new ArrayList<>();
+    Collection <FieldOfStudy> fields = new ArrayList<>();
     Collection<Roles> roles = new ArrayList<>();
     Collection<Users> users = new ArrayList<>();
     Users selectedUser;
@@ -57,6 +58,9 @@ public class AdminManagedBean implements Serializable {
     BloodGroups selectedBloodGroup;
     int bloodGroupId;
     String bloodGroupName;
+    
+    FieldOfStudy selectedFieldOfStudy;
+    String fieldName;
 
     Degrees selectedDegree;
     Collection<Degrees> degrees = new ArrayList<>();
@@ -740,4 +744,51 @@ public class AdminManagedBean implements Serializable {
         UIComponent datatable = findComponentById(baseComponent, "diseaseTable");
         PrimeFaces.current().ajax().update(datatable.getClientId());
     }
+
+    public Collection<FieldOfStudy> getAllFields() {
+        ResponseModel<Collection<FieldOfStudy>> res = abl.getAllFieldsofStudy();
+        if (res.status) {
+            this.fields = res.data;
+        }
+        return fields;
+    }
+
+    public void setFields(Collection<FieldOfStudy> fields) {
+        this.fields = fields;
+    }
+    
+    public void openNewField()
+    {
+        this.selectedFieldOfStudy = new FieldOfStudy();
+    }
+    
+    public void deleteField(int id)
+    {
+        ResponseModel res = abl.deleteFieldOfStudy(id);
+        if (res.status == true) {
+            successMessage("Delete Field of study", "Record deleted successfully!");
+        } else {
+            errorMessage("Error", res.message);
+        }
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "FieldsTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public FieldOfStudy getSelectedFieldOfStudy() {
+        return selectedFieldOfStudy;
+    }
+
+    public void setSelectedFieldOfStudy(FieldOfStudy selectedFieldOfStudy) {
+        this.selectedFieldOfStudy = selectedFieldOfStudy;
+    }
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
+    }
+    
 }
