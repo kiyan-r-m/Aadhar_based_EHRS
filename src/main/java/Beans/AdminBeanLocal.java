@@ -4,11 +4,12 @@
  */
 package Beans;
 
+import Entities.Addresses;
+import Entities.Allergies;
 import Entities.BloodGroups;
 import Entities.CommonMedications;
 import Entities.Degrees;
 import Entities.Diseases;
-import Entities.Districts;
 import Entities.ResponseModel;
 import Entities.Symptoms;
 import java.util.Collection;
@@ -16,12 +17,12 @@ import javax.ejb.Local;
 import Entities.Users;
 import Entities.FieldOfStudy;
 import Entities.Pincodes;
-import Entities.States;
 import ReportModels.BloodGroupFrequency;
 import ReportModels.DiseaseToFrequency;
 import ReportModels.DateWiseCaseFrequency;
 import java.time.LocalDate;
 import java.util.Date;
+import Entities.Roles;
 
 /**
  *
@@ -46,13 +47,13 @@ public interface AdminBeanLocal {
 
     ResponseModel deleteDegree(int id);
     
-    ResponseModel<Collection<Districts>> getAllDistricts();
-
-    ResponseModel addDistrict(Districts d);
-
-    ResponseModel updateDistrict(Districts d);
-
-    ResponseModel deleteDistrict(int id);
+//    ResponseModel<Collection<Districts>> getAllDistricts();
+//
+//    ResponseModel addDistrict(Districts d);
+//
+//    ResponseModel updateDistrict(Districts d);
+//
+//    ResponseModel deleteDistrict(int id);
     
     ResponseModel<Collection<Symptoms>> getAllSymptoms();
 
@@ -97,11 +98,11 @@ public interface AdminBeanLocal {
     ResponseModel getPincode (int pin);
     ResponseModel updatePincode(Pincodes data);
     ResponseModel deletePincode(Pincodes data);
-    ResponseModel addState (States data);
-    ResponseModel getAllStates();
-    ResponseModel getState (int id);
-    ResponseModel updateState(States data);
-    ResponseModel deleteState(States data);
+//    ResponseModel addState (States data);
+//    ResponseModel getAllStates();
+//    ResponseModel getState (int id);
+//    ResponseModel updateState(States data);
+//    ResponseModel deleteState(States data);
     ResponseModel getSymptom (int id);
     ResponseModel deleteSymptom(Symptoms data);
     ResponseModel addAdminUser (Users data);
@@ -115,5 +116,21 @@ public interface AdminBeanLocal {
     long getAllUsersFrequency(int userid);
     Collection<DateWiseCaseFrequency>getCasesFrequency(String disease, LocalDate startDate, String state);
     Collection<DiseaseToFrequency>getTopCases();
+
+    ResponseModel<Roles> getRoleById(int id);
+
+    ResponseModel<BloodGroups> getBloodGroupById(int id);
+
+    ResponseModel addUser(Users user);
+
+    ResponseModel addAddress(Addresses address);
+    
+    public ResponseModel addChronicDiseasesToUser(int userId, Collection<Integer> dIds);
+    
+    public ResponseModel addAllergiesToUser(int userId, Collection<Integer> aIds);
+    
+    public ResponseModel<Users> getUserById(int id);
+    
+    public ResponseModel<Allergies> getAllergyById(int id);
 }
 

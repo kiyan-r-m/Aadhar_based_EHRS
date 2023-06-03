@@ -4,8 +4,10 @@
  */
 package Config;
 
+import java.io.IOException;
 import javax.inject.Named;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,8 +23,9 @@ public class Logout {
     @Inject
     private HttpServletRequest request;
 
-    public void submit() throws ServletException {
+    public void submit() throws ServletException, IOException {
         request.logout();
         request.getSession().invalidate();
+        FacesContext.getCurrentInstance().getExternalContext().redirect("login.jsf");
     }
 }

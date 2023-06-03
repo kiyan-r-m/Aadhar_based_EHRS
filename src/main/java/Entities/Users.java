@@ -6,6 +6,7 @@ package Entities;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import javax.json.bind.annotation.JsonbTransient;
@@ -46,7 +47,8 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Users.findByBloodGroupId", query = "SELECT u FROM Users u WHERE u.bloodGroupId.bloodGroupId = :bloodGroupId"),
     @NamedQuery(name = "Users.findByAddressId", query = "SELECT u FROM Users u WHERE u.addressId.addressId = :addressId"),
     @NamedQuery(name = "Users.findByAadharPassword", query = "SELECT u FROM Users u where u.aadharCardNo = :aadharCardNo AND u.password = :password"),
-    @NamedQuery(name = "Users.findByUsernamePassword", query = "SELECT u FROM Users u where u.username = :username AND u.password = :password")})
+    @NamedQuery(name = "Users.findByUsernamePassword", query = "SELECT u FROM Users u where u.username = :username AND u.password = :password"),
+    @NamedQuery(name = "Users.findByEmailId", query = "SELECT u FROM Users u where u.emailid = :emailId")})
 @NamedStoredProcedureQuery(
     name = "countUsers", 
     procedureName = "ehrsystem.countUsers", 
@@ -54,6 +56,7 @@ import javax.validation.constraints.Size;
         @StoredProcedureParameter(mode = ParameterMode.IN, name="userType", type = Integer.class)
     }
 )
+    
 public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -114,10 +117,16 @@ public class Users implements Serializable {
     private Roles roleId;
 
     public Users() {
+        this.gender = "Male";
+        this.diseasesCollection = new ArrayList<>();
+        this.allergiesCollection = new ArrayList<>();
     }
 
     public Users(Integer userId) {
         this.userId = userId;
+        this.gender = "Male";
+        this.diseasesCollection = new ArrayList<>();
+        this.allergiesCollection = new ArrayList<>();
     }
 
     public Users(String username, String emailid, String password, BigInteger aadharCardNo, BigInteger contactNo, String gender, Date dob, Collection<Diseases> diseasesCollection, Collection<Allergies> allergiesCollection, Addresses addressId, BloodGroups bloodGroupId, Roles roleId) {

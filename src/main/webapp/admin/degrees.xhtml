@@ -3,75 +3,85 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
     <h:head>
         <link rel="shortcut icon" href="../images/favicon.ico"/>
         <title>Degrees - EHR Admin</title>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
     </h:head>
     <h:body>
-        <h:form>
-            <p:dataTable id="degreeTable" widgetVar="dtDegree" var="degree" value="#{adminManagedBean.getAllDegrees()}" styleClass="degrees-table">
-                <f:facet name="header">
-                    <div class="degree-table-header flex justify-content-between flex-wrap">
-                        <div style="font-weight: bold" class="text-3xl">Degrees</div>
-                        <div>
-                            <div class="filter-container ui-input-icon-left mx-3"> 
-                                <i class="pi pi-search"></i>
-                                <p:inputText id="globalFilter" onkeyup="PF('dtDegree').filter()" placeholder="Search" />
-                            </div>
-                            <p:commandButton value="New" icon="pi pi-plus" actionListener="#{adminManagedBean.openNewDegree()}" oncomplete="PF('manageDegreeDialog').show()"
-                                             styleClass="ui-button-primary" style="margin-right: .5rem" update=":dialogs:manage-degree-content" >
-                                <p:resetInput target=":dialogs:manage-degree-content" />
-                            </p:commandButton>
-                            <p:commandButton value="Logout" icon="pi pi-sign-out" styleClass="ui-button-primary" action="#{logout.submit()}" style="margin-right: .5rem">
-                            </p:commandButton>
-                        </div>
-                    </div>
-                </f:facet>
-                <p:column headerText="Name" filterStyle="display: none" sortBy="#{degree.degreeName}" filterBy="#{degree.degreeName}">
-                    <h:outputText value="#{degree.degreeName}"/>
-                </p:column>
-                <p:column>
-                    <p:growl id="message" showDetail="true"/>
-                    <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-degree-content"
-                                     oncomplete="PF('manageDegreeDialog').show()"
-                                     styleClass="edit-button rounded-button ui-button-primary" process="@this">
-                        <f:setPropertyActionListener value="#{degree}" target="#{adminManagedBean.selectedDegree}" />
-                        <p:resetInput target=":dialogs:manage-degree-content" />
-                    </p:commandButton>
-                    <p:commandButton icon="pi pi-trash" action="#{adminManagedBean.deleteDegree(degree.degreeId)}" update="message" class="ui-button-danger rounded-button mx-2">
-                        <p:confirm header="Confirmation" message="Are you sure you want to delete?" icon="pi pi-exclamation-triangle"/>
-                    </p:commandButton>
-                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
-                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
-                    </p:confirmDialog>
-                </p:column>
-            </p:dataTable>
-        </h:form>
+        <ui:composition template="home.xhtml">
+            <ui:define name="content">
+                <div class="container">
+                    <h:form>
+                        <p:dataTable id="degreeTable" widgetVar="dtDegree" var="degree" value="#{adminManagedBean.getAllDegrees()}" styleClass="degrees-table" paginator="true" rows="7" paginatorPosition="bottom">
+                            <f:facet name="header">
+                                <div class="degree-table-header card p-3">
+                                    <div class="flex justify-content-between flex-wrap">
+                                        <div style="font-weight: bold" class="text-2xl">Degrees</div>
+                                        <div>
+                                            <div class="filter-container ui-input-icon-left mx-3"> 
+                                                <i class="pi pi-search"></i>
+                                                <p:inputText id="globalFilter" onkeyup="PF('dtDegree').filter()" placeholder="Search" />
+                                            </div>
+                                            <p:commandButton value="New" icon="pi pi-plus" actionListener="#{adminManagedBean.openNewDegree()}" oncomplete="PF('manageDegreeDialog').show()"
+                                                             styleClass="ui-button-primary" style="margin-right: .5rem" update=":dialogs:manage-degree-content" >
+                                                <p:resetInput target=":dialogs:manage-degree-content" />
+                                            </p:commandButton>
+                                            <p:commandButton value="Logout" icon="pi pi-sign-out" styleClass="ui-button-primary" action="#{logout.submit()}" style="margin-right: .5rem">
+                                            </p:commandButton>
+                                        </div>
+                                    </div>
+                                </div>
+                            </f:facet>
+                            <p:column headerText="Name" filterStyle="display: none" sortBy="#{degree.degreeName}" filterBy="#{degree.degreeName}">
+                                <h:outputText value="#{degree.degreeName}"/>
+                            </p:column>
+                            <p:column>
+                                <p:growl id="message" showDetail="true"/>
+                                <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-degree-content"
+                                                 oncomplete="PF('manageDegreeDialog').show()"
+                                                 styleClass="edit-button rounded-button ui-button-primary" process="@this">
+                                    <f:setPropertyActionListener value="#{degree}" target="#{adminManagedBean.selectedDegree}" />
+                                    <p:resetInput target=":dialogs:manage-degree-content" />
+                                </p:commandButton>
+                                <p:commandButton icon="pi pi-trash" action="#{adminManagedBean.deleteDegree(degree.degreeId)}" update="message" class="ui-button-danger rounded-button mx-2">
+                                    <p:confirm header="Confirmation" message="Are you sure you want to delete?" icon="pi pi-exclamation-triangle"/>
+                                </p:commandButton>
+                                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                    <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                                    <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
+                                </p:confirmDialog>
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
 
-        <h:form id="dialogs">
-            <p:dialog header="Degree Details" width="25rem" showEffect="fade" modal="true" widgetVar="manageDegreeDialog"
-                      responsive="true">
-                <p:outputPanel id="manage-degree-content" class="ui-fluid">
-                    <p:outputPanel rendered="#{not empty adminManagedBean.selectedDegree}">
-                        <div class="field">
-                            <p:outputLabel for="degreeName">Degree Name</p:outputLabel>
-                            <div><p:inputText style="width: 100% !important" id="degreeName" required="true" requiredMessage="Please enter degree" value="#{adminManagedBean.selectedDegree.degreeName}" /></div>
-                            <div><p:message for="degreeName" styleClass="my-2" /></div>
-                        </div>
-                    </p:outputPanel>
-                </p:outputPanel>
-                <f:facet name="footer">
-                    <p:commandButton value="Save" icon="pi pi-check" actionListener="#{adminManagedBean.saveDegree()}"
-                                     update="manage-degree-content message1" process="manage-degree-content @this" />
-                    <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageDegreeDialog').hide()"
-                                     class="ui-button-secondary" type="button" />
-                </f:facet>
-            </p:dialog>
-            <p:growl id="message1" showDetail="true" rendered="#{not facesContext.validationFailed}" />
-        </h:form>
+                    <h:form id="dialogs">
+                        <p:dialog header="Degree Details" width="25rem" showEffect="fade" modal="true" widgetVar="manageDegreeDialog"
+                                  responsive="true">
+                            <p:outputPanel id="manage-degree-content" class="ui-fluid">
+                                <p:outputPanel rendered="#{not empty adminManagedBean.selectedDegree}">
+                                    <div class="field">
+                                        <p:outputLabel for="degreeName">Degree Name</p:outputLabel>
+                                        <div><p:inputText style="width: 100% !important" id="degreeName" required="true" requiredMessage="Please enter degree" value="#{adminManagedBean.selectedDegree.degreeName}" /></div>
+                                        <div><p:message for="degreeName" styleClass="my-2" /></div>
+                                    </div>
+                                </p:outputPanel>
+                            </p:outputPanel>
+                            <f:facet name="footer">
+                                <p:commandButton value="Save" icon="pi pi-check" actionListener="#{adminManagedBean.saveDegree()}"
+                                                 update="manage-degree-content message1" process="manage-degree-content @this" />
+                                <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageDegreeDialog').hide()"
+                                                 class="ui-button-secondary" type="button" />
+                            </f:facet>
+                        </p:dialog>
+                        <p:growl id="message1" showDetail="true" rendered="#{not facesContext.validationFailed}" />
+                    </h:form>
+                </div>
+            </ui:define>
+        </ui:composition>
     </h:body>
 </html>
 
