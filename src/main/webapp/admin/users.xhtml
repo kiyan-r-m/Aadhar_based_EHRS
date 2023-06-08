@@ -14,7 +14,6 @@
     <h:body>
         <ui:composition template="adminPanel.xhtml">
             <ui:define name="content">
-                <div class="container">
                 <h:form>
                     <p:dataTable id="userTable" widgetVar="dtUsers" var="user" value="#{adminManagedBean.getAllUsers()}" styleClass="users-table" paginator="true" rows="5" paginatorPosition="bottom">
                         <f:facet name="header">
@@ -189,7 +188,6 @@
                     </p:dialog>
                     <p:growl id="message1" showDetail="true" rendered="#{not facesContext.validationFailed}"/>
                 </h:form>
-                </div>
             </ui:define>
         </ui:composition>
     </h:body>

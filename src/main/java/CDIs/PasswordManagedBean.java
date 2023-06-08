@@ -21,9 +21,14 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import org.primefaces.PrimeFaces;
 
-@Named(value = "forgotPasswordManagedBean")
+/**
+ *
+ * @author admin
+ */
+@Named(value = "passwordManagedBean")
 @SessionScoped
-public class ForgotPasswordManagedBean implements Serializable {
+public class PasswordManagedBean implements Serializable {
+
     String email;
     String oldPassword;
     String password;
@@ -34,32 +39,15 @@ public class ForgotPasswordManagedBean implements Serializable {
     ExternalContext externalContent;
     @Inject
     Login login;
-    
-    public ForgotPasswordManagedBean() {
+    public PasswordManagedBean() {
     }
-    
+
     public String getEmail() {
         return email;
     }
-    
+
     public void setEmail(String email) {
         this.email = email;
-    }
-    
-    public String getPassword() {
-        return password;
-    }
-    
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
-    public String getConfirmPassword() {
-        return confirmPassword;
-    }
-    
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
     }
 
     public String getOldPassword() {
@@ -68,6 +56,22 @@ public class ForgotPasswordManagedBean implements Serializable {
 
     public void setOldPassword(String oldPassword) {
         this.oldPassword = oldPassword;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
     }
     
     public void submit() {
@@ -85,7 +89,7 @@ public class ForgotPasswordManagedBean implements Serializable {
             try {
                 FacesContext.getCurrentInstance().getExternalContext().redirect("login.jsf");
             } catch (IOException ex) {
-                Logger.getLogger(ForgotPasswordManagedBean.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(PasswordManagedBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             errorMessage("Error", res.message);
