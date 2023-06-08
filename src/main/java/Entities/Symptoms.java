@@ -6,6 +6,7 @@ package Entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,13 +41,9 @@ public class Symptoms implements Serializable {
     @Size(max = 65535)
     @Column(name = "symptom_name")
     private String symptomName;
-<<<<<<< HEAD
-    @ManyToMany(mappedBy = "symptomsCollection")
-=======
     @JsonbTransient
     @ManyToMany(mappedBy = "symptomsCollection")
     
->>>>>>> 24502a2824bdc69fc34dcbe0d10529ebf55f59d6
     private Collection<Diseases> diseasesCollection;
 
     public Symptoms() {
