@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Facelet Title</title>
+        <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css"></link>
+        <h:outputStylesheet library="css" name="main.css"/>
+    </h:head>
+    <h:body>
+        <div>
+            <h1 class="quicksand-font-500">Welcome <h:outputText value="#{login.email}"/>! </h1>
+            <h3 class="quicksand-font-500 subtitle">This is your Admin Dashboard</h3>
+        </div>
+
+        <div class="grid">
+            <div class="col  m-2">
+                <p:card>
+                    <p class="m-0 p-0 text-6xl text-center">
+                        <pe:counter start="0" end="#{adminReportsManagedBean.doctorCounter}"/>
+                    </p>
+                    <f:facet name="footer">
+                        <p class="m-0 quicksand-font-500 font-bold text-center">Doctors in active service</p>
+                    </f:facet>
+                </p:card>
+            </div>
+            <div class="col m-2">
+                <p:card>
+                    <p class="m-0 p-0 text-6xl text-center">
+                        <pe:counter start="0" end="#{adminReportsManagedBean.accessCounter}"/>
+                    </p>
+                    <f:facet name="footer">
+                        <p class="m-0 quicksand-font-500 font-bold text-center">Active patient-doctor access</p>
+                    </f:facet>
+                </p:card>
+            </div>
+            <div class="col m-2">
+                <p:card>
+                    <p class="m-0 p-0 text-6xl text-center">
+                        <pe:counter start="0" end="#{adminReportsManagedBean.doctorCounter}"/>
+                    </p>
+                    <f:facet name="footer">
+                        <p class="m-0 quicksand-font-500 font-bold text-center">Average Doctors per district</p>
+                    </f:facet>
+                </p:card>
+            </div>
+            <div class="col m-2">
+                <p:card>
+                    <p class="m-0 p-0 text-6xl text-center">
+                        <pe:counter start="0" end="#{adminReportsManagedBean.doctorDensity}"/>
+                    </p>
+                    <f:facet name="footer">
+                        <p class="m-0 quicksand-font-500 font-bold text-center">Doctors per 1000 people</p>
+                    </f:facet>
+                </p:card>
+            </div>
+        </div>
+        <div class="grid">
+            <div class="col-6">
+                <p:barChart model="#{adminReportsManagedBean.mixedModel}"/>
+            </div>
+            <div class="col">
+                <h:form>
+                    <div class="card">
+                        <p:dataTable var="topDisease" value="#{adminReportsManagedBean.topDiseases}" stripedRows="true">
+                            <p:column headerText="Disease">
+                                <h:outputText value="#{topDisease.diseaseName}" />
+                            </p:column>
+
+                            <p:column headerText="Cases">
+                                <h:outputText value="#{topDisease.frequency}" />
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </h:form>
+            </div>
+            
+        </div>
+
+        <div class = "grid">
+            <div class="col">
+                <p:barChart model="#{adminReportsManagedBean.acBarModel}" style="width: 50%; height: 100%;"/>
+
+            </div>
+            <div class="col">
+
+            </div>
+        </div>
+
+
+<!--            <p:barChart model="#{adminReportsManagedBean.mixedModel}" style="width: 50%; height: 50%;"/>
+
+<div class="card">
+    <div class="flex card-container">
+        <div class="flex-1 h-4rem text-center  p-1 border-round">
+            <p:card style="width: 17rem">
+                <f:facet name="header">
+                    Card header
+                </f:facet>
+                <f:facet name="title">
+                    Advanced Card
+                </f:facet>
+                <f:facet name="subtitle">
+                    Card subtitle
+                </f:facet>
+                Total doctors
+                <f:facet name="footer">
+                    <p:commandButton icon="pi pi-check" value="Save"/>
+                    <p:commandButton icon="pi pi-times" value="Cancel" styleClass="ui-button-secondary" style="margin-left: .5em"/>
+                </f:facet>
+            </p:card>
+        </div>
+        <div class="flex-1 text-center p-1 border-round">
+            <p:card style="width: 17rem">
+                <f:facet name="title">
+                    <p class="text-4xl font-bold">
+                        <pe:counter start="0" end="#{adminReportsManagedBean.doctorCounter}"/>
+                    </p>
+                </f:facet>
+                <f:facet name="subtitle">
+                    Doctors in active service
+                </f:facet>
+
+
+            </p:card>
+        </div>
+        <div class="flex-1 h-4rem text-center p-1 border-round">
+            <p:card style="width: 20rem">
+                <f:facet name="header">
+                    Card header
+                </f:facet>
+                <f:facet name="title">
+                    Advanced Card
+                </f:facet>
+                <f:facet name="subtitle">
+                    Card subtitle
+                </f:facet>
+                Total doctors
+                <f:facet name="footer">
+                    <p:commandButton icon="pi pi-check" value="Save"/>
+                    <p:commandButton icon="pi pi-times" value="Cancel" styleClass="ui-button-secondary" style="margin-left: .5em"/>
+                </f:facet>
+            </p:card>
+        </div>
+    </div>
+</div>-->
+
+
+    </h:body>
+</html>
+

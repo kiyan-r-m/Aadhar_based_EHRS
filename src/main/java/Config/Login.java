@@ -6,6 +6,7 @@ package Config;
 
 import java.io.Serializable;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -44,6 +45,7 @@ public class Login implements Serializable{
     @NotNull
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
+    
     @Inject
     private SecurityContext securityContext;
     @Inject
@@ -53,7 +55,7 @@ public class Login implements Serializable{
     @Inject
     IdentityStoreHandler identitystore;
 
-    public String submit() {
+    public void submit() {
         switch (continueAuthentication()) {
             case SEND_CONTINUE:
                 facesContext.responseComplete();
@@ -68,11 +70,14 @@ public class Login implements Serializable{
                         .validate(new UsernamePasswordCredential(email, password));
                 Set<String> roles = result.getCallerGroups();
                 if (roles.contains("Admin")) {
-                    return "admin/home.jsf";
+                    FacesContext.getCurrentInstance().getExternalContext().redirect("admin/home.jsf");
+                    break;
                 } else if (roles.contains("User")) {
-                    return "user/home.jsf";
+                    FacesContext.getCurrentInstance().getExternalContext().redirect("user/home.jsf");
+                    break;
                 } else if (roles.contains("Doctor")) {
-                    return "doctor/home.jsf";
+                    FacesContext.getCurrentInstance().getExternalContext().redirect("doctor/home.jsf");
+                    break;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -81,7 +86,6 @@ public class Login implements Serializable{
             case NOT_DONE:
 // Doesn’t happen here
         }
-        return "login.jsf";
     }
 
     private AuthenticationStatus continueAuthentication() {

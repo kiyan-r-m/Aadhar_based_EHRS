@@ -7,10 +7,15 @@ package Servlets;
 import Beans.AdminBeanLocal;
 import Beans.userBeanLocal;
 import Entities.*;
+import ReportModels.BloodGroupFrequency;
+import ReportModels.DateWiseCaseFrequency;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,6 +59,25 @@ public class TestServlet extends HttpServlet {
             out.println("<title>Servlet TestServlet</title>");
             out.println("</head>");
             out.println("<body>");
+            Collection<BloodGroupFrequency> respo = abl.getBloodGroupFrequency();
+            for(BloodGroupFrequency data : respo){
+                out.println(data.getBlood_group_name());
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
+            String datestring = "01-04-2023";
+            Date date = sdf.parse(datestring);
+            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+            Long countdoctors = abl.getAllUsersFrequency(3);
+            out.println(countdoctors);
+            LocalDate ld = LocalDate.of(2023,01,22);
+            Collection<DateWiseCaseFrequency> cf = abl.getCasesFrequency(null, ld, null);
+            for(DateWiseCaseFrequency data : cf){
+                out.println(data.getFrequency().toString());
+            }
+            out.println(abl.getTotalAcuteCases());
+            out.println(abl.getTotalChronicCases());
+            
+            
 
 //            ubl.addUser(new Users("Vesu", new Pincodes(395006)));
 //            ubl.updateAddresses(new Addresses(1, "Vesu", new Pincodes(395006)));
@@ -72,10 +96,7 @@ public class TestServlet extends HttpServlet {
 //                System.out.println(users.message);
 //            }
 //            out.println("<h1>Servlet TestServlet at " + request.getContextPath() + "</h1>");
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
-            String datestring = "28-04-2001";
-            Date date = sdf.parse(datestring);
-            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+            
 
             ResponseModel<Users> res = new ResponseModel<>();
 
@@ -128,7 +149,6 @@ public class TestServlet extends HttpServlet {
 //                System.out.println("Mail Sent");
 //                System.out.println(res.message);
 //            }
-
 //            // Forget Password
 //            ResponseModel res = ubl.SendMailForForgetPassword("charmimodi242@gmail.com", response);
 //            if (res.status == true) {
@@ -142,6 +162,9 @@ public class TestServlet extends HttpServlet {
 //                System.out.println("Error!!");
 //                System.out.println(res.message);
 //            }
+//            ubl.SendMailForForgetPassword("charmimodi242@gmail.com", response);
+//            ubl.ForgetPassword(request, response, 16, "6b824236-cea2-4c3d-8cf9-c940fafdc8ac", "Chr@1234");
+//            ubl.ChangePassword(16, "Chr@1234", "Krm@1234");
             out.println("</body>");
             out.println("</html>");
         }

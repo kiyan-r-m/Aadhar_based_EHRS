@@ -5,6 +5,7 @@
 package Entities;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -16,6 +17,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -31,6 +36,24 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "PatientDoctorMapper.findByPatientDoctorMapperId", query = "SELECT p FROM PatientDoctorMapper p WHERE p.patientDoctorMapperId = :patientDoctorMapperId"),
     @NamedQuery(name = "PatientDoctorMapper.findByStartDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.startDate = :startDate"),
     @NamedQuery(name = "PatientDoctorMapper.findByEndDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.endDate = :endDate")})
+@NamedStoredProcedureQueries({
+    @NamedStoredProcedureQuery(name = "frequencyByDiseaseDateState",
+            procedureName = "ehrsystem.frequencyByDiseaseDateState", parameters = {
+                @StoredProcedureParameter(mode = ParameterMode.IN, name = "diseaseval", type = String.class),
+                @StoredProcedureParameter(mode = ParameterMode.IN, name = "dateval", type = LocalDate.class),
+                @StoredProcedureParameter(mode = ParameterMode.IN, name = "stateval", type = String.class)
+            }
+    ),
+    @NamedStoredProcedureQuery(name = "topTenDiseasesByCases",
+            procedureName = "ehrsystem.topTenDiseasesByCases"
+    ),
+    @NamedStoredProcedureQuery(name = "countChronicPatients",
+            procedureName = "ehrsystem.countChronicPatients"
+    ),
+    @NamedStoredProcedureQuery(name = "countAcutePatients",
+            procedureName = "ehrsystem.countAcutePatients"
+    )
+})
 public class PatientDoctorMapper implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -134,5 +157,5 @@ public class PatientDoctorMapper implements Serializable {
     public String toString() {
         return "Entities.PatientDoctorMapper[ patientDoctorMapperId=" + patientDoctorMapperId + " ]";
     }
-    
+
 }

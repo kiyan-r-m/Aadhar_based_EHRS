@@ -28,7 +28,8 @@ import javax.validation.constraints.Size;
 @Table(name = "field_of_study", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "FieldOfStudy.findAll", query = "SELECT f FROM FieldOfStudy f"),
-    @NamedQuery(name = "FieldOfStudy.findByFieldId", query = "SELECT f FROM FieldOfStudy f WHERE f.fieldId = :fieldId")})
+    @NamedQuery(name = "FieldOfStudy.findByFieldId", query = "SELECT f FROM FieldOfStudy f WHERE f.fieldId = :fieldId"),
+    @NamedQuery(name = "FieldOfStudy.findByFieldName", query = "SELECT f FROM FieldOfStudy f WHERE f.fieldName = :fieldName")})
 public class FieldOfStudy implements Serializable {
 
     private static final long serialVersionUID = 1L;

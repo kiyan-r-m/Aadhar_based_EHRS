@@ -4,6 +4,7 @@
  */
 package Entities;
 
+import ReportModels.BloodGroupFrequency;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.json.bind.annotation.JsonbTransient;
@@ -16,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
@@ -30,6 +32,7 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "BloodGroups.findAll", query = "SELECT b FROM BloodGroups b"),
     @NamedQuery(name = "BloodGroups.findByBloodGroupId", query = "SELECT b FROM BloodGroups b WHERE b.bloodGroupId = :bloodGroupId"),
     @NamedQuery(name = "BloodGroups.findByBloodGroupName", query = "SELECT b FROM BloodGroups b WHERE b.bloodGroupName = :bloodGroupName")})
+@NamedStoredProcedureQuery(name = "getBloodGroupFrequency", procedureName = "ehrsystem.getBloodGroupFrequency")
 public class BloodGroups implements Serializable {
 
     private static final long serialVersionUID = 1L;

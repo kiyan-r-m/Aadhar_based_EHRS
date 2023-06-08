@@ -6,7 +6,9 @@ package CDIs;
 
 import Beans.AdminBeanLocal;
 import Beans.userBeanLocal;
+import Config.Login;
 import Entities.*;
+import java.io.IOException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -16,11 +18,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.security.enterprise.identitystore.IdentityStoreHandler;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -37,9 +42,9 @@ public class AdminManagedBean implements Serializable {
     Date dob;
     Collection<Diseases> diseasesCollection = new ArrayList<>();
     Collection<Allergies> allergiesCollection = new ArrayList<>();
-    Addresses userAddressId = new Addresses();
     BloodGroups userBloodGroupId = new BloodGroups();
     Roles userRoleId = new Roles();
+    String Pincode;
 
     @EJB
     AdminBeanLocal abl;
@@ -48,15 +53,19 @@ public class AdminManagedBean implements Serializable {
 
     Collection<Diseases> diseases = new ArrayList<>();
     Collection<Allergies> allergies = new ArrayList<>();
-    Collection<Addresses> addresses = new ArrayList<>();
+//    Collection<Addresses> addresses = new ArrayList<>();
     Collection<BloodGroups> bloodGroups = new ArrayList<>();
+    Collection <FieldOfStudy> fields = new ArrayList<>();
     Collection<Roles> roles = new ArrayList<>();
     Collection<Users> users = new ArrayList<>();
     Users selectedUser;
+    Collection<Pincodes> pincodes = new ArrayList<>();
+    Collection<String> pc = new ArrayList<>();
 
     BloodGroups selectedBloodGroup;
     int bloodGroupId;
     String bloodGroupName;
+    int roleId;
 
     Degrees selectedDegree;
     Collection<Degrees> degrees = new ArrayList<>();
@@ -67,10 +76,16 @@ public class AdminManagedBean implements Serializable {
     Symptoms selectedSymptom;
     Collection<Symptoms> symptoms = new ArrayList<>();
 
-    Districts selectedDistrict;
-    Collection<Districts> districts = new ArrayList<>();
-
+//    Districts selectedDistrict;
+//    Collection<Districts> districts = new ArrayList<>();
     Diseases selectedDisease;
+
+    FieldOfStudy selectedFieldOfStudy;
+
+    @Inject
+    IdentityStoreHandler identitystore;
+    @Inject
+    Login login;
 
     public AdminManagedBean() {
     }
@@ -85,9 +100,16 @@ public class AdminManagedBean implements Serializable {
         if (res1.status) {
             allergies = res1.data;
         }
-        ResponseModel<Collection<Addresses>> res2 = ubl.getAllAddresses();
+//        ResponseModel<Collection<Addresses>> res2 = ubl.getAllAddresses();
+//        if (res2.status) {
+//            addresses = res2.data;
+//        }
+        ResponseModel<Collection<Pincodes>> res2 = abl.getAllPincodes();
         if (res2.status) {
-            addresses = res2.data;
+            pincodes = res2.data;
+            for (Pincodes pincode : pincodes) {
+                pc.add(pincode.getPincode().toString());
+            }
         }
         ResponseModel<Collection<BloodGroups>> res3 = ubl.getAllBloodGroups();
         if (res3.status) {
@@ -187,14 +209,6 @@ public class AdminManagedBean implements Serializable {
         this.allergiesCollection = allergiesCollection;
     }
 
-    public Addresses getUserAddressId() {
-        return userAddressId;
-    }
-
-    public void setUserAddressId(Addresses userAddressId) {
-        this.userAddressId = userAddressId;
-    }
-
     public BloodGroups getUserBloodGroupId() {
         return userBloodGroupId;
     }
@@ -243,12 +257,27 @@ public class AdminManagedBean implements Serializable {
         this.allergies = allergies;
     }
 
-    public Collection<Addresses> getAddresses() {
-        return addresses;
+    public Collection<Pincodes> getPincodes() {
+        return pincodes;
     }
 
-    public void setAddresses(Collection<Addresses> addresses) {
-        this.addresses = addresses;
+    public void setPincodes(Collection<Pincodes> pincodes) {
+        this.pincodes = pincodes;
+    }
+
+    public Collection<String> getPc() {
+        return pc;
+    }
+
+//    public Collection<Addresses> getAddresses() {
+//        return addresses;
+//    }
+//
+//    public void setAddresses(Collection<Addresses> addresses) {
+//        this.addresses = addresses;
+//    }
+    public void setPc(Collection<String> pc) {
+        this.pc = pc;
     }
 
     public Collection<BloodGroups> getBloodGroups() {
@@ -355,28 +384,51 @@ public class AdminManagedBean implements Serializable {
         this.symptoms = symptoms;
     }
 
-    public Districts getSelectedDistrict() {
-        return selectedDistrict;
-    }
-
-    public void setSelectedDistrict(Districts selectedDistrict) {
-        this.selectedDistrict = selectedDistrict;
-    }
-
-    public Collection<Districts> getDistricts() {
-        return districts;
-    }
-
-    public void setDistricts(Collection<Districts> districts) {
-        this.districts = districts;
-    }
-
+//    public Districts getSelectedDistrict() {
+//        return selectedDistrict;
+//    }
+//
+//    public void setSelectedDistrict(Districts selectedDistrict) {
+//        this.selectedDistrict = selectedDistrict;
+//    }
+//
+//    public Collection<Districts> getDistricts() {
+//        return districts;
+//    }
+//
+//    public void setDistricts(Collection<Districts> districts) {
+//        this.districts = districts;
+//    }
     public Diseases getSelectedDisease() {
         return selectedDisease;
     }
 
     public void setSelectedDisease(Diseases selectedDisease) {
         this.selectedDisease = selectedDisease;
+    }
+
+    public String getPincode() {
+        return Pincode;
+    }
+
+    public void setPincode(String Pincode) {
+        this.Pincode = Pincode;
+    }
+
+    public int getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
+    }
+
+    public FieldOfStudy getSelectedFieldOfStudy() {
+        return selectedFieldOfStudy;
+    }
+
+    public void setSelectedFieldOfStudy(FieldOfStudy selectedFieldOfStudy) {
+        this.selectedFieldOfStudy = selectedFieldOfStudy;
     }
 
     public List<Users> getAllUsers() {
@@ -401,25 +453,47 @@ public class AdminManagedBean implements Serializable {
 
     public void openNewUser() {
         this.selectedUser = new Users();
+        selectedUser.setAddressId(new Addresses());
+        this.bloodGroupId = 0;
+        this.Pincode = null;
+        this.roleId = 0;
+    }
+
+    public void onPincodeSelect() {
+        if (Pincode != null || Pincode.isEmpty()) {
+            Pincodes pin = pincodes.stream().filter(p -> p.getPincode().toString().equals(Pincode)).findFirst().orElse(null);
+
+            this.selectedUser.getAddressId().setPincode(pin);
+            UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+            UIComponent component = findComponentById(baseComponent, "district");
+            PrimeFaces.current().ajax().update(component.getClientId());
+            component = findComponentById(baseComponent, "state");
+            PrimeFaces.current().ajax().update(component.getClientId());
+        } else {
+            this.selectedUser.getAddressId().setPincode(new Pincodes());
+            UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+            UIComponent component = findComponentById(baseComponent, "district");
+            PrimeFaces.current().ajax().update(component.getClientId());
+            component = findComponentById(baseComponent, "state");
+            PrimeFaces.current().ajax().update(component.getClientId());
+        }
     }
 
     public void saveUser() {
+        ResponseModel<BloodGroups> bg = abl.getBloodGroupById(bloodGroupId);
+        if (bg.status) {
+            selectedUser.setBloodGroupId(bg.data);
+        } else {
+            selectedUser.setBloodGroupId(null);
+        }
+        ResponseModel<Roles> r = abl.getRoleById(roleId);
+        if (r.status) {
+            selectedUser.setRoleId(r.data);
+        } else {
+            selectedUser.setRoleId(null);
+        }
         if (selectedUser.getUserId() == null) {
-            diseasesCollection = selectedUser.getDiseasesCollection();
-            Collection<Diseases> d = new ArrayList<>();
-            for (Diseases diseases1 : diseasesCollection) {
-                d.add(new Diseases(diseases1.getDiseaseId()));
-            }
-            selectedUser.setDiseasesCollection(d);
-            Collection<Allergies> a = new ArrayList<>();
-            allergiesCollection = selectedUser.getAllergiesCollection();
-            for (Allergies allergies1 : allergiesCollection) {
-                a.add(new Allergies(allergies1.getAllergyId()));
-            }
-            selectedUser.setAllergiesCollection(a);
-            userAddressId = selectedUser.getAddressId();
-            selectedUser.setAddressId(new Addresses(userAddressId.getAddressId()));
-            ResponseModel res = ubl.addUser(this.selectedUser);
+            ResponseModel res = abl.addUser(this.selectedUser);
             if (res.status) {
                 successMessage("Add User", "Record added successfully");
             } else {
@@ -437,6 +511,14 @@ public class AdminManagedBean implements Serializable {
         UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
         UIComponent datatable = findComponentById(baseComponent, "userTable");
         PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public void updateUserProp(Users u) {
+        this.selectedUser = u;
+        this.bloodGroupId = u.getBloodGroupId().getBloodGroupId();
+        this.roleId = u.getRoleId().getRoleid();
+        this.Pincode = u.getAddressId().getPincode().getPincode().toString();
+        onPincodeSelect();
     }
 
     public List<BloodGroups> getAllBloodGroups() {
@@ -460,13 +542,15 @@ public class AdminManagedBean implements Serializable {
     }
 
     public void successMessage(String summary, String detail) {
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
-        FacesContext.getCurrentInstance().addMessage(null, message);
+//        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail);
+//        FacesContext.getCurrentInstance().addMessage(null, message);
+        PrimeFaces.current().executeScript("Swal.fire({title: '" + summary + "', text: '" + detail + "', icon: 'success', timer: 1500, showConfirmButton: false});");
     }
 
     private void errorMessage(String summary, String detail) {
-        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail);
-        FacesContext.getCurrentInstance().addMessage(null, message);
+//        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail);
+//        FacesContext.getCurrentInstance().addMessage(null, message);
+        PrimeFaces.current().executeScript("Swal.fire({title : '" + summary + "', text: '" + detail + "', icon: 'error', timer: 1500, showConfirmButton: false});");
     }
 
     public void openNewBloodGroup() {
@@ -649,52 +733,51 @@ public class AdminManagedBean implements Serializable {
         PrimeFaces.current().ajax().update(datatable.getClientId());
     }
 
-    public List<Districts> getAllDistricts() {
-        ResponseModel<Collection<Districts>> res = abl.getAllDistricts();
-        if (res.status) {
-            this.districts = res.data;
-        }
-        return (List<Districts>) districts;
-    }
-
-    public void deleteDistrict(int id) {
-        ResponseModel res = abl.deleteDistrict(id);
-        if (res.status == true) {
-            successMessage("Delete District", "Record deleted successfully!");
-        } else {
-            errorMessage("Error", res.message);
-        }
-        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
-        UIComponent datatable = findComponentById(baseComponent, "districtTable");
-        PrimeFaces.current().ajax().update(datatable.getClientId());
-    }
-
-    public void openNewDistrict() {
-        this.selectedDistrict = new Districts();
-    }
-
-    public void saveDistrict() {
-        if (selectedDistrict.getDistrictId() == null) {
-            ResponseModel res = abl.addDistrict(selectedDistrict);
-            if (res.status) {
-                successMessage("Add District", "Record added successfully");
-            } else {
-                errorMessage("Error", res.message);
-            }
-        } else {
-            ResponseModel res = abl.updateDistrict(selectedDistrict);
-            if (res.status) {
-                successMessage("Update District", "Record updated successfully");
-            } else {
-                errorMessage("Error", res.message);
-            }
-        }
-        PrimeFaces.current().executeScript("PF('manageDistrictDialog').hide();");
-        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
-        UIComponent datatable = findComponentById(baseComponent, "districtTable");
-        PrimeFaces.current().ajax().update(datatable.getClientId());
-    }
-
+//    public List<Districts> getAllDistricts() {
+//        ResponseModel<Collection<Districts>> res = abl.getAllDistricts();
+//        if (res.status) {
+//            this.districts = res.data;
+//        }
+//        return (List<Districts>) districts;
+//    }
+//
+//    public void deleteDistrict(int id) {
+//        ResponseModel res = abl.deleteDistrict(id);
+//        if (res.status == true) {
+//            successMessage("Delete District", "Record deleted successfully!");
+//        } else {
+//            errorMessage("Error", res.message);
+//        }
+//        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+//        UIComponent datatable = findComponentById(baseComponent, "districtTable");
+//        PrimeFaces.current().ajax().update(datatable.getClientId());
+//    }
+//
+//    public void openNewDistrict() {
+//        this.selectedDistrict = new Districts();
+//    }
+//
+//    public void saveDistrict() {
+//        if (selectedDistrict.getDistrictId() == null) {
+//            ResponseModel res = abl.addDistrict(selectedDistrict);
+//            if (res.status) {
+//                successMessage("Add District", "Record added successfully");
+//            } else {
+//                errorMessage("Error", res.message);
+//            }
+//        } else {
+//            ResponseModel res = abl.updateDistrict(selectedDistrict);
+//            if (res.status) {
+//                successMessage("Update District", "Record updated successfully");
+//            } else {
+//                errorMessage("Error", res.message);
+//            }
+//        }
+//        PrimeFaces.current().executeScript("PF('manageDistrictDialog').hide();");
+//        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+//        UIComponent datatable = findComponentById(baseComponent, "districtTable");
+//        PrimeFaces.current().ajax().update(datatable.getClientId());
+//    }
     public List<Diseases> getAllDiseases() {
         ResponseModel<Collection<Diseases>> res = abl.getAllDiseases();
         if (res.status) {
@@ -739,5 +822,59 @@ public class AdminManagedBean implements Serializable {
         UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
         UIComponent datatable = findComponentById(baseComponent, "diseaseTable");
         PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public List<FieldOfStudy> getAllFieldOfStudies() {
+        ResponseModel<Collection<FieldOfStudy>> res = abl.getAllFieldsofStudy();
+        if (true) {
+            return (List<FieldOfStudy>) res.data;
+        }
+        return null;
+    }
+
+    public void deleteFieldOfStudy(int id) {
+        ResponseModel res = abl.deleteFieldOfStudy(new FieldOfStudy(id));
+        if (res.status == true) {
+            successMessage("Delete Field Of Study", "Record deleted successfully!");
+        } else {
+            errorMessage("Error", res.message);
+        }
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "fieldOfStudyTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public void openNewFieldOfStudy() {
+        this.selectedFieldOfStudy = new FieldOfStudy();
+    }
+
+    public void saveFieldOfStudy() {
+        if (selectedFieldOfStudy.getFieldId() == null) {
+            ResponseModel res = abl.addFieldOfStudy(selectedFieldOfStudy);
+            if (res.status) {
+                successMessage("Add Field Of Study", "Record added successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        } else {
+            ResponseModel res = abl.updateFieldOfStudy(selectedFieldOfStudy);
+            if (res.status) {
+                successMessage("Update Field Of Study", "Record updated successfully");
+            } else {
+                errorMessage("Error", res.message);
+            }
+        }
+        PrimeFaces.current().executeScript("PF('manageFieldOfStudyDialog').hide();");
+        UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
+        UIComponent datatable = findComponentById(baseComponent, "fieldOfStudyTable");
+        PrimeFaces.current().ajax().update(datatable.getClientId());
+    }
+
+    public void redirectTo(String page) {
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect(page);
+        } catch (IOException ex) {
+            Logger.getLogger(AdminManagedBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
