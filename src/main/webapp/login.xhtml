@@ -29,7 +29,7 @@
                     <!--<span class="ui-float-label">-->
                     <div class="pb-2 flex flex-wrap justify-content-between">
                         <p:outputLabel for="password" value="Password" styleClass="text-lg" style="font-weight: bold" />
-                        <a href="forgetPassword.jsf" >Forgot Password?</a>                        
+                        <a href="forgotPassword.jsf" >Forgot Password?</a>                        
                     </div>
                     <p:password id="password" style="width: 100%" required="true" validatorMessage="Please enter password properly" requiredMessage="Please enter password" value="#{login.password}" >
                         <f:validateRegex pattern="^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,}$"  />

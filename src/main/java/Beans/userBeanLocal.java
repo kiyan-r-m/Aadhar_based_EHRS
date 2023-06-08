@@ -17,7 +17,6 @@ import Entities.Users;
 import java.util.Collection;
 import javax.ejb.Local;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  *
@@ -39,8 +38,8 @@ public interface userBeanLocal {
     ResponseModel updateAccessMapperToUser(int userId, Collection<Integer> dIds);
     ResponseModel<Collection<PatientDoctorMapper>> getPatientDoctorMapperByUserId(int userId);
     ResponseModel ChangePassword(int userId, String oldPassword, String newPassword);
-    ResponseModel SendMailForForgetPassword(String emailId, HttpServletResponse response);
-    ResponseModel ForgetPassword(HttpServletRequest request, HttpServletResponse response, int userId, String OTP, String newPassword);
+    ResponseModel SendMailForForgetPassword(String emailId, HttpServletRequest request);
+    ResponseModel ForgetPassword(HttpServletRequest request, String newPassword);
     ResponseModel<Collection<BloodGroups>> getAllBloodGroups();
     ResponseModel<BloodGroups> getBloodGroups(int id);
     ResponseModel<Users> getUserById(int id);
@@ -53,9 +52,7 @@ public interface userBeanLocal {
     ResponseModel<DoctorDetails> getDoctorDetailById(int id);
     ResponseModel<Collection<Addresses>> getAllAddresses();
     ResponseModel getUserByAadharPassword(String aadhar, String password);
-    ResponseModel getUserByUsernamePassword(String username, String password);
-
+    ResponseModel<Users> getUserByUsernamePassword(String username, String password);
     ResponseModel removeUser(int id);
-
     ResponseModel<Collection<Roles>> getAllRoles();
 }

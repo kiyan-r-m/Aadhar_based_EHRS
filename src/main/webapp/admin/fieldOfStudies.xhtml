@@ -14,11 +14,11 @@
         <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
     </h:head>
     <h:body>
-        <ui:composition template="home.xhtml">
+        <ui:composition template="adminPanel.xhtml">
             <ui:define name="content">
                 <div class="container">
                     <h:form>
-                        <p:dataTable id="fieldOfStudyTable" widgetVar="dtFieldOfStudies" var="fieldOfStudy" value="#{adminManagedBean.getAllFieldOfStudies()}" styleClass="field-of-studies-table" paginator="true" rows="7" paginatorPosition="bottom">
+                        <p:dataTable id="fieldOfStudyTable" widgetVar="dtFieldOfStudies" var="fieldOfStudy" value="#{adminManagedBean.getAllFieldOfStudies()}" styleClass="field-of-studies-table" paginator="true" rows="5" paginatorPosition="bottom">
                             <f:facet name="header">
                                 <div class="field-of-study-table-header card p-3">
                                     <div class="flex justify-content-between flex-wrap">
