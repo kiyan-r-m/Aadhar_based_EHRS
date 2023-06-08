@@ -74,6 +74,8 @@ public class TestServlet extends HttpServlet {
             for(DateWiseCaseFrequency data : cf){
                 out.println(data.getFrequency().toString());
             }
+            out.println(abl.getTotalAcuteCases());
+            out.println(abl.getTotalChronicCases());
             
             
 

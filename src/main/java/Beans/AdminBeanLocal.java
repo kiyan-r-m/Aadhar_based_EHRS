@@ -87,7 +87,7 @@ public interface AdminBeanLocal {
     ResponseModel getAllFieldsofStudy();
     ResponseModel getFieldOfStudy(int id);
     ResponseModel updateFieldOfStudy(FieldOfStudy data);
-    ResponseModel deleteFieldOfStudy(int id);
+    ResponseModel deleteFieldOfStudy(FieldOfStudy data);
     ResponseModel addMedication(CommonMedications data);
     ResponseModel getAllMedications();
     ResponseModel getMedication(int id);
@@ -116,6 +116,9 @@ public interface AdminBeanLocal {
     long getAllUsersFrequency(int userid);
     Collection<DateWiseCaseFrequency>getCasesFrequency(String disease, LocalDate startDate, String state);
     Collection<DiseaseToFrequency>getTopCases();
+    long getTotalAccess();
+    long getTotalAcuteCases();
+    long getTotalChronicCases();
 
     ResponseModel<Roles> getRoleById(int id);
 

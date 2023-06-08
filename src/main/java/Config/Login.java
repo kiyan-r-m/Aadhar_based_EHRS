@@ -6,6 +6,7 @@ package Config;
 
 import java.io.Serializable;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -44,6 +45,7 @@ public class Login implements Serializable{
     @NotNull
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
+    
     @Inject
     private SecurityContext securityContext;
     @Inject

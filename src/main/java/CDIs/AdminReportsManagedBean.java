@@ -7,6 +7,7 @@ package CDIs;
 import Beans.AdminBeanLocal;
 import ReportModels.BloodGroupFrequency;
 import ReportModels.DateWiseCaseFrequency;
+import ReportModels.DiseaseToFrequency;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -39,11 +40,17 @@ public class AdminReportsManagedBean implements Serializable {
     @EJB
     AdminBeanLocal abl;
 
-    private BarChartModel barModel, mixedModel;
+    private BarChartModel barModel, mixedModel, acBarModel;
 
-    private long doctorCounter;
+    private long doctorCounter, accessCounter, doctorDensity;
+    private String disease, state;
+    List<DiseaseToFrequency> topDiseases;
+    LocalDate startDate;
 
     public AdminReportsManagedBean() {
+        disease = state = null;
+        startDate = LocalDate.now();
+        startDate = startDate.minusMonths(2);
 
     }
 
@@ -51,6 +58,7 @@ public class AdminReportsManagedBean implements Serializable {
     public void init() {
         createBgBarModel();
         createCasesMixedModel();
+        createACBarModel();
     }
 
     public BarChartModel getMixedModel() {
@@ -83,7 +91,7 @@ public class AdminReportsManagedBean implements Serializable {
 
             LocalDate ld = LocalDate.of(2023, Month.APRIL, 1);
 
-            ArrayList<DateWiseCaseFrequency> table = returnCasesDataset(null, ld, null);
+            ArrayList<DateWiseCaseFrequency> table = returnCasesDataset();
 
             for (DateWiseCaseFrequency xdata : table) {
                 values.add(xdata.getFrequency());
@@ -186,8 +194,65 @@ public class AdminReportsManagedBean implements Serializable {
 
         barModel.setOptions(options);
     }
+    
+    public void createACBarModel() {
+        acBarModel = new BarChartModel();
+        ChartData data = new ChartData();
 
-    ArrayList<DateWiseCaseFrequency> returnCasesDataset(String disease, LocalDate startDate, String state) {
+        BarChartDataSet barDataSet = new BarChartDataSet();
+
+        List<String> labels = new ArrayList<>();
+        List<Number> values = new ArrayList<>();
+        List<String> bgColor = new ArrayList<>();
+        List<String> borderColor = new ArrayList<>();
+        values.add(abl.getTotalChronicCases());
+        values.add(abl.getTotalAcuteCases());
+        for (int i = 1; i<2; i++) {
+            bgColor.add("rgba(233, 86, 112, 0.8)");
+            borderColor.add("rgb(67, 47, 112)");
+        }
+        labels.add("Chronic");
+        labels.add("Acute");
+        barDataSet.setData(values);
+
+        barDataSet.setBackgroundColor(bgColor);
+
+        barDataSet.setBorderColor(borderColor);
+        barDataSet.setBorderWidth(1);
+
+        data.addChartDataSet(barDataSet);
+
+        data.setLabels(labels);
+        acBarModel.setData(data);
+        
+
+        //Options
+        BarChartOptions options = new BarChartOptions();
+        CartesianScales cScales = new CartesianScales();
+        CartesianLinearAxes linearAxes = new CartesianLinearAxes();
+        linearAxes.setOffset(true);
+        CartesianLinearTicks ticks = new CartesianLinearTicks();
+        ticks.setBeginAtZero(true);
+        //ticks.setStepSize(10);
+        linearAxes.setTicks(ticks);
+        cScales.addYAxesData(linearAxes);
+        options.setScales(cScales);
+
+        Title title = new Title();
+        title.setDisplay(true);
+        title.setText("Currently active Acute vs. Chronic cases");
+        options.setTitle(title);
+
+        // disable animation
+        Animation animation = new Animation();
+        animation.setDuration(700);
+        options.setAnimation(animation);
+        options.setBarThickness(35);
+
+        acBarModel.setOptions(options);
+    }
+
+    ArrayList<DateWiseCaseFrequency> returnCasesDataset() {
         ArrayList<DateWiseCaseFrequency> spData = (ArrayList) abl.getCasesFrequency(disease, startDate, state);
         ArrayList<DateWiseCaseFrequency> returnData = new ArrayList<>();
         LocalDate endDate = LocalDate.now();
@@ -208,6 +273,16 @@ public class AdminReportsManagedBean implements Serializable {
         return returnData;
     }
 
+    public BarChartModel getAcBarModel() {
+        return acBarModel;
+    }
+
+    public void setAcBarModel(BarChartModel acBarModel) {
+        this.acBarModel = acBarModel;
+    }
+    
+    
+
     public long getDoctorCounter() {
         this.doctorCounter = abl.getAllUsersFrequency(3);
         return this.doctorCounter;
@@ -216,5 +291,36 @@ public class AdminReportsManagedBean implements Serializable {
     public void setDoctorCounter(long doctorCounter) {
         this.doctorCounter = doctorCounter;
     }
+
+    public long getAccessCounter() {
+        accessCounter = abl.getTotalAccess();
+        return accessCounter;
+    }
+
+    public void setAccessCounter(long accessCounter) {
+        this.accessCounter = accessCounter;
+    }
+
+    public long getDoctorDensity() {
+        doctorDensity = (abl.getAllUsersFrequency(3)*1000)/(abl.getAllUsersFrequency(1)+abl.getAllUsersFrequency(2)+abl.getAllUsersFrequency(3));
+        return doctorDensity;
+    }
+
+    public void setDoctorDensity(long doctorDensity) {
+        this.doctorDensity = doctorDensity;
+    }
+
+    public List<DiseaseToFrequency> getTopDiseases() {
+        topDiseases = (List)abl.getTopCases();
+        return topDiseases;
+    }
+
+    public void setTopDiseases(List<DiseaseToFrequency> topDiseases) {
+        this.topDiseases = topDiseases;
+    }
+    
+    
+    
+    
 
 }

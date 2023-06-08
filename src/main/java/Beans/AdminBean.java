@@ -979,18 +979,18 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public ResponseModel deleteFieldOfStudy(int data) {
+    public ResponseModel deleteFieldOfStudy(FieldOfStudy data) {
         ResponseModel res = new ResponseModel();
-        FieldOfStudy deletedata = em.find(FieldOfStudy.class, data);
+        FieldOfStudy deletedata = em.find(FieldOfStudy.class, data.getFieldId());
         try {
             if (deletedata == null) {
                 res.status = false;
                 res.message = "input invalid";
             } else {
-                if(deletedata.getDoctorDetailsCollection().isEmpty()) {
-                em.remove(deletedata);
-                res.status = true;
-                res.message = "Delete success";
+                if (deletedata.getDoctorDetailsCollection().isEmpty()) {
+                    em.remove(deletedata);
+                    res.status = true;
+                    res.message = "Delete success";
                 } else {
                     res.status = false;
                     res.message = "This field of study is being used";
@@ -1337,6 +1337,9 @@ public class AdminBean implements AdminBeanLocal {
             bg.setBlood_group_name(data[0].toString());
             bg.setFrequency(Long.parseLong(data[1].toString()));
             res.add(bg);
+        }
+        return res;
+    }
 
     public ResponseModel<Roles> getRoleById(int id) {
         ResponseModel<Roles> res = new ResponseModel<>();
@@ -1356,134 +1359,6 @@ public class AdminBean implements AdminBeanLocal {
         } catch (Exception ex) {
             res.status = false;
             res.message = ex.getMessage();
-        }
-        return res;
-    }
-
-    @Override
-    public long getAllUsersFrequency(int userid) {
-        StoredProcedureQuery qry = em.createNamedStoredProcedureQuery("countUsers");
-        qry.setParameter("userType", userid);
-        qry.execute();
-        List<Object[]> result = qry.getResultList();
-        Long count = 0L;
-        for (Object[] data : result) {
-            count = Long.valueOf(data[0].toString());
-        }
-        return count;
-    }
-
-    @Override
-    public Collection<DateWiseCaseFrequency> getCasesFrequency(String disease, LocalDate startDate, String state) {
-        Collection<DateWiseCaseFrequency> res = new ArrayList<>();
-
-        StoredProcedureQuery qry = em.createNamedStoredProcedureQuery("frequencyByDiseaseDateState");
-        qry.setParameter("diseaseval", disease);
-
-        qry.setParameter("dateval", startDate);
-
-        qry.setParameter("stateval", state);
-        qry.execute();
-        List<Object[]> datalist = qry.getResultList();
-        for (Object[] data : datalist) {
-            DateWiseCaseFrequency cf = new DateWiseCaseFrequency();
-            cf.setFrequencyDate(LocalDate.parse(data[0].toString(), DateTimeFormatter.ISO_DATE));
-            cf.setFrequency(Long.valueOf(data[1].toString()));
-            res.add(cf);
-    public ResponseModel<BloodGroups> getBloodGroupById(int id) {
-        ResponseModel<BloodGroups> res = new ResponseModel<>();
-        try {
-            if (id == 0) {
-                res.status = false;
-                res.message = "Input Invalid";
-                return res;
-            }
-            if (em.find(BloodGroups.class, id) != null) {
-                res.data = em.find(BloodGroups.class, id);
-                res.status = true;
-            } else {
-                res.status = false;
-                res.message = "BloodGroup not found";
-            }
-        } catch (Exception ex) {
-            res.status = false;
-            res.message = ex.getMessage();
-        }
-        return res;
-    }
-
-    @Override
-    public Collection<DiseaseToFrequency> getTopCases() {
-        Collection<DiseaseToFrequency> res = new ArrayList<>();
-        StoredProcedureQuery qry = em.createStoredProcedureQuery("topTenDiseasesByCases");
-        qry.execute();
-        List<Object[]> datalist = qry.getResultList();
-        for (Object[] data : datalist) {
-            DiseaseToFrequency cf = new DiseaseToFrequency();
-            cf.setDiseaseName(data[0].toString());
-            cf.setFrequency(Long.valueOf(data[1].toString()));
-            res.add(cf);
-
-    public ResponseModel addUser(Users user) {
-        ResponseModel res = new ResponseModel();
-        try {
-            if (user == null) {
-                res.status = false;
-                res.message = "Input Invalid";
-                return res;
-            }
-            if (em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getResultList().isEmpty()) {
-                String password = generatePassword();
-                String hashedPassword = PasswordHash.generate(password.toCharArray());
-                user.setPassword(hashedPassword);
-                Collection<Integer> dids = new ArrayList<>();
-                Collection<Integer> aids = new ArrayList<>();
-                if (!user.getDiseasesCollection().isEmpty()) {
-                    for (Diseases diseases : user.getDiseasesCollection()) {
-                        dids.add(diseases.getDiseaseId());
-                    }
-                }
-                if (!user.getAllergiesCollection().isEmpty()) {
-                    for (Allergies allergies : user.getAllergiesCollection()) {
-                        aids.add(allergies.getAllergyId());
-                    }
-                }
-                user.setDiseasesCollection(null);
-                user.setAllergiesCollection(null);
-                if (em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()) != null) {
-                    user.setBloodGroupId(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()));
-                } else {
-                    user.setBloodGroupId(null);
-                }
-                if (em.find(Roles.class, user.getRoleId().getRoleid()) != null) {
-                    user.setRoleId(em.find(Roles.class, user.getRoleId().getRoleid()));
-                } else {
-                    user.setRoleId(null);
-                }
-                ResponseModel addr = addAddress(user.getAddressId());
-                if (addr.status) {
-                    Addresses a = (Addresses) em.createNamedQuery("Addresses.findByAddress").setParameter("address", user.getAddressId().getAddress()).getSingleResult();
-                    user.setAddressId(a);
-                }
-                em.persist(user);
-                SendMailForSendingPasswordToUser(user.getAadharCardNo(), password);
-                Users u = (Users) em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getSingleResult();
-                if (!dids.isEmpty()) {
-                    addChronicDiseasesToUser(u.getUserId(), dids);
-                }
-                if (!aids.isEmpty()) {
-                    addAllergiesToUser(u.getUserId(), aids);
-                }
-                res.status = true;
-
-            } else {
-                res.status = false;
-                res.message = "User already exists";
-            }
-
-        } catch (Exception e) {
-            res.status = false;
-            res.message = e.getMessage();
         }
         return res;
     }
@@ -1691,5 +1566,159 @@ public class AdminBean implements AdminBeanLocal {
             res.message = e.getMessage();
         }
         return res;
+    }
+
+    public ResponseModel addUser(Users user) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (user == null) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getResultList().isEmpty()) {
+                String password = generatePassword();
+                String hashedPassword = PasswordHash.generate(password.toCharArray());
+                user.setPassword(hashedPassword);
+                Collection<Integer> dids = new ArrayList<>();
+                Collection<Integer> aids = new ArrayList<>();
+                if (!user.getDiseasesCollection().isEmpty()) {
+                    for (Diseases diseases : user.getDiseasesCollection()) {
+                        dids.add(diseases.getDiseaseId());
+                    }
+                }
+                if (!user.getAllergiesCollection().isEmpty()) {
+                    for (Allergies allergies : user.getAllergiesCollection()) {
+                        aids.add(allergies.getAllergyId());
+                    }
+                }
+                user.setDiseasesCollection(null);
+                user.setAllergiesCollection(null);
+                if (em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()) != null) {
+                    user.setBloodGroupId(em.find(BloodGroups.class, user.getBloodGroupId().getBloodGroupId()));
+                } else {
+                    user.setBloodGroupId(null);
+                }
+                if (em.find(Roles.class, user.getRoleId().getRoleid()) != null) {
+                    user.setRoleId(em.find(Roles.class, user.getRoleId().getRoleid()));
+                } else {
+                    user.setRoleId(null);
+                }
+                ResponseModel addr = addAddress(user.getAddressId());
+                if (addr.status) {
+                    Addresses a = (Addresses) em.createNamedQuery("Addresses.findByAddress").setParameter("address", user.getAddressId().getAddress()).getSingleResult();
+                    user.setAddressId(a);
+                }
+                em.persist(user);
+                SendMailForSendingPasswordToUser(user.getAadharCardNo(), password);
+                Users u = (Users) em.createNamedQuery("Users.findByAadharCardNo").setParameter("aadharCardNo", user.getAadharCardNo()).getSingleResult();
+                if (!dids.isEmpty()) {
+                    addChronicDiseasesToUser(u.getUserId(), dids);
+                }
+                if (!aids.isEmpty()) {
+                    addAllergiesToUser(u.getUserId(), aids);
+                }
+                res.status = true;
+
+            } else {
+                res.status = false;
+                res.message = "User already exists";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public long getAllUsersFrequency(int userid) {
+        StoredProcedureQuery qry = em.createNamedStoredProcedureQuery("countUsers");
+        qry.setParameter("userType", userid);
+        qry.execute();
+        List<Object[]> result = qry.getResultList();
+        Long count = 0L;
+        for (Object[] data : result) {
+            count = Long.valueOf(data[0].toString());
+        }
+        return count;
+    }
+
+    @Override
+    public Collection<DateWiseCaseFrequency> getCasesFrequency(String disease, LocalDate startDate, String state) {
+        Collection<DateWiseCaseFrequency> res = new ArrayList<>();
+
+        StoredProcedureQuery qry = em.createNamedStoredProcedureQuery("frequencyByDiseaseDateState");
+        qry.setParameter("diseaseval", disease);
+
+        qry.setParameter("dateval", startDate);
+
+        qry.setParameter("stateval", state);
+        qry.execute();
+        List<Object[]> datalist = qry.getResultList();
+        for (Object[] data : datalist) {
+            DateWiseCaseFrequency cf = new DateWiseCaseFrequency();
+            cf.setFrequencyDate(LocalDate.parse(data[0].toString(), DateTimeFormatter.ISO_DATE));
+            cf.setFrequency(Long.valueOf(data[1].toString()));
+            res.add(cf);
+        }
+        return res;
+    }
+
+    public ResponseModel<BloodGroups> getBloodGroupById(int id) {
+        ResponseModel<BloodGroups> res = new ResponseModel<>();
+        try {
+            if (id == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (em.find(BloodGroups.class, id) != null) {
+                res.data = em.find(BloodGroups.class, id);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "BloodGroup not found";
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public Collection<DiseaseToFrequency> getTopCases() {
+        Collection<DiseaseToFrequency> res = new ArrayList<>();
+        StoredProcedureQuery qry = em.createStoredProcedureQuery("topTenDiseasesByCases");
+        qry.execute();
+        List<Object[]> datalist = qry.getResultList();
+        for (Object[] data : datalist) {
+            DiseaseToFrequency cf = new DiseaseToFrequency();
+            cf.setDiseaseName(data[0].toString());
+            cf.setFrequency(Long.valueOf(data[1].toString()));
+            res.add(cf);
+
+        }
+        return res;
+    }
+
+    @Override
+    public long getTotalAccess() {
+        Object frequency = em.createNativeQuery("select count(*) as frequency from ehrsystem.patient_access_mapper").getSingleResult();
+        return Long.parseLong(frequency.toString());
+    }
+
+    @Override
+    public long getTotalAcuteCases() {
+        Object frequency = em.createNativeQuery("SELECT COUNT(*) FROM patient_doctor_mapper where disease_id IN(SELECT disease_id FROM diseases where disease_type = 1)").getSingleResult();
+        return Long.parseLong(frequency.toString());
+    }
+
+    @Override
+    public long getTotalChronicCases() {
+         Object frequency = em.createNativeQuery("SELECT COUNT(*) FROM patient_doctor_mapper where disease_id IN(SELECT disease_id FROM diseases where disease_type = 0)").getSingleResult();
+        return Long.parseLong(frequency.toString());
     }
 }

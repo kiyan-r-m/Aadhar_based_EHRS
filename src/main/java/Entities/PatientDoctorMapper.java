@@ -46,6 +46,12 @@ import javax.persistence.TemporalType;
     ),
     @NamedStoredProcedureQuery(name = "topTenDiseasesByCases",
             procedureName = "ehrsystem.topTenDiseasesByCases"
+    ),
+    @NamedStoredProcedureQuery(name = "countChronicPatients",
+            procedureName = "ehrsystem.countChronicPatients"
+    ),
+    @NamedStoredProcedureQuery(name = "countAcutePatients",
+            procedureName = "ehrsystem.countAcutePatients"
     )
 })
 public class PatientDoctorMapper implements Serializable {
