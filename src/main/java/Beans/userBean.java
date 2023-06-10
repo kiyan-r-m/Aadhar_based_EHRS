@@ -5,18 +5,19 @@
 package Beans;
 
 import Entities.*;
+import io.jsonwebtoken.lang.Collections;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.UUID;
+import java.util.Enumeration;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.security.enterprise.identitystore.Pbkdf2PasswordHash;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -753,7 +754,7 @@ public class userBean implements userBeanLocal {
     }
 
     @Override
-    public ResponseModel SendMailForForgetPassword(String emailId, HttpServletResponse response) {
+    public ResponseModel SendMailForForgetPassword(String emailId, HttpServletRequest request) {
         ResponseModel res = new ResponseModel();
         try {
             if (emailId.isEmpty()) {
@@ -763,11 +764,16 @@ public class userBean implements userBeanLocal {
             }
             if (!em.createNamedQuery("Users.findByEmailId").setParameter("emailId", emailId).getResultList().isEmpty()) {
                 Users u = (Users) em.createNamedQuery("Users.findByEmailId").setParameter("emailId", emailId).getSingleResult();
-                String otp = UUID.randomUUID().toString();
-                Cookie cookie = new Cookie("forgetPasswordOTP", otp);
-                response.addCookie(cookie);
-                String body = "<h3>Hello " + u.getUsername() + "!</h3><p>Your OTP for forget password is " + otp + "</p><br/><p>Enter this OTP for creating the new password</p>";
-                mail.sendMail(u.getEmailid(), "Forget Password OTP - EHR", body);
+                long time = System.currentTimeMillis() + 3600000;
+//                HttpSession session = request.getSession(true);
+                ServletContext context = request.getServletContext();
+                context.setAttribute(u.getUserId().toString(), String.valueOf(time));
+//                session.setAttribute(u.getUserId().toString(), String.valueOf(time));
+                String link = "http://localhost:8082/Aadhar_based_EHRS/resetPassword.jsf?user=" + u.getUserId() + "," + time;
+                String body = "<h3>Hello " + u.getUsername()
+                        + "!</h3><p><a href='" + link
+                        + "'>Click here to reset Password</a></p><br/><p>This link is available for only one hour. So please reset password before that.</p><br/><p>If you did not request a password reset, you can ignore this message</p>";
+                mail.sendMail(u.getEmailid(), "Forgot Password - EHR", body);
                 res.status = true;
             } else {
                 res.status = false;
@@ -782,37 +788,44 @@ public class userBean implements userBeanLocal {
     }
 
     @Override
-    public ResponseModel ForgetPassword(HttpServletRequest request, HttpServletResponse response, int userId, String OTP, String newPassword) {
+    public ResponseModel ForgetPassword(HttpServletRequest request, String newPassword) {
         ResponseModel res = new ResponseModel();
         try {
-            if (userId == 0 || newPassword == null || OTP == null) {
+            if (newPassword == null) {
                 res.status = false;
                 res.message = "Input Invalid";
                 return res;
             }
-            if (em.find(Users.class, userId) != null) {
-                Cookie cookie = getCookie("forgetPasswordOTP", request);
-                if (cookie != null) {
-                    if (cookie.getValue().equals(OTP)) {
-                        Users u = em.find(Users.class, userId);
-                        u.setPassword(PasswordHash.generate(newPassword.toCharArray()));
-                        em.merge(u);
-                        res.status = true;
-                        cookie.setMaxAge(0);
-                        response.addCookie(cookie);
-                    } else {
-                        res.status = false;
-                        res.message = "Incorrect OTP";
-                        return res;
-                    }
+//            int UserId = 0;
+//            if (!queryReq.isEmpty()) {
+//                String[] values = queryReq.split(",");
+//                if (!values[0].isEmpty()) {
+//                    UserId = Integer.parseInt(values[0]);
+//                }
+//            }
+            HttpSession session = request.getSession(true);
+            Enumeration<String> e = session.getAttributeNames();
+            int UserId = 0;
+            if (Collections.contains(e, "userId")) {
+                UserId = Integer.parseInt(session.getAttribute("userId").toString());
+            }
+            if (UserId == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            } else {
+                ServletContext context = request.getServletContext();
+                if (em.find(Users.class, UserId) != null) {
+                    Users u = em.find(Users.class, UserId);
+                    u.setPassword(PasswordHash.generate(newPassword.toCharArray()));
+                    em.merge(u);
+                    session.removeAttribute("userId");
+                    context.removeAttribute(String.valueOf(UserId));
+                    res.status = true;
                 } else {
                     res.status = false;
-                    res.message = "Something went wrong";
-                    return res;
+                    res.message = "User not found";
                 }
-            } else {
-                res.status = false;
-                res.message = "User not found";
             }
 
         } catch (Exception e) {
@@ -822,19 +835,18 @@ public class userBean implements userBeanLocal {
         return res;
     }
 
-    private Cookie getCookie(String CookieName, HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies != null) {
-            for (Cookie c : cookies) {
-                if (c.getName().equals(CookieName)) {
-                    return c;
-                }
-            }
-        }
-        return null;
-    }
-
+//    private Cookie getCookie(String CookieName, HttpServletRequest request) {
+//        Cookie[] cookies = request.getCookies();
+//
+//        if (cookies != null) {
+//            for (Cookie c : cookies) {
+//                if (c.getName().equals(CookieName)) {
+//                    return c;
+//                }
+//            }
+//        }
+//        return null;
+//    }
     @Override
     public ResponseModel<Collection<BloodGroups>> getAllBloodGroups() {
         ResponseModel<Collection<BloodGroups>> res = new ResponseModel<>();
@@ -969,7 +981,7 @@ public class userBean implements userBeanLocal {
     }
 
     @Override
-    public ResponseModel getUserByUsernamePassword(String username, String password) {
+    public ResponseModel<Users> getUserByUsernamePassword(String username, String password) {
         ResponseModel<Users> res = new ResponseModel<>();
         try {
             if (username.isEmpty() || password.isEmpty()) {
@@ -977,12 +989,18 @@ public class userBean implements userBeanLocal {
                 res.message = "Input Invalid";
                 return res;
             }
-            res.data = (Users) em.createNamedQuery("Users.findByUsernamePassword")
-                    .setParameter("username", username)
-                    .setParameter("password", password).getSingleResult();
-            if (res.data != null) {
-                res.status = true;
-                return res;
+            Users user = (Users) em.createNamedQuery("Users.findByUsername")
+                    .setParameter("username", username).getSingleResult();
+            if (user != null) {
+                if (PasswordHash.verify(password.toCharArray(), user.getPassword())) {
+                    res.data = user;
+                    res.status = true;
+                    return res;
+                } else {
+                    res.status = false;
+                    res.message = "Something went wrong";
+                    return res;
+                }
             } else {
                 res.status = false;
                 res.message = "User not found";

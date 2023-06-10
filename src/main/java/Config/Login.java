@@ -4,6 +4,9 @@
  */
 package Config;
 
+import Beans.userBeanLocal;
+import Entities.ResponseModel;
+import Entities.Users;
 import java.io.Serializable;
 import java.util.Set;
 import javax.annotation.PostConstruct;
@@ -21,9 +24,9 @@ import javax.security.enterprise.identitystore.CredentialValidationResult;
 import javax.security.enterprise.identitystore.IdentityStoreHandler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import javax.ejb.EJB;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;   
+import javax.validation.constraints.Size;
 
 ;
 
@@ -33,7 +36,7 @@ import javax.validation.constraints.Size;
  */
 @Named(value = "login")
 @SessionScoped
-public class Login implements Serializable{
+public class Login implements Serializable {
 
     /**
      * Creates a new instance of Login
@@ -45,7 +48,7 @@ public class Login implements Serializable{
     @NotNull
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
-    
+    private int userId;
     @Inject
     private SecurityContext securityContext;
     @Inject
@@ -54,11 +57,19 @@ public class Login implements Serializable{
     private FacesContext facesContext;
     @Inject
     IdentityStoreHandler identitystore;
+    @EJB
+    userBeanLocal ubl;
 
     public void submit() {
         switch (continueAuthentication()) {
             case SEND_CONTINUE:
                 facesContext.responseComplete();
+                if (this.userId == 0) {
+                    ResponseModel<Users> res = ubl.getUserByUsernamePassword(email, password);
+                    if (res.status) {
+                        this.userId = res.data.getUserId();
+                    }
+                }
                 break;
             case SEND_FAILURE:
                 facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Username or Password is wrong"));
@@ -69,6 +80,10 @@ public class Login implements Serializable{
                 CredentialValidationResult result = identitystore
                         .validate(new UsernamePasswordCredential(email, password));
                 Set<String> roles = result.getCallerGroups();
+                ResponseModel<Users> res = ubl.getUserByUsernamePassword(email, password);
+                if (res.status) {
+                    this.userId = res.data.getUserId();
+                }
                 if (roles.contains("Admin")) {
                     FacesContext.getCurrentInstance().getExternalContext().redirect("admin/home.jsf");
                     break;
@@ -111,5 +126,13 @@ public class Login implements Serializable{
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }
