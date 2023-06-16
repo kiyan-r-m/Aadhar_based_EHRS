@@ -21,7 +21,6 @@ import ReportModels.BloodGroupFrequency;
 import ReportModels.DiseaseToFrequency;
 import ReportModels.DateWiseCaseFrequency;
 import java.time.LocalDate;
-import java.util.Date;
 import Entities.Roles;
 
 /**
@@ -135,5 +134,7 @@ public interface AdminBeanLocal {
     public ResponseModel<Users> getUserById(int id);
     
     public ResponseModel<Allergies> getAllergyById(int id);
+    
+    public ResponseModel<Collection<Diseases>> getAllChronicDiseases(); 
 }
 

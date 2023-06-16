@@ -40,7 +40,7 @@
                             </p:column>
                             <p:column style="text-align: right; padding-right: 3rem">
                                 <p:growl id="message" showDetail="true"/>
-                                <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-field-of-study-content"
+                                <p:commandButton icon="fa fa-pencil" update=":dialogs:manage-field-of-study-content"
                                                  oncomplete="PF('manageFieldOfStudyDialog').show()" style="background-color: #233565; border: #233565"
                                                  styleClass="edit-button rounded-button ui-button-primary" process="@this">
                                     <f:setPropertyActionListener value="#{fieldOfStudy}" target="#{adminManagedBean.selectedFieldOfStudy}" />

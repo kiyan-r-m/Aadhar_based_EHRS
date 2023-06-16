@@ -33,7 +33,6 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "Diseases.findAll", query = "SELECT d FROM Diseases d"),
     @NamedQuery(name = "Diseases.findByDiseaseId", query = "SELECT d FROM Diseases d WHERE d.diseaseId = :diseaseId"),
-    @NamedQuery(name = "Diseases.findByCommonMedicationId", query = "SELECT d FROM Diseases d WHERE d.commonMedicationId = :commonMedicationId"),
     @NamedQuery(name = "Diseases.findByDiseaseType", query = "SELECT d FROM Diseases d WHERE d.diseaseType = :diseaseType")})
 public class Diseases implements Serializable {
 
@@ -47,13 +46,11 @@ public class Diseases implements Serializable {
     @Size(max = 65535)
     @Column(name = "disease_name")
     private String diseaseName;
-    @Column(name = "common_medication_id")
-    private Integer commonMedicationId;
     @Column(name = "disease_type")
     private Boolean diseaseType;
-    @JoinTable(name = "disease_symptom_mapper", joinColumns = {
+    @JoinTable(name = "patient_chronic_mapper", joinColumns = {
         @JoinColumn(name = "disease_id", referencedColumnName = "disease_id")}, inverseJoinColumns = {
-        @JoinColumn(name = "disease_id", referencedColumnName = "symptom_id")})
+        @JoinColumn(name = "user_id", referencedColumnName = "userId")})
     @ManyToMany
     @JsonbTransient
     private Collection<Users> usersCollection;
@@ -61,11 +58,13 @@ public class Diseases implements Serializable {
         @JoinColumn(name = "disease_id", referencedColumnName = "disease_id")}, inverseJoinColumns = {
         @JoinColumn(name = "medication_id", referencedColumnName = "medication_id")})
     @ManyToMany
+    @JsonbTransient
     private Collection<CommonMedications> commonMedicationsCollection;
     @JoinTable(name = "disease_symptom_mapper", joinColumns = {
         @JoinColumn(name = "disease_id", referencedColumnName = "disease_id")}, inverseJoinColumns = {
         @JoinColumn(name = "symptom_id", referencedColumnName = "symptom_id")})
     @ManyToMany
+    @JsonbTransient
     private Collection<Symptoms> symptomsCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "diseaseId")
     @JsonbTransient
@@ -113,20 +112,28 @@ public class Diseases implements Serializable {
         this.diseaseName = diseaseName;
     }
 
-    public Integer getCommonMedicationId() {
-        return commonMedicationId;
-    }
-
-    public void setCommonMedicationId(Integer commonMedicationId) {
-        this.commonMedicationId = commonMedicationId;
-    }
-
     public Boolean getDiseaseType() {
         return diseaseType;
     }
 
     public void setDiseaseType(Boolean diseaseType) {
         this.diseaseType = diseaseType;
+    }
+
+    public Collection<Users> getUsersCollection() {
+        return usersCollection;
+    }
+
+    public void setUsersCollection(Collection<Users> usersCollection) {
+        this.usersCollection = usersCollection;
+    }
+
+    public Collection<CommonMedications> getCommonMedicationsCollection() {
+        return commonMedicationsCollection;
+    }
+
+    public void setCommonMedicationsCollection(Collection<CommonMedications> commonMedicationsCollection) {
+        this.commonMedicationsCollection = commonMedicationsCollection;
     }
 
     public Collection<Symptoms> getSymptomsCollection() {
@@ -137,12 +144,12 @@ public class Diseases implements Serializable {
         this.symptomsCollection = symptomsCollection;
     }
 
-    public Collection<CommonMedications> getCommonMedicationsCollection() {
-        return commonMedicationsCollection;
+    public Collection<PatientDoctorMapper> getPatientDoctorMapperCollection() {
+        return patientDoctorMapperCollection;
     }
 
-    public void setCommonMedicationsCollection(Collection<CommonMedications> commonMedicationsCollection) {
-        this.commonMedicationsCollection = commonMedicationsCollection;
+    public void setPatientDoctorMapperCollection(Collection<PatientDoctorMapper> patientDoctorMapperCollection) {
+        this.patientDoctorMapperCollection = patientDoctorMapperCollection;
     }
 
     @Override
@@ -163,14 +170,6 @@ public class Diseases implements Serializable {
             return false;
         }
         return true;
-    }
-
-    public Collection<Users> getUsersCollection() {
-        return usersCollection;
-    }
-
-    public void setUsersCollection(Collection<Users> usersCollection) {
-        this.usersCollection = usersCollection;
     }
 
     @Override

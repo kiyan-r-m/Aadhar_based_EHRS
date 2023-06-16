@@ -1,12 +1,317 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html">
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
-        <title>Facelet Title</title>
+        <title>Sign Up - EHR</title>
+        <link rel="shortcut icon" href="images/favicon.ico"/>
+        <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />   
+        <h:outputStylesheet library="css" name="main.css"/>
+        <style>
+            body .ui-card {
+                background: rgba(244, 244, 244, 0.9);
+                border-radius: 3rem;
+            }
+            /*            body .ui-tabs .ui-tabs-nav {
+                            background: none;
+                        }
+                        body .ui-tabs .ui-tabs-nav li.ui-tabs-header.ui-state-active {
+                            background: none;
+                            margin-left: 1rem;
+                        }
+                        body .ui-tabs .ui-tabs-panels {
+                            background: none;
+                        }*/
+            body .ui-wizard .ui-wizard-step-titles .ui-wizard-step-title.ui-state-highlight {
+                background: none;
+                border-bottom: 0.2rem solid #233565;
+                color: #233565;
+                font-size: 1.2rem
+            }
+            body .ui-wizard .ui-wizard-step-titles .ui-wizard-step-title {
+                padding: 0 0.2rem 0.5rem 0.2rem;
+                border: none;
+                border-bottom: 0.1rem solid #F5F5F5;
+            }
+            body .ui-button.ui-button-text-icon-right .ui-button-text, body .ui-button.ui-button-text-icon-left .ui-button-text {
+                background: #233565;
+                border-color: #233565;
+            }
+            .ui-wizard-content > .grid {
+                width: 100%;
+            }
+            .ui-wizard-nav-back, .ui-wizard-nav-next {
+                float: none;
+            }
+            body .ui-wizard .ui-wizard-step-titles .ui-wizard-step-title {
+                background: none;
+                border-bottom: lightgrey 0.2rem solid ;
+                color: #233565;
+                font-size: 1.2rem
+            }
+            .ui-inputfield {
+                width: 100%;
+            }
+
+            body .ui-panel .ui-panel-content {
+                background: none;
+            }
+        </style>
     </h:head>
-    <h:body>
-        Hello from Facelets
+    <h:body class="login" style="margin: 2rem">
+        <center>
+            <p:card style="width: 38rem;">
+                <div class="pt-2 pb-4">  
+                    <h:outputText value="Sign Up" style="color: #233565; font-weight: bold;" class="text-4xl"/>
+                </div>
+                <h:form class="px-5">
+                    <p:growl id="msgs" showDetail="true" rendered="#{not facesContext.validationFailed}"/>
+                    <p:wizard>
+                        <p:tab title="User details">
+                            <div class="grid">
+                                <div class="col-6">
+                                    <div align="left" class="pb-2">
+                                        <p:outputLabel for="username" value="Username" styleClass="text-lg" style="font-weight: bold" />
+                                    </div>
+                                    <div align="left">
+                                        <p:inputText id="username" style="width: 100%;" required="true" requiredMessage="enter username" value="#{adminManagedBean.username}" />
+                                    </div>
+                                    <p:message for="username" style="width: 98%;" class="my-2" />
+                                </div>
+                                <div class="col-6">
+                                    <div align="left" class="pb-2">
+                                        <p:outputLabel for="aadhar" value="Aadhar-Card No" styleClass="text-lg" style="font-weight: bold" />
+                                    </div>
+                                    <div align="left">
+                                        <p:inputText id="aadhar" style="width: 100%;" required="true" requiredMessage="enter aadhar card no" validatorMessage="enter valid aadhar card no" value="#{adminManagedBean.aadharCardNo}" >
+                                            <f:validateLongRange maximum="999999999999" minimum="120000000000" />
+                                        </p:inputText>
+                                    </div>
+                                    <p:message for="aadhar" style="width: 98%;" class="my-2" />
+                                </div>
+                            </div>
+                            <div class="grid">
+                                <div class="col-6">
+                                    <div align="left" class="pb-2">
+                                        <div class="flex flex-wrap justify-content-between">
+                                            <p:outputLabel for="password" value="Password" styleClass="text-lg" style="font-weight: bold" />
+
+                                        </div>
+                                    </div>
+                                    <div align="left"><p:password id="password" style="width: 100%" required="true" validatorMessage="enter password properly" requiredMessage="enter password" value="#{adminManagedBean.password}" >
+                                            <f:validateRegex pattern="^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,}$"  />
+                                        </p:password>
+                                    </div>
+                                    <p:message for="password" style="width: 98%;" class="my-2" />
+                                </div>
+                                <div class="col-6">
+                                    <div align="left" class="pb-2">
+                                        <p:outputLabel for="confirm" value="Confirm Password" styleClass="text-lg" style="font-weight: bold" />                        
+                                    </div>
+                                    <div align="left">
+                                        <p:password id="confirm" style="width: 100%" required="true" validatorMessage="enter confirm password properly" requiredMessage="enter confirm password" value="#{adminManagedBean.confirm}" >
+                                            <f:validator validatorId="confirmPasswordValidator"  />
+                                        </p:password>
+                                    </div>
+                                    <p:message for="confirm" style="width: 98%;" class="my-2" />
+                                </div>
+                            </div>
+                            <div class="grid">
+
+                                <div class="col-6">
+                                    <div align="left" class="pb-2">
+                                        <p:outputLabel for="dob" styleClass="text-lg" style="font-weight: bold" value="Date of Birth" />
+                                    </div>
+                                    <div align="left">
+                                        <p:datePicker style="width: 100%" id="dob" value="#{adminManagedBean.dob}" monthNavigator="true" yearNavigator="true" showWeek="true" required="true" requiredMessage="select date of birth"/>
+                                    </div>
+                                    <p:message for="dob" style="width: 98%;" styleClass="my-2" />
+                                </div>
+                                <div class="col-6">
+                                    <div align="left" class="pb-2">
+                                        <p:outputLabel for="role" value="Role" styleClass="text-lg" style="font-weight: bold" />                        
+                                    </div>
+                                    <div align="left">
+                                        <p:selectOneMenu id="role" style="width: 100%" value="#{adminManagedBean.roleId}" filter="true" required="true" requiredMessage="select role">
+                                            <f:selectItem itemLabel="Select role" itemValue="" noSelectionOption="true"/>
+                                            <f:selectItem itemLabel="Doctor" itemValue="3" />
+                                            <f:selectItem itemLabel="User" itemValue="2" />
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <p:message for="role" styleClass="my-2" style="width: 98%" />
+                                </div>
+                            </div>
+                            <div class="grid">
+                                <div class="col-6">
+                                    <div align="left">
+                                        <p:outputLabel for="gender" value="Gender" styleClass="text-lg" style="font-weight: bold" />
+                                    </div>
+                                    <div align="left" class="pt-2">
+                                        <p:selectOneRadio id="gender" value="#{adminManagedBean.gender}">
+                                            <f:selectItem itemValue="Male" itemLabel="Male" />
+                                            <f:selectItem itemValue="Female" itemLabel="Female" />
+                                        </p:selectOneRadio>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div align="left" class="pb-2">
+                                        <p:outputLabel for="bloodGroup" value="Blood-Group" styleClass="text-lg" style="font-weight: bold" />                        
+                                    </div>
+                                    <div align="left">
+                                        <p:selectOneMenu style="width: 100%" id="bloodGroup" value="#{adminManagedBean.bloodGroupId}" filter="true" required="true" requiredMessage="select blood group">
+                                            <f:selectItem itemLabel="Select blood-group" itemValue="" noSelectionOption="true"/>
+                                            <f:selectItems value="#{adminManagedBean.bloodGroups}" var="bg1" itemValue="#{bg1.bloodGroupId.toString()}" itemLabel="#{bg1.bloodGroupName}" />
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <p:message for="bloodGroup" style="width: 98%" styleClass="my-2" />
+                                </div>
+                            </div>
+                        </p:tab>
+                        <p:tab title="Contact Details">
+                            <div class="grid">
+                                <div class="col-6">
+                                    <div align="left" class="pb-2">
+                                        <p:outputLabel for="contact" value="Contact No" styleClass="text-lg" style="font-weight: bold" />
+                                    </div>
+                                    <div align="left">
+                                        <p:inputText style="width: 100% !important " id="contact" required="true" requiredMessage="select gender" validatorMessage="enter valid mobile no" value="#{adminManagedBean.contactNo}" >
+                                            <f:validateLongRange maximum="9999999999" minimum="1000000000" />
+                                        </p:inputText>
+                                    </div>
+                                    <p:message for="contact" styleClass="my-2" />
+                                </div>
+                                <div class="col-6">
+                                    <div align="left" class="pb-2">
+                                        <p:outputLabel for="email" value="Email Id" styleClass="text-lg" style="font-weight: bold" />
+                                    </div>
+                                    <div align="left">
+                                        <p:inputText style="width: 100% !important " id="email" required="true" requiredMessage="enter email" validatorMessage="enter email properly" value="#{adminManagedBean.emailid}" >
+                                            <f:validateRegex pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$" />
+                                        </p:inputText>
+                                    </div>
+                                    <div><p:message for="email" styleClass="my-2" /></div>
+                                </div>
+                            </div>
+                            <div class="grid">
+                                <div class="col-12">
+                                    <div align="left" class="pb-2">
+                                        <p:outputLabel for="address" value="Address" styleClass="text-lg" style="font-weight: bold" />
+                                    </div>
+                                    <div align="left">
+                                        <p:inputText style="width: 100% !important " id="address" required="true" requiredMessage="enter address" value="#{adminManagedBean.address.address}" />
+                                    </div>
+                                    <p:message for="address" styleClass="my-2" />
+                                </div>
+                            </div>
+                            <div class="grid">
+                                <div class="col-4">
+                                    <div align="left" class="pb-2">
+                                        <p:outputLabel for="pincode" value="Pincode" styleClass="text-lg" style="font-weight: bold" />
+                                    </div>
+                                    <div align="left">
+                                        <p:selectOneMenu filter="true" value="#{adminManagedBean.pincode}" id="pincode" style="width: 100% !important" required="true" requiredMessage="select pincode" >
+                                            <f:selectItem itemLabel="Select pincode" itemValue="" noSelectionOption="true" />
+                                            <f:selectItems value="#{adminManagedBean.pc}" />
+                                            <f:ajax listener="#{adminManagedBean.onPincodeSelect()}" />
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <p:message for="pincode" styleClass="my-2" />
+                                </div>
+                                <div class="col-4">
+                                    <div align="left" class="pb-2">
+                                        <p:outputLabel for="district" value="District" styleClass="text-lg" style="font-weight: bold" />
+                                    </div>
+                                    <div align="left">
+                                        <p:inputText disabled="true" widgetVar="district1" id="district" value="#{adminManagedBean.address.pincode.district}" />
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div align="left" class="pb-2">
+                                        <p:outputLabel for="state" value="State" styleClass="text-lg" style="font-weight: bold" />
+                                    </div>
+                                    <div align="left">
+                                        <p:inputText disabled="true" id="state" widgetVar="state1" value="#{adminManagedBean.address.pincode.state}" />
+                                    </div>
+                                </div>
+                            </div>
+                        </p:tab>
+                        <p:tab title="Additional">
+                            <p:panel rendered="#{adminManagedBean.roleId eq 2}">
+                                <div class="grid">
+                                    <div class="col-6">
+                                        <div align="left" class="pb-2">
+                                            <p:outputLabel for="allergy" value="Allergies" styleClass="text-lg" style="font-weight: bold" />
+                                        </div>
+                                        <div align="left">
+                                            <p:selectManyMenu id="allergy" showCheckbox="true" filter="true" value="#{adminManagedBean.allergiesCollection}">
+                                                <f:selectItems value="#{adminManagedBean.allergies}" var="a" itemLabel="#{a.allergyName}" itemValue="#{a}" />
+                                            </p:selectManyMenu>
+                                        </div>
+                                        <p:message for="allergy" style="width: 98%;" class="my-2" />
+                                    </div>
+                                    <div class="col-6">
+                                        <div align="left" class="pb-2">
+                                            <p:outputLabel for="diseases" value="Chronic Diseases" styleClass="text-lg" style="font-weight: bold" />
+                                        </div>
+                                        <div align="left">
+                                            <p:selectManyMenu id="diseases" showCheckbox="true" filter="true" value="#{adminManagedBean.chronicCollection}">
+                                                <f:selectItems value="#{adminManagedBean.chronicDiseases}" var="c" itemLabel="#{c.diseaseName}" itemValue="#{c}" />
+                                            </p:selectManyMenu>
+                                        </div>
+                                        <p:message for="diseases" style="width: 98%;" class="my-2" />
+                                    </div>
+                                </div>
+                            </p:panel>
+                            <p:panel rendered="#{adminManagedBean.roleId eq 3}">
+                                <div class="grid">
+                                    <div class="col-12">
+                                        <div align="left" class="pb-2">
+                                            <p:outputLabel for="licence" value="Licence No" styleClass="text-lg" style="font-weight: bold" />
+                                        </div>
+                                        <div align="left">
+                                            <p:inputText id="licence" style="width: 100%;" required="true" requiredMessage="enter licence no" value="#{adminManagedBean.licenceNo}" />
+                                        </div>
+                                        <p:message for="licence" style="width: 98%;" class="my-2" />
+                                    </div>
+                                </div>
+                                <div class="grid">
+                                    <div class="col-6">
+                                        <div align="left" class="pb-2">
+                                            <p:outputLabel for="degree" value="Degree" styleClass="text-lg" style="font-weight: bold" />
+                                        </div>
+                                        <div align="left">
+                                            <p:selectOneMenu style="width: 100%" id="degree" value="#{adminManagedBean.degreeId}" filter="true" required="true" requiredMessage="select degree">
+                                            <f:selectItem itemLabel="Select degree" itemValue="" noSelectionOption="true"/>
+                                            <f:selectItems value="#{adminManagedBean.degrees}" var="d" itemValue="#{d.degreeId.toString()}" itemLabel="#{d.degreeName}" />
+                                        </p:selectOneMenu>
+                                        </div>
+                                        <p:message for="degree" style="width: 98%;" class="my-2" />
+                                    </div>
+                                    <div class="col-6">
+                                        <div align="left" class="pb-2">
+                                            <p:outputLabel for="field" value="Field Of Study" styleClass="text-lg" style="font-weight: bold" />
+                                        </div>
+                                        <div align="left">
+                                            <p:selectOneMenu style="width: 100%" id="field" value="#{adminManagedBean.fieldOfStudy}" filter="true" required="true" requiredMessage="select field of study">
+                                            <f:selectItem itemLabel="Select field" itemValue="" noSelectionOption="true"/>
+                                            <f:selectItems value="#{adminManagedBean.fields}" var="f" itemValue="#{f.fieldId.toString()}" itemLabel="#{f.fieldName}" />
+                                        </p:selectOneMenu>
+                                        </div>
+                                        <p:message for="field" style="width: 98%;" class="my-2" />
+                                    </div>
+                                </div>
+                            </p:panel>
+                            <p:commandButton class="mt-2 mb-2" ajax="false" update="@form" value="Sign Up" style="width: 100%; background: #233565; border: #233565" actionListener="#{adminManagedBean.signUp()}"  />
+                        </p:tab>
+                    </p:wizard>
+                </h:form>
+                <h:form>
+                    <div class="mt-2"><p:outputLabel value="Already have an account? " /><h:commandLink action="#{adminManagedBean.redirectTo('login.jsf')}" value="Login" /></div>
+                </h:form>
+            </p:card>
+        </center>
     </h:body>
 </html>
 

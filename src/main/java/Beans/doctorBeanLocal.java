@@ -4,7 +4,6 @@
  */
 package Beans;
 
-import Entities.Allergies;
 import Entities.Appointments;
 import Entities.DoctorDetails;
 import Entities.PatientDoctorMapper;
@@ -31,6 +30,7 @@ public interface doctorBeanLocal {
     ResponseModel updatePatientDoctorMapperRecord(PatientDoctorMapper data);
     ResponseModel getAllAccessesByDoctorId(int id);
     ResponseModel addPatientAccess(int id, Users user);
+    ResponseModel<DoctorDetails> getDoctorDetailsByUserId(int id);
 //    ResponseModel deletePatientAccess(Users data);
 //    ResponseModel getAllergyByPatient(Users data);
 //    ResponseModel addNewAllergyToPatient(Allergies allergy, Users user);

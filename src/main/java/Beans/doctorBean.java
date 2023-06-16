@@ -331,4 +331,29 @@ public class doctorBean implements doctorBeanLocal {
 //    public ResponseModel deleteAllergyFromPatient(Allergies allergy, Users user) {
 //        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
 //    }
+
+    @Override
+    public ResponseModel<DoctorDetails> getDoctorDetailsByUserId(int id) {
+        ResponseModel<DoctorDetails> res = new ResponseModel<>();
+        try {
+            if (String.valueOf(id).isEmpty() || id == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            res.data = (DoctorDetails) em.createNamedQuery("DoctorDetails.findByUserId").setParameter("userId", id).getSingleResult();
+            if (res.data != null) {
+                res.status = true;
+                return res;
+            } else {
+                res.status = false;
+                res.message = "Doctor not found";
+                return res;
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+            return res;
+        }
+    }
 }

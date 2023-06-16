@@ -37,7 +37,7 @@
                             </p:column>
                             <p:column style="text-align: right; padding-right: 3rem">
                                 <p:growl id="message" showDetail="true"/>
-                                <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-blood-group-content"
+                                <p:commandButton icon="fa fa-pencil" update=":dialogs:manage-blood-group-content"
                                                  oncomplete="PF('manageBloodGroupDialog').show()"
                                                  styleClass="edit-button rounded-button" style="background: #233565; border: #233565" process="@this">
                                     <f:setPropertyActionListener value="#{bloodGroup}" target="#{adminManagedBean.selectedBloodGroup}" />
