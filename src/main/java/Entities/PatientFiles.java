@@ -24,7 +24,7 @@ import javax.validation.constraints.Size;
 
 /**
  *
- * @author admin
+ * @author krdmo
  */
 @Entity
 @Table(name = "patient_files", catalog = "ehrsystem", schema = "")
@@ -103,20 +103,20 @@ public class PatientFiles implements Serializable {
         this.reportDate = reportDate;
     }
 
-    public MedicalReportCategories getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(MedicalReportCategories categoryId) {
-        this.categoryId = categoryId;
-    }
-
     public PatientDoctorMapper getPatientDoctorMapperId() {
         return patientDoctorMapperId;
     }
 
     public void setPatientDoctorMapperId(PatientDoctorMapper patientDoctorMapperId) {
         this.patientDoctorMapperId = patientDoctorMapperId;
+    }
+
+    public MedicalReportCategories getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(MedicalReportCategories categoryId) {
+        this.categoryId = categoryId;
     }
 
     @Override

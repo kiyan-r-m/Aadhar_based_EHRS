@@ -34,9 +34,10 @@
                 color: #FFFFFF;
             }
         </style>
+        <h:outputStylesheet library="css" name="main.css"/>
     </h:head>
-    <h:body style="background-color: whitesmoke">
-        <nav class="navbar navbar-expand-lg" style="background: #233565; padding: 0.5rem 3rem 0.5rem 2rem;z-index: 2;position: fixed;width: 100%;">
+    <h:body class="quicksand-font-300">
+        <nav class="navbar navbar-expand-lg" style="background: #233565; padding: 0.5rem 3rem 0.5rem 2rem; margin-bottom: 2rem">
             <div class="container-fluid flex justify-content-between">
                 <button id="sb" value="sidebar" title="sidebar" onclick="PF('sidebar').show()" style="background: #233565; color: #FFFFFF" class="btn" ><i class="pi pi-bars" style="font-size: 1.6rem"></i></button>
                 <!--<div class="text-white fw-bold"> <i class="fa fa-user-circle fs-3 p-2 " /> Welcome, ${adminManagedBean.username} </div>-->
@@ -50,36 +51,30 @@
                 </h:form>
             </div>
         </nav>
-        <div class="p-4" style="padding-top: 5rem !important">
-            <ui:insert name="content" />
-        </div>
+        <ui:insert name="content" />
         <h:form>
-            <p:dialog header="Change Password" minHeight="40" width="25rem" showEffect="fade" modal="true" widgetVar="manageChangePasswordDialog" responsive="true">
+            <p:dialog header="Change Password" minHeight="40" width="25rem" showEffect="fade" modal="true" widgetVar="manageChangePasswordDialog" responsive="true">  
                 <p:outputPanel id="manage-change-password-content" class="ui-fluid">
                     <div class="field">
                         <p:outputLabel for="old" value="Old Password" styleClass="text-lg" />
-                        <p:password id="old" style="width: 100%" required="true" validatorMessage="Please enter old password properly" requiredMessage="Please enter old password" value="#{passwordManagedBean.oldPassword}" >
+                        <p:password id="old" style="width: 100%" required="true" validatorMessage="Please enter old password properly" requiredMessage="Please enter old password" value="#{forgotPasswordManagedBean.oldPassword}" >
                             <f:validateRegex pattern="^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,}$"  />
                         </p:password>
                         <p:message for="old" style="width: 98%;" class="my-2" />
-                    </div>
-                    <div class="field">
                         <p:outputLabel for="password" value="Password" styleClass="text-lg" />
-                        <p:password id="password" style="width: 100%" required="true" validatorMessage="Please enter new password properly" requiredMessage="Please enter new password" value="#{passwordManagedBean.password}" >
+                        <p:password id="password" style="width: 100%" required="true" validatorMessage="Please enter new password properly" requiredMessage="Please enter new password" value="#{forgotPasswordManagedBean.password}" >
                             <f:validateRegex pattern="^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,}$"  />
                         </p:password>
                         <p:message for="password" style="width: 98%;" class="my-2" />
-                    </div>
-                    <div class="field">
                         <p:outputLabel for="confirm" value="Confirm Password" styleClass="text-lg" style="font-weight: bold" />
-                        <p:password id="confirm" style="width: 100%" required="true" validatorMessage="Please enter confirm password properly" requiredMessage="Please enter confirm password" value="#{passwordManagedBean.confirmPassword}" >
+                        <p:password id="confirm" style="width: 100%" required="true" validatorMessage="Please enter confirm password properly" requiredMessage="Please enter confirm password" value="#{forgotPasswordManagedBean.confirmPassword}" >
                             <f:validator validatorId="confirmPasswordValidator"  />
                         </p:password>
                         <p:message for="confirm" style="width: 98%;" class="my-2" />
                     </div>
                 </p:outputPanel>
                 <f:facet name="footer">
-                    <p:commandButton  value="Save" icon="pi pi-check" actionListener="#{passwordManagedBean.changePassword()}"
+                    <p:commandButton  value="Save" icon="pi pi-check" actionListener="#{forgotPasswordManagedBean.changePassword()}"
                                       update="manage-change-password-content msgs" process="manage-change-password-content @this" />
                     <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageChangePasswordDialog').hide()"
                                      class="ui-button-secondary" type="button" />
@@ -92,43 +87,20 @@
                 <h:link outcome="home.jsf"><p:graphicImage value="../images/Health-crop.png" width="100%"/></h:link>
                 <h:form style="margin-top: 2rem">
                     <div style="margin: 0 0 0 3rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('users.jsf')}" class="text-white">
-                            <i class="pi pi-user fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="users" />
+                        <p:commandLink action="#{adminManagedBean.redirectTo('timeline.jsf')}" class="text-white">
+                            <i class="pi pi-clock fs-5 pr-2 py-2" />
+                            <p:outputLabel class="fs-6 py-2" value="Timeline" />
                         </p:commandLink>
                     </div>
                     <div style="margin: 0 0 0 3rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('diseases.jsf')}" class="text-white">
-                            <i class="fa fa-viruses fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="diseases" />
-                        </p:commandLink>
-                    </div>
-                    <div style="margin: 0 0 0 2.7rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('symptoms.jsf')}" class="text-white">
-                            <p:graphicImage value="../images/symptoms.svg"/>
-                            <p:outputLabel class="fs-6 pl-1 py-2" value="symptoms" />
-                        </p:commandLink>
-                    </div>
-                    <div style="margin: 0 0 0 3rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('medications.jsf')}" class="text-white">
-                            <i class="fas fa-pills fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="medications" />
-                        </p:commandLink>
-                    </div>
-                    <div style="margin: 0 0 0 3rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('bloodGroups.jsf')}" class="text-white">
-                            <i class="fa fa-droplet fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="blood-groups"/>
-                        </p:commandLink>
-                    </div>
-                    <div style="margin: 0 0 0 3rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('fieldOfStudies.jsf')}" class="text-white">
-                            <i class="fa fa-graduation-cap fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="field-of-study"/>
+                        <p:commandLink action="#{adminManagedBean.redirectTo('accesses.jsf')}" class="text-white">
+                            <i class="pi pi-key fs-5 pr-2 py-2" />
+                            <p:outputLabel class="fs-6 py-2" value="Accesses" />
                         </p:commandLink>
                     </div>
                 </h:form>
             </div>
-        </p:sidebar>
+        </p:sidebar>  
     </h:body>
 </html>
+

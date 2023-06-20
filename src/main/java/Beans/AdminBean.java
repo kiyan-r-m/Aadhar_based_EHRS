@@ -1643,7 +1643,6 @@ public class AdminBean implements AdminBeanLocal {
     @Override
     public Collection<DateWiseCaseFrequency> getCasesFrequency(String disease, LocalDate startDate, String state) {
         Collection<DateWiseCaseFrequency> res = new ArrayList<>();
-
         StoredProcedureQuery qry = em.createNamedStoredProcedureQuery("frequencyByDiseaseDateState");
         qry.setParameter("diseaseval", disease);
 

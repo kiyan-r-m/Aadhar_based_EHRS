@@ -24,7 +24,7 @@ import javax.validation.constraints.Size;
 
 /**
  *
- * @author admin
+ * @author krdmo
  */
 @Entity
 @Table(name = "patient_disease_medication", catalog = "ehrsystem", schema = "")

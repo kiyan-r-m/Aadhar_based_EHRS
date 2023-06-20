@@ -1033,4 +1033,36 @@ public class userBean implements userBeanLocal {
         }
         return res;
     }
+
+    @Override
+    public ResponseModel<ArrayList<DoctorNotes>> getNotesById(int id) {
+        ResponseModel<ArrayList<DoctorNotes>> res = new ResponseModel<>();
+        try{
+            PatientDoctorMapper pd = em.find(PatientDoctorMapper.class, id);
+            ArrayList<DoctorNotes> arr = new ArrayList<>(pd.getDoctorNotesCollection());
+            res.data = arr;
+            res.status = true;
+        }
+        catch(Exception e)
+        {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel<PatientDoctorMapper> getPatientDoctorMapperById(int id) {
+        ResponseModel<PatientDoctorMapper> res = new ResponseModel<>();
+        try{
+            res.data = em.find(PatientDoctorMapper.class, id);
+            res.status = true;
+        }
+        catch(Exception e)
+        {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
 }
