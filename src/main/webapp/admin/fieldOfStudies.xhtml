@@ -16,7 +16,6 @@
     <h:body>
         <ui:composition template="adminPanel.xhtml">
             <ui:define name="content">
-                <div class="container">
                     <h:form>
                         <p:dataTable id="fieldOfStudyTable" widgetVar="dtFieldOfStudies" var="fieldOfStudy" value="#{adminManagedBean.getAllFieldOfStudies()}" styleClass="field-of-studies-table" paginator="true" rows="5" paginatorPosition="bottom">
                             <f:facet name="header">
@@ -41,7 +40,7 @@
                             </p:column>
                             <p:column style="text-align: right; padding-right: 3rem">
                                 <p:growl id="message" showDetail="true"/>
-                                <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-field-of-study-content"
+                                <p:commandButton icon="fa fa-pencil" update=":dialogs:manage-field-of-study-content"
                                                  oncomplete="PF('manageFieldOfStudyDialog').show()" style="background-color: #233565; border: #233565"
                                                  styleClass="edit-button rounded-button ui-button-primary" process="@this">
                                     <f:setPropertyActionListener value="#{fieldOfStudy}" target="#{adminManagedBean.selectedFieldOfStudy}" />
@@ -79,7 +78,6 @@
                         </p:dialog>
                         <p:growl id="message1" showDetail="true" rendered="#{not facesContext.validationFailed}" />
                     </h:form>
-                </div>
             </ui:define>
         </ui:composition>
     </h:body>

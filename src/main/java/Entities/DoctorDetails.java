@@ -5,6 +5,7 @@
 package Entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
@@ -33,6 +34,7 @@ import javax.validation.constraints.Size;
 @Table(name = "doctor_details", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "DoctorDetails.findAll", query = "SELECT d FROM DoctorDetails d"),
+    @NamedQuery(name = "DoctorDetails.findByUserId", query = "SELECT d FROM DoctorDetails d WHERE d.userId.userId = :userId"),
     @NamedQuery(name = "DoctorDetails.findByDoctorId", query = "SELECT d FROM DoctorDetails d WHERE d.doctorId = :doctorId")})
 public class DoctorDetails implements Serializable {
 
@@ -53,16 +55,17 @@ public class DoctorDetails implements Serializable {
     @JsonbTransient
     private Collection<Users> usersCollection;
     @OneToMany(mappedBy = "doctorId")
+    @JsonbTransient
     private Collection<Appointments> appointmentsCollection;
     @JoinColumn(name = "degree_id", referencedColumnName = "degree_id")
     @ManyToOne
     private Degrees degreeId;
-    @JoinColumn(name = "field_of_study_id", referencedColumnName = "field_id")
-    @ManyToOne
-    private FieldOfStudy fieldOfStudyId;
     @JoinColumn(name = "education_level_id", referencedColumnName = "level_id")
     @ManyToOne
     private EducationLevel educationLevelId;
+    @JoinColumn(name = "field_of_study_id", referencedColumnName = "field_id")
+    @ManyToOne
+    private FieldOfStudy fieldOfStudyId;
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
     @ManyToOne
     private Users userId;
@@ -71,10 +74,12 @@ public class DoctorDetails implements Serializable {
     private Collection<PatientDoctorMapper> patientDoctorMapperCollection;
 
     public DoctorDetails() {
+        this.usersCollection = new ArrayList<>();
     }
 
     public DoctorDetails(Integer doctorId) {
         this.doctorId = doctorId;
+        this.usersCollection = new ArrayList<>();
     }
 
     public Integer getDoctorId() {
@@ -117,20 +122,20 @@ public class DoctorDetails implements Serializable {
         this.degreeId = degreeId;
     }
 
-    public FieldOfStudy getFieldOfStudyId() {
-        return fieldOfStudyId;
-    }
-
-    public void setFieldOfStudyId(FieldOfStudy fieldOfStudyId) {
-        this.fieldOfStudyId = fieldOfStudyId;
-    }
-
     public EducationLevel getEducationLevelId() {
         return educationLevelId;
     }
 
     public void setEducationLevelId(EducationLevel educationLevelId) {
         this.educationLevelId = educationLevelId;
+    }
+
+    public FieldOfStudy getFieldOfStudyId() {
+        return fieldOfStudyId;
+    }
+
+    public void setFieldOfStudyId(FieldOfStudy fieldOfStudyId) {
+        this.fieldOfStudyId = fieldOfStudyId;
     }
 
     public Users getUserId() {

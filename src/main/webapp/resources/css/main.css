@@ -2,7 +2,7 @@
 Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
 Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
 */
-/* 
+/*
     Created on : 07-May-2023, 3:37:42 PM
     Author     : admin
 */
@@ -23,7 +23,8 @@ body{
     /*background-image: url(../images/form3.png);*/
     background: linear-gradient(rgba(35, 53, 101, 0.5), rgba(0, 0, 0, 0.6)), url("../images/bg.png");
     background-repeat: no-repeat;
-    background-size: cover
+    background-size: cover;
+    background-attachment: fixed;
 }
 
 .quicksand-font-300 {

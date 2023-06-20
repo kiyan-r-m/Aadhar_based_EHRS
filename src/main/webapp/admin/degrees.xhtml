@@ -41,7 +41,7 @@
                             </p:column>
                             <p:column>
                                 <p:growl id="message" showDetail="true"/>
-                                <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-degree-content"
+                                <p:commandButton icon="fa fa-pencil" update=":dialogs:manage-degree-content"
                                                  oncomplete="PF('manageDegreeDialog').show()"
                                                  styleClass="edit-button rounded-button ui-button-primary" process="@this">
                                     <f:setPropertyActionListener value="#{degree}" target="#{adminManagedBean.selectedDegree}" />

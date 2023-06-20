@@ -8,13 +8,8 @@ import Entities.*;
 import ReportModels.BloodGroupFrequency;
 import ReportModels.DiseaseToFrequency;
 import ReportModels.DateWiseCaseFrequency;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -1720,5 +1715,18 @@ public class AdminBean implements AdminBeanLocal {
     public long getTotalChronicCases() {
          Object frequency = em.createNativeQuery("SELECT COUNT(*) FROM patient_doctor_mapper where disease_id IN(SELECT disease_id FROM diseases where disease_type = 0)").getSingleResult();
         return Long.parseLong(frequency.toString());
+    }
+
+    @Override
+    public ResponseModel<Collection<Diseases>> getAllChronicDiseases() {
+        ResponseModel<Collection<Diseases>> res = new ResponseModel<>();
+        try {
+            res.data = em.createNamedQuery("Diseases.findByDiseaseType").setParameter("diseaseType", true).getResultList();
+            res.status = true;
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
     }
 }

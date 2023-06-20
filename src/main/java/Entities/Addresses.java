@@ -34,17 +34,16 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Addresses.findByAddress", query = "SELECT a FROM Addresses a WHERE a.address = :address")})
 public class Addresses implements Serializable {
 
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "address")
-    private String address;
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "address_id")
     private Integer addressId;
+    @Lob
+    @Size(max = 65535)
+    @Column(name = "address")
+    private String address;
     @JoinColumn(name = "pincode", referencedColumnName = "pincode")
     @ManyToOne
     private Pincodes pincode;
@@ -79,6 +78,13 @@ public class Addresses implements Serializable {
         this.addressId = addressId;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
     public Pincodes getPincode() {
         return pincode;
@@ -119,14 +125,6 @@ public class Addresses implements Serializable {
     @Override
     public String toString() {
         return "Entities.Addresses[ addressId=" + addressId + " ]";
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
     
 }
