@@ -59,10 +59,16 @@ public class PatientFiles implements Serializable {
     private PatientDoctorMapper patientDoctorMapperId;
 
     public PatientFiles() {
+        this.categoryId = new MedicalReportCategories();
+        this.reportDate = new Date();
+        this.patientDoctorMapperId = new PatientDoctorMapper();
     }
 
     public PatientFiles(Integer fileId) {
         this.fileId = fileId;
+        this.categoryId = new MedicalReportCategories();
+        this.reportDate = new Date();
+        this.patientDoctorMapperId = new PatientDoctorMapper();
     }
 
     public Integer getFileId() {

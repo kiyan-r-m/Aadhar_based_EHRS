@@ -52,10 +52,14 @@ public class DoctorNotes implements Serializable {
     private PatientDoctorMapper patientDoctorMapperId;
 
     public DoctorNotes() {
+        this.patientDoctorMapperId = new PatientDoctorMapper();
+        this.createdDate = new Date();
     }
 
     public DoctorNotes(Integer noteId) {
         this.noteId = noteId;
+        this.patientDoctorMapperId = new PatientDoctorMapper();
+        this.createdDate = new Date();
     }
 
     public Integer getNoteId() {

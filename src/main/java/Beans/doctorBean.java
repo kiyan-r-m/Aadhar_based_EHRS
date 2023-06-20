@@ -6,10 +6,15 @@ package Beans;
 
 import Entities.Appointments;
 import Entities.DoctorDetails;
+import Entities.DoctorNotes;
+import Entities.MedicalReportCategories;
+import Entities.PatientDiseaseMedication;
 import Entities.PatientDoctorMapper;
+import Entities.PatientFiles;
 import Entities.ResponseModel;
 import Entities.Users;
 import java.util.Collection;
+import java.util.Date;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -199,18 +204,32 @@ public class doctorBean implements doctorBeanLocal {
     @Override
     public ResponseModel addPatientDoctorMapperRecord(PatientDoctorMapper data) {
         ResponseModel res = new ResponseModel();
-        PatientDoctorMapper addData = em.find(PatientDoctorMapper.class, data.getPatientDoctorMapperId());
+        Collection<PatientDoctorMapper> addData = em.createNamedQuery("PatientDoctorMapper.findByPatientIdDoctorIdDiseaseIdStartDate").setParameter("patientId", data.getPatientId().getUserId()).setParameter("doctorId", data.getDoctorId().getDoctorId()).setParameter("diseaseId", data.getDiseaseId().getDiseaseId()).setParameter("startDate", data.getStartDate()).getResultList();
         try {
             if (data == null) {
                 res.status = false;
                 res.message = "input invalid";
                 return res;
             } else {
-                if(addData == null)
+                if(addData.isEmpty())
                 {
-                    em.persist(data);
+                    PatientDoctorMapper pdm = new PatientDoctorMapper();
+                    pdm.setStartDate(new Date());
+                    pdm.setPatientId(data.getPatientId());
+                    pdm.setDiseaseId(data.getDiseaseId());
+                    pdm.setDoctorId(data.getDoctorId());
+                    em.persist(pdm);
+                    em.flush();
+                    for (PatientDiseaseMedication patientDiseaseMedication : data.getPatientDiseaseMedicationCollection()) {
+                        patientDiseaseMedication.setPatientDoctorMapperId(pdm);
+                    }
+                    pdm.setPatientDiseaseMedicationCollection(data.getPatientDiseaseMedicationCollection());
+                    for (PatientFiles patientFiles : data.getPatientFilesCollection()) {
+                        patientFiles.setPatientDoctorMapperId(pdm);
+                    }
+                    pdm.setPatientFilesCollection(data.getPatientFilesCollection());
+                    em.merge(pdm);
                     res.status = true;
-                    res.message = "input success";
                 }
             }
         } catch (Exception e) {
@@ -265,7 +284,7 @@ public class doctorBean implements doctorBeanLocal {
     }
 
     @Override
-    public ResponseModel getAllAccessesByDoctorId(int id) {
+    public ResponseModel<Collection<Users>> getAllAccessesByDoctorId(int id) {
         ResponseModel res = new ResponseModel();
         DoctorDetails data = em.find(DoctorDetails.class, id);
         Collection<Users> users = data.getUsersCollection();
@@ -301,7 +320,6 @@ public class doctorBean implements doctorBeanLocal {
                 userdata.getDoctorDetailsCollection().add(doctor);
                 users.add(user);
                 res.status = true;
-                res.message = "Input Success";
             }
             else
             {
@@ -355,5 +373,164 @@ public class doctorBean implements doctorBeanLocal {
             res.message = ex.getMessage();
             return res;
         }
+    }
+
+    @Override
+    public ResponseModel<Collection<MedicalReportCategories>> getAllReportCategories() {
+        ResponseModel<Collection<MedicalReportCategories>> res = new ResponseModel<>();
+        try {
+            res.data = em.createNamedQuery("MedicalReportCategories.findAll").getResultList();
+            res.status = true;
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel addNotes(DoctorNotes data) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (data == null) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (data.getPatientDoctorMapperId().getPatientDoctorMapperId() != 0) {
+                PatientDoctorMapper pdm = em.find(PatientDoctorMapper.class, data.getPatientDoctorMapperId().getPatientDoctorMapperId());
+                if (pdm != null) {
+                    data.setPatientDoctorMapperId(pdm);
+                    em.persist(data);
+                    res.status = true;
+                } else {
+                    res.status = false;
+                    res.message = "Something went wrong";
+                }
+            } else {
+                res.status = false;
+                res.message = "Something went wrong";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel addMedication(Collection<PatientDiseaseMedication> data) {
+        ResponseModel res = new ResponseModel();
+        PatientDoctorMapper pdm = em.find(PatientDoctorMapper.class, data.iterator().next().getPatientDoctorMapperId().getPatientDoctorMapperId());
+        try {
+            if (data == null) {
+                res.status = false;
+                res.message = "input invalid";
+                return res;
+            } else {
+                if(pdm != null)
+                {
+                    for (PatientDiseaseMedication patientDiseaseMedication : data) {
+                        patientDiseaseMedication.setPatientDoctorMapperId(pdm);
+                    }
+                    pdm.setPatientDiseaseMedicationCollection(data);
+                    em.merge(pdm);
+                    res.status = true;
+                } else {
+                    res.status = false;
+                    res.message = "Disease access not found";
+                }
+            }
+        } catch (Exception e) {
+            res.message = e.getMessage();
+            res.status = false;
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel addPatientReports(Collection<PatientFiles> data) {
+        ResponseModel res = new ResponseModel();
+        PatientDoctorMapper pdm = em.find(PatientDoctorMapper.class, data.iterator().next().getPatientDoctorMapperId().getPatientDoctorMapperId());
+        try {
+            if (data == null) {
+                res.status = false;
+                res.message = "input invalid";
+                return res;
+            } else {
+                if(pdm != null)
+                {
+                    for (PatientFiles patientFiles : data) {
+                        patientFiles.setPatientDoctorMapperId(pdm);
+                    }
+                    pdm.setPatientFilesCollection(data);
+                    em.merge(pdm);
+                    res.status = true;
+                } else {
+                    res.status = false;
+                    res.message = "Disease access not found";
+                }
+            }
+        } catch (Exception e) {
+            res.message = e.getMessage();
+            res.status = false;
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel updateMedication(PatientDiseaseMedication data) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (data == null) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+
+            if (em.find(PatientDiseaseMedication.class, data.getPatientDiseaseMedicationId())!= null) {
+                PatientDiseaseMedication pdm = em.find(PatientDiseaseMedication.class, data.getPatientDiseaseMedicationId());
+                pdm.setStartDate(data.getStartDate());
+                pdm.setEndDate(data.getEndDate());
+                pdm.setFrequency(data.getFrequency());
+                em.merge(pdm);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "Medication not found";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel<Collection<PatientDiseaseMedication>> getMedicationsByPatientDoctorId(int id) {
+        ResponseModel<Collection<PatientDiseaseMedication>> res = new ResponseModel<>();
+        try {
+            if (id == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+
+            if (em.find(PatientDoctorMapper.class, id)!= null) {
+                PatientDoctorMapper pdm = em.find(PatientDoctorMapper.class, id);
+                res.data = pdm.getPatientDiseaseMedicationCollection();
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "Medication not found";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
     }
 }

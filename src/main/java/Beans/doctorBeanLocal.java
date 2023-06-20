@@ -6,7 +6,11 @@ package Beans;
 
 import Entities.Appointments;
 import Entities.DoctorDetails;
+import Entities.DoctorNotes;
+import Entities.MedicalReportCategories;
+import Entities.PatientDiseaseMedication;
 import Entities.PatientDoctorMapper;
+import Entities.PatientFiles;
 import Entities.ResponseModel;
 import Entities.Users;
 import java.util.Collection;
@@ -28,7 +32,7 @@ public interface doctorBeanLocal {
     ResponseModel addPatientDoctorMapperRecord(PatientDoctorMapper data);
     ResponseModel getPatientDoctorMapperRecordByDoctorId(int id);
     ResponseModel updatePatientDoctorMapperRecord(PatientDoctorMapper data);
-    ResponseModel getAllAccessesByDoctorId(int id);
+    ResponseModel<Collection<Users>> getAllAccessesByDoctorId(int id);
     ResponseModel addPatientAccess(int id, Users user);
     ResponseModel<DoctorDetails> getDoctorDetailsByUserId(int id);
 //    ResponseModel deletePatientAccess(Users data);
@@ -47,4 +51,11 @@ public interface doctorBeanLocal {
     //ResponseModel<Collection<PatientChronicMapper>> getPatientChronicDiseases();
     //ResponseModel updatePatientChronicDisease();
     //ResponseModel removePatientChronicDisease(PatientChronicMapper data); 
+
+    ResponseModel<Collection<MedicalReportCategories>> getAllReportCategories();
+    ResponseModel addNotes(DoctorNotes data);
+    ResponseModel addMedication(Collection<PatientDiseaseMedication> data);
+    ResponseModel addPatientReports(Collection<PatientFiles> data);
+    ResponseModel updateMedication(PatientDiseaseMedication data);
+    ResponseModel<Collection<PatientDiseaseMedication>> getMedicationsByPatientDoctorId(int id);
 }

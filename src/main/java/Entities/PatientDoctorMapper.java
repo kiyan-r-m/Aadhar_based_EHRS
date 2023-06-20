@@ -38,6 +38,7 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "PatientDoctorMapper.findAll", query = "SELECT p FROM PatientDoctorMapper p"),
     @NamedQuery(name = "PatientDoctorMapper.findByPatientDoctorMapperId", query = "SELECT p FROM PatientDoctorMapper p WHERE p.patientDoctorMapperId = :patientDoctorMapperId"),
     @NamedQuery(name = "PatientDoctorMapper.findByStartDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.startDate = :startDate"),
+    @NamedQuery(name = "PatientDoctorMapper.findByPatientIdDoctorIdDiseaseIdStartDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.patientId.userId = :patientId AND p.doctorId.doctorId = :doctorId AND p.diseaseId.diseaseId = :diseaseId AND p.startDate = :startDate"),
     @NamedQuery(name = "PatientDoctorMapper.findByEndDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.endDate = :endDate")})
 @NamedStoredProcedureQueries({
     @NamedStoredProcedureQuery(name = "frequencyByDiseaseDateState",

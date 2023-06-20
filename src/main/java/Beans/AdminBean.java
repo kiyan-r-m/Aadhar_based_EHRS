@@ -1721,7 +1721,7 @@ public class AdminBean implements AdminBeanLocal {
     public ResponseModel<Collection<Diseases>> getAllChronicDiseases() {
         ResponseModel<Collection<Diseases>> res = new ResponseModel<>();
         try {
-            res.data = em.createNamedQuery("Diseases.findByDiseaseType").setParameter("diseaseType", 1).getResultList();
+            res.data = em.createNamedQuery("Diseases.findByDiseaseType").setParameter("diseaseType", true).getResultList();
             res.status = true;
         } catch (Exception e) {
             res.status = false;

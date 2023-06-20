@@ -5,6 +5,7 @@
 package Entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
@@ -51,8 +52,10 @@ public class DoctorDetails implements Serializable {
         @JoinColumn(name = "doctor_id", referencedColumnName = "doctor_id")}, inverseJoinColumns = {
         @JoinColumn(name = "patient_id", referencedColumnName = "userId")})
     @ManyToMany
+    @JsonbTransient
     private Collection<Users> usersCollection;
     @OneToMany(mappedBy = "doctorId")
+    @JsonbTransient
     private Collection<Appointments> appointmentsCollection;
     @JoinColumn(name = "degree_id", referencedColumnName = "degree_id")
     @ManyToOne
@@ -71,10 +74,12 @@ public class DoctorDetails implements Serializable {
     private Collection<PatientDoctorMapper> patientDoctorMapperCollection;
 
     public DoctorDetails() {
+        this.usersCollection = new ArrayList<>();
     }
 
     public DoctorDetails(Integer doctorId) {
         this.doctorId = doctorId;
+        this.usersCollection = new ArrayList<>();
     }
 
     public Integer getDoctorId() {
