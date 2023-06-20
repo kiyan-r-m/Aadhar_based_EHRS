@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Accesses</title>
+        <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
+    </h:head>
+    <h:body>
+        <ui:composition template="userPanel.xhtml">
+            <ui:define name="content">
+                <h:form class="p-3">
+                    <p:dataTable id="AccessTable" widgetVar="dtAccess" var="access" value="#{userManagedBean.myAccess}" styleClass="" paginator="true" rows="5" paginatorPosition="bottom" stickyHeader="true">
+                        <f:facet name="header">
+                            <div class="card p-3">
+                                <div class="flex justify-content-between flex-wrap" >
+                                    <div style="font-weight: bold" class="text-xl ">Medical Professionals who can see your treatment data</div>
+
+                                    <div class="filter-container ui-input-icon-left mx-3"> 
+                                        <i class="pi pi-search"></i>
+                                        <p:inputText id="globalFilter" onkeyup="PF('dtAccess').filter()" placeholder="Search" />
+                                    </div>
+
+                                </div>
+                            </div>
+                        </f:facet>
+                        <p:column headerText="Details" style="padding-left: 3rem" filterStyle="display: none" sortBy="#{access.userId.username}" filterBy="#{access.userId.username}">
+                            Dr.<h:outputText value="#{access.userId.username}"/>
+                        </p:column>
+                        <p:column style="text-align: right; padding-right: 3rem">
+                            <p:growl id="message" showDetail="true"/>
+                            <p:commandButton icon="pi pi-trash" action="#{userManagedBean.deleteAccess(access.doctorId)}" update="@form" class="ui-button-danger rounded-button mx-2">
+                                <p:confirm header="Confirmation" message="Are you sure you want to delete?" icon="pi pi-exclamation-triangle"/>
+                            </p:commandButton>
+                            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" />
+                            </p:confirmDialog>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+
+
+</html>
+

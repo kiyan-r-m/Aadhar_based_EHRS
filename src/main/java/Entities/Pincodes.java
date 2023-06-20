@@ -5,6 +5,7 @@
 package Entities;
 
 import java.io.Serializable;
+import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,12 +15,13 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
 /**
  *
- * @author admin
+ * @author krdmo
  */
 @Entity
 @Table(name = "pincodes", catalog = "ehrsystem", schema = "")
@@ -42,6 +44,8 @@ public class Pincodes implements Serializable {
     @Size(max = 65535)
     @Column(name = "state")
     private String state;
+    @OneToMany(mappedBy = "pincode")
+    private Collection<Addresses> addressesCollection;
 
     public Pincodes() {
     }
@@ -72,6 +76,14 @@ public class Pincodes implements Serializable {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public Collection<Addresses> getAddressesCollection() {
+        return addressesCollection;
+    }
+
+    public void setAddressesCollection(Collection<Addresses> addressesCollection) {
+        this.addressesCollection = addressesCollection;
     }
 
     @Override

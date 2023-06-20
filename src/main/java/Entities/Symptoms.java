@@ -43,7 +43,6 @@ public class Symptoms implements Serializable {
     private String symptomName;
     @JsonbTransient
     @ManyToMany(mappedBy = "symptomsCollection")
-    
     private Collection<Diseases> diseasesCollection;
 
     public Symptoms() {

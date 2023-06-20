@@ -10,10 +10,12 @@ import Entities.Appointments;
 import Entities.BloodGroups;
 import Entities.Diseases;
 import Entities.DoctorDetails;
+import Entities.DoctorNotes;
 import Entities.PatientDoctorMapper;
 import Entities.ResponseModel;
 import Entities.Roles;
 import Entities.Users;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.Local;
 import javax.servlet.http.HttpServletRequest;
@@ -55,4 +57,6 @@ public interface userBeanLocal {
     ResponseModel<Users> getUserByUsernamePassword(String username, String password);
     ResponseModel removeUser(int id);
     ResponseModel<Collection<Roles>> getAllRoles();
+    ResponseModel<ArrayList<DoctorNotes>>getNotesById(int id);
+    ResponseModel<PatientDoctorMapper> getPatientDoctorMapperById(int id);
 }

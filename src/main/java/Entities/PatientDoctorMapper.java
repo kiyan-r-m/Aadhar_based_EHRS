@@ -6,6 +6,7 @@ package Entities;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -19,6 +20,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
@@ -35,7 +37,8 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "PatientDoctorMapper.findAll", query = "SELECT p FROM PatientDoctorMapper p"),
     @NamedQuery(name = "PatientDoctorMapper.findByPatientDoctorMapperId", query = "SELECT p FROM PatientDoctorMapper p WHERE p.patientDoctorMapperId = :patientDoctorMapperId"),
     @NamedQuery(name = "PatientDoctorMapper.findByStartDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.startDate = :startDate"),
-    @NamedQuery(name = "PatientDoctorMapper.findByEndDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.endDate = :endDate")})
+    @NamedQuery(name = "PatientDoctorMapper.findByEndDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.endDate = :endDate"),
+    @NamedQuery(name = "PatientDoctorMapper.findByPatientId", query = "SELECT p FROM PatientDoctorMapper p WHERE p.patientId = :patientId")})
 @NamedStoredProcedureQueries({
     @NamedStoredProcedureQuery(name = "frequencyByDiseaseDateState",
             procedureName = "ehrsystem.frequencyByDiseaseDateState", parameters = {
@@ -77,6 +80,12 @@ public class PatientDoctorMapper implements Serializable {
     @JoinColumn(name = "patient_id", referencedColumnName = "userId")
     @ManyToOne(optional = false)
     private Users patientId;
+    @OneToMany(mappedBy = "patientDoctorMapperId")
+    private Collection<PatientDiseaseMedication> patientDiseaseMedicationCollection;
+    @OneToMany(mappedBy = "patientDoctorMapperId")
+    private Collection<PatientFiles> patientFilesCollection;
+    @OneToMany(mappedBy = "patientDoctorMapperId")
+    private Collection<DoctorNotes> doctorNotesCollection;
 
     public PatientDoctorMapper() {
     }
@@ -131,6 +140,30 @@ public class PatientDoctorMapper implements Serializable {
 
     public void setPatientId(Users patientId) {
         this.patientId = patientId;
+    }
+
+    public Collection<PatientDiseaseMedication> getPatientDiseaseMedicationCollection() {
+        return patientDiseaseMedicationCollection;
+    }
+
+    public void setPatientDiseaseMedicationCollection(Collection<PatientDiseaseMedication> patientDiseaseMedicationCollection) {
+        this.patientDiseaseMedicationCollection = patientDiseaseMedicationCollection;
+    }
+
+    public Collection<PatientFiles> getPatientFilesCollection() {
+        return patientFilesCollection;
+    }
+
+    public void setPatientFilesCollection(Collection<PatientFiles> patientFilesCollection) {
+        this.patientFilesCollection = patientFilesCollection;
+    }
+
+    public Collection<DoctorNotes> getDoctorNotesCollection() {
+        return doctorNotesCollection;
+    }
+
+    public void setDoctorNotesCollection(Collection<DoctorNotes> doctorNotesCollection) {
+        this.doctorNotesCollection = doctorNotesCollection;
     }
 
     @Override

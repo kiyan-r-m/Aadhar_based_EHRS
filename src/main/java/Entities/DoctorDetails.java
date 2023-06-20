@@ -57,12 +57,12 @@ public class DoctorDetails implements Serializable {
     @JoinColumn(name = "degree_id", referencedColumnName = "degree_id")
     @ManyToOne
     private Degrees degreeId;
-    @JoinColumn(name = "field_of_study_id", referencedColumnName = "field_id")
-    @ManyToOne
-    private FieldOfStudy fieldOfStudyId;
     @JoinColumn(name = "education_level_id", referencedColumnName = "level_id")
     @ManyToOne
     private EducationLevel educationLevelId;
+    @JoinColumn(name = "field_of_study_id", referencedColumnName = "field_id")
+    @ManyToOne
+    private FieldOfStudy fieldOfStudyId;
     @JoinColumn(name = "user_id", referencedColumnName = "userId")
     @ManyToOne
     private Users userId;
@@ -117,20 +117,20 @@ public class DoctorDetails implements Serializable {
         this.degreeId = degreeId;
     }
 
-    public FieldOfStudy getFieldOfStudyId() {
-        return fieldOfStudyId;
-    }
-
-    public void setFieldOfStudyId(FieldOfStudy fieldOfStudyId) {
-        this.fieldOfStudyId = fieldOfStudyId;
-    }
-
     public EducationLevel getEducationLevelId() {
         return educationLevelId;
     }
 
     public void setEducationLevelId(EducationLevel educationLevelId) {
         this.educationLevelId = educationLevelId;
+    }
+
+    public FieldOfStudy getFieldOfStudyId() {
+        return fieldOfStudyId;
+    }
+
+    public void setFieldOfStudyId(FieldOfStudy fieldOfStudyId) {
+        this.fieldOfStudyId = fieldOfStudyId;
     }
 
     public Users getUserId() {

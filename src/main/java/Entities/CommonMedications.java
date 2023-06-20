@@ -17,12 +17,13 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
 /**
  *
- * @author admin
+ * @author krdmo
  */
 @Entity
 @Table(name = "common_medications", catalog = "ehrsystem", schema = "")
@@ -44,6 +45,8 @@ public class CommonMedications implements Serializable {
     @ManyToMany(mappedBy = "commonMedicationsCollection")
     @JsonbTransient
     private Collection<Diseases> diseasesCollection;
+    @OneToMany(mappedBy = "medicationId")
+    private Collection<PatientDiseaseMedication> patientDiseaseMedicationCollection;
 
     public CommonMedications() {
     }
@@ -74,6 +77,14 @@ public class CommonMedications implements Serializable {
 
     public void setDiseasesCollection(Collection<Diseases> diseasesCollection) {
         this.diseasesCollection = diseasesCollection;
+    }
+
+    public Collection<PatientDiseaseMedication> getPatientDiseaseMedicationCollection() {
+        return patientDiseaseMedicationCollection;
+    }
+
+    public void setPatientDiseaseMedicationCollection(Collection<PatientDiseaseMedication> patientDiseaseMedicationCollection) {
+        this.patientDiseaseMedicationCollection = patientDiseaseMedicationCollection;
     }
 
     @Override
