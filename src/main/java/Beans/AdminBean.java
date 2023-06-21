@@ -1704,6 +1704,20 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
+    public Collection<String> getStates() {
+        Collection<String> res = new ArrayList<>();
+        StoredProcedureQuery qry = em.createStoredProcedureQuery("getStatesList");
+        qry.execute();
+        List<Object[]> datalist = qry.getResultList();
+        for (Object[] data : datalist) {
+            String state = data[0].toString();
+            res.add(state);
+
+        }
+        return res;
+    }
+
+    @Override
     public long getTotalAccess() {
         Object frequency = em.createNativeQuery("select count(*) as frequency from ehrsystem.patient_access_mapper").getSingleResult();
         return Long.parseLong(frequency.toString());
@@ -1717,7 +1731,41 @@ public class AdminBean implements AdminBeanLocal {
 
     @Override
     public long getTotalChronicCases() {
-         Object frequency = em.createNativeQuery("SELECT COUNT(*) FROM patient_doctor_mapper where disease_id IN(SELECT disease_id FROM diseases where disease_type = 0)").getSingleResult();
+        Object frequency = em.createNativeQuery("SELECT COUNT(*) FROM patient_doctor_mapper where disease_id IN(SELECT disease_id FROM diseases where disease_type = 0)").getSingleResult();
         return Long.parseLong(frequency.toString());
+    }
+
+    @Override
+    public Collection<String> getCities(String state) {
+        Collection<String> res = new ArrayList<>();
+        StoredProcedureQuery qry = em.createNamedStoredProcedureQuery("getCitiesList").setParameter("stateval", state);
+        qry.execute();
+        List<Object[]> datalist = qry.getResultList();
+        for (Object[] data : datalist) {
+            String city = data[0].toString();
+            res.add(city);
+
+        }
+        return res;
+    }
+
+    @Override
+    public long getDistrictCountWithDoctors() {
+        Object frequency = em.createNativeQuery("select count(district) from pincodes where pincode in(select pincode from addresses where address_id in (select address_id from users where role_id=3));").getSingleResult();
+        return Long.parseLong(frequency.toString());
+    }
+
+    @Override
+    public Collection<String> getDiseases() {
+        Collection<String> res = new ArrayList<>();
+        StoredProcedureQuery qry = em.createStoredProcedureQuery("getDiseasesList");
+        qry.execute();
+        List<Object[]> datalist = qry.getResultList();
+        for (Object[] data : datalist) {
+            String disease = data[0].toString();
+            res.add(disease);
+
+        }
+        return res;
     }
 }

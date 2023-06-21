@@ -2,17 +2,63 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
         <title>Facelet Title</title>
         <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
 
     </h:head>
     <h:body>
-        <div class="card">
-            
-            <p:barChart model="#{adminReportsManagedBean.mixedModel}" style="width: 100%; height: 450px;"/>
-        </div>
+        <ui:composition template="adminPanel.xhtml">
+            <ui:define name="content">
+                <h:form>
+                    <div class="card m-3">
+                        <div class=" p-2 flex justify-content-between flex-wrap flex-wrap">
+                            <div class="flex align-items-center justify-content-center">
+                                <p:selectOneMenu filter="true" value="#{adminReportsManagedBean.state}" id="state" style="width: 100% !important">
+                                    <f:selectItem itemLabel="All States" itemValue="#{null}" />
+                                    <f:selectItems value="#{adminReportsManagedBean.states}" />
+                                    <f:ajax listener="#{adminReportsManagedBean.getCitiesByState()}" execute="@this" render="city"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="flex align-items-center justify-content-center">
+                                <p:selectOneMenu filter="true" value="#{adminReportsManagedBean.city}" id="city" style="width: 100% !important">
+                                    <f:selectItem itemLabel="All districts" itemValue="#{null}" />
+                                    <f:selectItems value="#{adminReportsManagedBean.cities}" />
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="flex align-items-center justify-content-center">
+                                <p:selectOneMenu value="#{adminReportsManagedBean.datedropdown}" id="datedropdown" style="width: 100% !important">
+                                    <f:selectItem itemLabel="last month" itemValue="last month" />
+                                    <f:selectItem itemLabel="last 6 months" itemValue="last 6 months" />
+                                    <f:selectItem itemLabel="last year" itemValue="last year" />
+                                    <f:selectItem itemLabel="last 5 years" itemValue="last 5 years" />
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="flex align-items-center justify-content-center">
+                                <p:selectOneMenu filter="true" value="#{adminReportsManagedBean.disease}" id="disease" style="width: 100% !important">
+                                    <f:selectItem itemLabel="All Diseases" itemValue="#{null}" />
+                                    <f:selectItems value="#{adminReportsManagedBean.diseases}" />
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="flex align-items-center justify-content-center">
+                                <p:commandButton value="search" icon="pi pi-search">
+                                    <f:ajax listener="#{adminReportsManagedBean.createCasesMixedModel()}" execute="@this" render="graph"/>
+                                </p:commandButton>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+                <div class="card m-3">
+
+                    <p:barChart model="#{adminReportsManagedBean.mixedModel}" style="width: 100%; height: 450px" id="graph">
+
+                    </p:barChart>
+                </div>
+            </ui:define>
+        </ui:composition>
     </h:body>
 </html>
 

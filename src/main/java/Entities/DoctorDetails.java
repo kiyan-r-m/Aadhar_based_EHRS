@@ -5,6 +5,7 @@
 package Entities;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Collection;
 import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
@@ -21,7 +22,11 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -34,6 +39,11 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "DoctorDetails.findAll", query = "SELECT d FROM DoctorDetails d"),
     @NamedQuery(name = "DoctorDetails.findByDoctorId", query = "SELECT d FROM DoctorDetails d WHERE d.doctorId = :doctorId")})
+@NamedStoredProcedureQueries({
+    @NamedStoredProcedureQuery(name = "getDistrictCountWithDoctors",
+            procedureName = "ehrsystem.getDistrictCountWithDoctors"
+    )
+})
 public class DoctorDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;

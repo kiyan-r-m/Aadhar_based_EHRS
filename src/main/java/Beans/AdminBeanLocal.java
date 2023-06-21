@@ -135,5 +135,9 @@ public interface AdminBeanLocal {
     public ResponseModel<Users> getUserById(int id);
     
     public ResponseModel<Allergies> getAllergyById(int id);
+    public Collection<String> getStates();
+    public Collection<String> getCities(String state);
+    public long getDistrictCountWithDoctors();
+    public Collection<String> getDiseases();
 }
 

@@ -20,6 +20,8 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
@@ -34,6 +36,11 @@ import javax.validation.constraints.Size;
     @NamedQuery(name = "Diseases.findAll", query = "SELECT d FROM Diseases d"),
     @NamedQuery(name = "Diseases.findByDiseaseId", query = "SELECT d FROM Diseases d WHERE d.diseaseId = :diseaseId"),
     @NamedQuery(name = "Diseases.findByDiseaseType", query = "SELECT d FROM Diseases d WHERE d.diseaseType = :diseaseType")})
+@NamedStoredProcedureQueries({
+    @NamedStoredProcedureQuery(name = "getDiseasesList",
+            procedureName = "ehrsystem.getDiseasesList"
+    )
+})
 public class Diseases implements Serializable {
 
     private static final long serialVersionUID = 1L;
