@@ -5,6 +5,7 @@
 package Entities;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Collection;
 import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
@@ -16,7 +17,11 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -29,6 +34,16 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "Pincodes.findAll", query = "SELECT p FROM Pincodes p"),
     @NamedQuery(name = "Pincodes.findByPincode", query = "SELECT p FROM Pincodes p WHERE p.pincode = :pincode")})
+@NamedStoredProcedureQueries({
+    @NamedStoredProcedureQuery(name = "getStatesList",
+            procedureName = "ehrsystem.getStatesList"
+    ),
+    @NamedStoredProcedureQuery(name = "getCitiesList",
+            procedureName = "ehrsystem.getCitiesList", parameters = {
+                @StoredProcedureParameter(mode = ParameterMode.IN, name = "stateval", type = String.class)
+            }
+    )
+})
 public class Pincodes implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -112,5 +127,5 @@ public class Pincodes implements Serializable {
     public String toString() {
         return "Entities.Pincodes[ pincode=" + pincode + " ]";
     }
-    
+
 }

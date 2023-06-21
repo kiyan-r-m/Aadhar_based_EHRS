@@ -143,5 +143,5 @@ public class PatientDiseaseMedication implements Serializable {
     public String toString() {
         return "Entities.PatientDiseaseMedication[ patientDiseaseMedicationId=" + patientDiseaseMedicationId + " ]";
     }
-    
+
 }

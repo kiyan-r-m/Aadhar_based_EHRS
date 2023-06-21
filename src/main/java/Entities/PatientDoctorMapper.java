@@ -195,5 +195,5 @@ public class PatientDoctorMapper implements Serializable {
     public String toString() {
         return "Entities.PatientDoctorMapper[ patientDoctorMapperId=" + patientDoctorMapperId + " ]";
     }
-    
+
 }

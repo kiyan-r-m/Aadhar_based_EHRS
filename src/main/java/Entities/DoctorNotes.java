@@ -118,5 +118,5 @@ public class DoctorNotes implements Serializable {
     public String toString() {
         return "Entities.DoctorNotes[ noteId=" + noteId + " ]";
     }
-    
+
 }

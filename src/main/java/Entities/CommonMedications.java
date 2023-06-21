@@ -46,7 +46,6 @@ public class CommonMedications implements Serializable {
     @JsonbTransient
     private Collection<Diseases> diseasesCollection;
     @OneToMany(mappedBy = "medicationId")
-    @JsonbTransient
     private Collection<PatientDiseaseMedication> patientDiseaseMedicationCollection;
 
     public CommonMedications() {
@@ -112,5 +111,5 @@ public class CommonMedications implements Serializable {
     public String toString() {
         return "Entities.CommonMedications[ medicationId=" + medicationId + " ]";
     }
-    
+
 }
