@@ -105,10 +105,6 @@ public class AdminManagedBean implements Serializable {
         if (res.status) {
             diseases = res.data;
         }
-        res = abl.getAllChronicDiseases();
-        if (res.status) {
-            chronicDiseases = res.data;
-        }
         ResponseModel<Collection<Allergies>> res1 = ubl.getAllAllergies();
         if (res1.status) {
             allergies = res1.data;
