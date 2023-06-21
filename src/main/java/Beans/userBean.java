@@ -987,6 +987,33 @@ public class userBean implements userBeanLocal {
         }
 
     }
+    
+    @Override
+    public ResponseModel getUserByEmail(String email) {
+        ResponseModel<Users> res = new ResponseModel<>();
+        try {
+            if (email.isEmpty()) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            res.data = (Users) em.createNamedQuery("Users.findByEmailId")
+                    .setParameter("emailId", email).getSingleResult();
+            if (res.data != null) {
+                res.status = true;
+                return res;
+            } else {
+                res.status = false;
+                res.message = "User not found";
+                return res;
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+            return res;
+        }
+
+    }
 
     @Override
     public ResponseModel<Users> getUserByUsernamePassword(String username, String password) {

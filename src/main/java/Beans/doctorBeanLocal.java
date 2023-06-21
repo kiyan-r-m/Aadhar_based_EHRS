@@ -15,6 +15,7 @@ import Entities.ResponseModel;
 import Entities.Users;
 import java.util.Collection;
 import javax.ejb.Local;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -35,6 +36,7 @@ public interface doctorBeanLocal {
     ResponseModel<Collection<Users>> getAllAccessesByDoctorId(int id);
     ResponseModel addPatientAccess(int id, Users user);
     ResponseModel<DoctorDetails> getDoctorDetailsByUserId(int id);
+    ResponseModel<DoctorDetails> getDoctorDetailsById(int id);
 //    ResponseModel deletePatientAccess(Users data);
 //    ResponseModel getAllergyByPatient(Users data);
 //    ResponseModel addNewAllergyToPatient(Allergies allergy, Users user);
@@ -58,4 +60,8 @@ public interface doctorBeanLocal {
     ResponseModel addPatientReports(Collection<PatientFiles> data);
     ResponseModel updateMedication(PatientDiseaseMedication data);
     ResponseModel<Collection<PatientDiseaseMedication>> getMedicationsByPatientDoctorId(int id);
+    ResponseModel sendOTPForAccess(String email, HttpServletRequest request);
+    ResponseModel giveAccess(int userId, int doctorId, int otp, HttpServletRequest request);
+
+    ResponseModel AddPatientDoctorAccess(int userId, int doctorId);
 }

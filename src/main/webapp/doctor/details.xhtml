@@ -1,0 +1,405 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>Facelet Title</title>
+        <h:outputStylesheet library="css" name="main.css"/>
+        <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
+    </h:head>
+    <h:body>
+        <ui:composition template="doctorPanel.xhtml">
+            <ui:define name="content">
+                <div class="card p-3 m-2">
+                    <div class="flex flex-wrap justify-content-between">
+                        <h1 class="quicksand-font-500">#{doctorManagedBean.myCaseDetails.diseaseId.diseaseName}</h1>
+                        <div>
+                            <h:form rendered="#{doctorManagedBean.isCurrent().equals(doctorManagedBean.myCaseDetails.diseaseId.diseaseName)}">
+                                <p:commandButton icon="fa-solid fa-notes-medical" styleClass="rounded-button" title="Add Notes" actionListener="#{doctorManagedBean.openNewNotes()}" oncomplete="PF('manageNotesDialog').show()" style="margin-right: .5rem; background-color: #233565; border: #233565" update=":dialogs:manage-notes-content" >
+                                    <p:resetInput target=":dialogs:manage-notes-content" />
+                                </p:commandButton>
+                                <p:commandButton icon="fa-solid fa-plus" styleClass="rounded-button" title="Add Medication" actionListener="#{doctorManagedBean.openNewMedication()}" oncomplete="PF('manageMedicationDialog').show()" style="margin-right: .5rem; background-color: #233565; border: #233565" update=":dialogs1:manage-medication-content" >
+                                    <p:resetInput target=":dialogs1:manage-medication-content" />
+                                </p:commandButton>
+                                <p:commandButton icon="fa-solid fa-plus" styleClass="rounded-button" title="Add Reports" actionListener="#{doctorManagedBean.openNewReport()}" oncomplete="PF('manageReportDialog').show()" style="margin-right: .5rem; background-color: #233565; border: #233565" update=":dialogs2:manage-report-content" >
+                                    <p:resetInput target=":dialogs2:manage-report-content" />
+                                </p:commandButton>
+                                <p:commandButton icon="fa fa-pencil" styleClass="rounded-button"  title="Edit Medications" oncomplete="PF('manageMedicationDialog1').show()" style="margin-right: .5rem; background-color: #233565; border: #233565" update=":dialogs3:manage-medication-content1">
+                                    <f:ajax listener="#{doctorManagedBean.setProps()}" />
+                                </p:commandButton>
+                            </h:form>
+                        </div>
+                    </div>
+                    <div class="grid">
+                        <div class="col">
+                            <h5>Case Details</h5>
+                        </div>
+                        <div class="col">
+                            <h5>Patient Details</h5>
+                        </div>
+                    </div>
+                    <div class="grid">
+                        <div class="col-5 flex align-items-center justify-content-center">
+                            <div class="ui-fluid">
+                                <div class="field">
+                                    <p:panelGrid columns="2">
+
+                                        <p:outputLabel class="font-bold" value="Start Date "/>
+                                        <p:outputLabel value="#{doctorManagedBean.myCaseDetails.startDate}">
+                                            <f:convertDateTime dateStyle="long" />
+                                        </p:outputLabel>
+
+                                        <p:outputLabel class="font-bold" value="End Date "/>
+                                        <p:outputLabel>
+                                            <c:choose>
+                                                <c:when test="#{doctorManagedBean.myCaseDetails.endDate==null}">
+                                                    Ongoing
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <h:outputText value="#{doctorManagedBean.myCaseDetails.endDate}">
+                                                        <f:convertDateTime dateStyle="long"/>
+                                                    </h:outputText>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </p:outputLabel>
+
+                                        <p:outputLabel class="font-bold" value="Medicines "/>
+                                        <p:outputLabel>
+                                            <c:forEach var="item" items="#{doctorManagedBean.myCaseDetails.patientDiseaseMedicationCollection}">
+                                                <h:outputText value="#{item.medicationId.medicationName}"/> (<h:outputText value="#{item.frequency}"/>)<br/>
+                                            </c:forEach>
+                                        </p:outputLabel>
+
+                                        <p:outputLabel class="font-bold" value="Common Symptoms "/>
+                                        <p:outputLabel>
+                                            <c:forEach var="item" items="#{doctorManagedBean.myCaseDetails.diseaseId.symptomsCollection}">
+                                                <h:outputText value="#{item.symptomName}"/><br/>
+                                            </c:forEach>
+                                        </p:outputLabel>
+
+
+                                    </p:panelGrid>
+                                </div>
+                                <div class="field">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <p:divider layout="vertical">
+                            </p:divider>
+                        </div>
+                        <div class="col-5 flex align-items-center justify-content-center">
+                            <div class="ui-fluid">
+                                <div class="field">
+                                    <p:panelGrid columns="2">
+
+                                        <p:outputLabel class="font-bold" value="Name "/>
+                                        <p:outputLabel value="Dr. #{doctorManagedBean.myCaseDetails.patientId.username}"/>
+
+                                        <p:outputLabel class="font-bold" value="email "/>
+                                        <p:outputLabel value="#{doctorManagedBean.myCaseDetails.patientId.emailid}"/>
+
+                                        <p:outputLabel class="font-bold" value="Blood Group "/>
+                                        <p:outputLabel value="#{doctorManagedBean.myCaseDetails.patientId.bloodGroupId.bloodGroupName}"/>
+
+
+                                        <p:outputLabel class="font-bold" value="Allergies "/>
+                                        <p:outputLabel>
+                                            <c:forEach var="a" items="#{doctorManagedBean.myCaseDetails.patientId.allergiesCollection}">
+                                                <h:outputText value="#{a.allergyName}"/><br/>
+                                            </c:forEach>
+                                        </p:outputLabel>
+                                    </p:panelGrid>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="m-2">
+                    <p:fieldset legend="Doctor's Notes" toggleable="true" toggleSpeed="500">
+
+                        <p class="m-0">
+                            <c:forEach var="item" items="#{doctorManagedBean.myCaseDetails.doctorNotesCollection}">
+                                <div class="m-2">
+                                    <h6>
+                                        <span class="font-bold">- </span> <h:outputText value="#{item.createdDate}">
+                                            <f:convertDateTime dateStyle="long"/>
+                                        </h:outputText>
+                                    </h6>
+                                    <div class="pl-3">
+                                        <h:outputText value="#{item.notes}" escape="false"/>
+                                    </div>
+                                </div>
+                            </c:forEach>
+                        </p>
+
+                    </p:fieldset>
+                </div>
+                <div class="m-2">
+                    <p:fieldset legend="Files &amp; Reports" toggleable="true" toggleSpeed="500">
+                        <p class="m-0">
+                            <p:carousel value="#{doctorManagedBean.myCaseDetails.patientFilesCollection}" var="files" circular="true" numVisible="2" numScroll="1">
+                                <h:form>
+                                    <p:commandLink style="color: #000">
+                                        <center>
+                                            <div><span style="border: 1px solid #233565; border-radius: 1rem; padding: 2rem">
+                                                    <i class="fa-solid fa-file-invoice fa-2xl" style="color: #233565" />
+                                                </span></div><br/>
+                                            <div style="font-weight: bold; padding-top: 2rem">
+                                                ${files.reportName}
+                                            </div><br/>
+                                            <div>
+                                                ${files.categoryId.reportCategory}
+                                            </div>
+                                        </center>
+                                        <p:fileDownload value="#{doctorManagedBean.getFileDownload(files.location)}" />
+                                    </p:commandLink>
+                                </h:form>
+                            </p:carousel>
+                        </p>
+                    </p:fieldset>
+                    <style>
+                        .ui-carousel-items-container {
+                            padding-top: 50px !important;
+                        }
+                    </style>
+                </div>
+                <h:form id="dialogs1">
+                    <p:dialog header="Add Medication" width="1030" height="450" showEffect="fade" modal="true" widgetVar="manageMedicationDialog"
+                              responsive="true">
+                        <p:outputPanel id="manage-medication-content" class="ui-fluid">
+                            <p:outputPanel rendered="#{not empty doctorManagedBean.patientDiseaseMedicationCollection}">
+                                <div class="flex flex-wrap justify-content-between pb-2">
+                                    <div>
+                                        <div align="left">
+                                            <p:outputLabel for="med" value="Medications" styleClass="text-lg" style="font-weight: bold" />
+                                        </div>
+                                    </div>
+                                    <div class="pr-4">
+                                        <p:commandButton class="rounded-button" style="background: #233565; border: #233565" icon="fa fa-plus" title="Add more medications">
+                                            <f:ajax listener="#{doctorManagedBean.addMedication()}"/>
+                                        </p:commandButton>
+                                    </div>
+                                </div>
+                                <p:panel widgetVar="med" id="med" style="width: 100%">
+                                    <ui:repeat var="m" value="#{doctorManagedBean.patientDiseaseMedicationCollection}" varStatus="status">
+                                        <p:panel class="py-2">
+                                            <div align="left" class="pb-2">
+                                                <div class="flex flex-wrap justify-content-between">
+                                                    <p:outputLabel for="medication" value="Medication" styleClass="text-lg" style="font-weight: bold" />
+                                                    <p:commandButton class="rounded-button ui-button-danger pr-4" icon="fa fa-minus" title="remove medications">
+                                                        <f:ajax listener="#{doctorManagedBean.removeMedication(m)}"/>
+                                                    </p:commandButton>
+                                                </div></div>
+                                            <div align="left">
+                                                <p:selectOneMenu id="medication" filter="true" value="#{m.medicationId.medicationId}" required="true" requiredMessage="Please select medication" style="width: 100%">
+                                                    <f:selectItem itemLabel="Select medication" itemValue="" noSelectionOption="true"/>
+                                                    <f:selectItems value="#{doctorManagedBean.medications}" var="m1" itemLabel="#{m1.medicationName}" itemValue="#{m1.medicationId}" />
+                                                </p:selectOneMenu>
+                                            </div>
+                                            <p:message for="medication" style="width: 98%;" class="my-2" />
+                                            <div class="grid">
+                                                <div class="col-6">
+                                                    <div align="left" class="pb-2">
+                                                        <p:outputLabel for="start" styleClass="text-lg" style="font-weight: bold" value="Start Date" />
+                                                    </div>
+                                                    <div>
+                                                        <p:datePicker style="width: 100%!important" id="start" value="#{m.startDate}" mindate="#{doctorManagedBean.today}" monthNavigator="true" yearNavigator="true" showWeek="true" required="true" requiredMessage="select start date">
+                                                            <p:ajax event="change" listener="#{doctorManagedBean.onStartDateSelect()}" />
+                                                        </p:datePicker>
+                                                    </div>
+                                                    <p:message for="start" style="width: 98%;" styleClass="my-2" />
+                                                </div>
+                                                <div class="col-6">
+                                                    <div align="left" class="pb-2">
+                                                        <p:outputLabel for="end" styleClass="text-lg" style="font-weight: bold" value="End Date" />
+                                                    </div>
+                                                    <div>
+                                                        <p:datePicker style="width: 100%!important" id="end" value="#{m.endDate}" monthNavigator="true" mindate="#{m.startDate}" yearNavigator="true" showWeek="true" required="true" requiredMessage="Please select end date"/>
+                                                    </div>
+                                                    <p:message for="end" style="width: 98%;" styleClass="my-2" />
+                                                </div>
+                                            </div>
+                                            <div align="left" class="pb-2">
+                                                <p:outputLabel for="frequency" value="Frequency" styleClass="text-lg" style="font-weight: bold" />
+                                            </div>
+                                            <div align="left">
+                                                <p:inputText id="frequency" placeholder="per day" style="width: 100%;" required="true" requiredMessage="Please Enter frequency" value="#{m.frequency}" />
+                                            </div>
+                                            <p:message for="frequency" style="width: 98%;" class="my-2" />
+                                            <p:staticMessage severity="Warn" detail='Enter frequency of medication per day e.g., "after dinner daily", "every 8 hrs." etc.' style="width: 98%"/>
+                                        </p:panel>
+                                    </ui:repeat>
+                                </p:panel>
+                            </p:outputPanel>
+                        </p:outputPanel>
+                        <f:facet name="footer">
+                            <p:commandButton  value="Save" icon="pi pi-check" actionListener="#{doctorManagedBean.addMedicationToPatientDisease()}"
+                                              update="manage-medication-content message1" process="manage-medication-content @this" />
+                            <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageMedicationDialog').hide()"
+                                             class="ui-button-secondary" type="button" />
+                        </f:facet>
+                    </p:dialog>
+                    <p:growl id="message1" showDetail="true" rendered="#{not facesContext.validationFailed}"/>
+                </h:form>
+
+                <h:form id="dialogs2">
+                    <p:dialog header="Add Reports" width="1030" height="450" showEffect="fade" modal="true" widgetVar="manageReportDialog"
+                              responsive="true">
+                        <p:outputPanel id="manage-report-content" class="ui-fluid">
+                            <p:outputPanel rendered="#{not empty doctorManagedBean.patientFilesCollection}">
+                                <div class="flex flex-wrap justify-content-between pt-5 pb-2">
+                                    <div>
+                                        <div align="left">
+                                            <p:outputLabel for="rec" value="Reports" styleClass="text-lg" style="font-weight: bold" />
+                                        </div>
+                                    </div>
+                                    <div class="pr-4">
+                                        <p:commandButton class="rounded-button" style="background: #233565; border: #233565" icon="fa fa-plus" title="Add more reports">
+                                            <f:ajax listener="#{doctorManagedBean.addRep()}"/>
+                                        </p:commandButton>
+                                    </div>
+                                </div>
+                                <p:panel widgetVar="rec" id="rec" style="width: 100%">
+                                    <ui:repeat var="r" value="#{doctorManagedBean.patientFilesCollection}" varStatus="status1">
+                                        <p:panel class="py-2">
+                                            <div align="left" class="pb-2">
+                                                <div class="flex flex-wrap justify-content-between">
+                                                    <p:outputLabel for="repName" value="Report Name" styleClass="text-lg" style="font-weight: bold" />
+                                                    <p:commandButton class="rounded-button ui-button-danger pr-4" icon="fa fa-minus" title="remove report">
+                                                        <f:ajax listener="#{doctorManagedBean.removeRep(r)}"/>
+                                                    </p:commandButton>
+                                                </div></div>
+                                            <div align="left">
+                                                <p:inputText id="repName" style="width: 100%;" required="true" requiredMessage="Please Enter report name" value="#{r.reportName}" />
+                                            </div>
+                                            <p:message for="repName" style="width: 98%;" class="my-2" />
+                                            <div align="left" class="pb-2">
+                                                <p:outputLabel for="cat" value="Report Category" styleClass="text-lg" style="font-weight: bold" />
+                                            </div>
+                                            <div align="left">
+                                                <p:selectOneMenu id="cat" filter="true" value="#{r.categoryId.categoryId}" required="true" requiredMessage="Please select category" style="width: 100%">
+                                                    <f:selectItem itemLabel="Select category" itemValue="" noSelectionOption="true"/>
+                                                    <f:selectItems value="#{doctorManagedBean.categories}" var="c" itemLabel="#{c.reportCategory}" itemValue="#{c.categoryId}" />
+                                                </p:selectOneMenu>
+                                            </div>
+                                            <p:message for="cat" style="width: 98%;" class="my-2" />
+
+                                            <p:fileUpload value="#{doctorManagedBean.reportFile}" mode="advanced" listener="#{doctorManagedBean.handleFileUpload}" >
+                                                <f:attribute name="rf" value="#{r}"/>
+                                            </p:fileUpload>
+                                        </p:panel>
+                                    </ui:repeat>
+                                </p:panel>
+                            </p:outputPanel>
+                        </p:outputPanel>
+                        <f:facet name="footer">
+                            <p:commandButton  value="Save" icon="pi pi-check" actionListener="#{doctorManagedBean.addReportToPatient()}"
+                                              update="manage-report-content message1" process="manage-report-content @this" />
+                            <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageReportDialog').hide()"
+                                             class="ui-button-secondary" type="button" />
+                        </f:facet>
+                    </p:dialog>
+                    <p:growl id="message1" showDetail="true" rendered="#{not facesContext.validationFailed}"/>
+                </h:form>
+
+                <h:form id="dialogs3">
+                    <p:dialog header="Edit Medication" width="1030" height="450" showEffect="fade" modal="true" widgetVar="manageMedicationDialog1"
+                              responsive="true">
+                        <p:outputPanel id="manage-medication-content1" class="ui-fluid">
+                            <p:outputPanel rendered="#{not empty doctorManagedBean.patientDiseaseMedicationCollection}">
+                                <div class="pb-2">
+                                    <div align="left">
+                                        <p:outputLabel for="med" value="Medications" styleClass="text-lg" style="font-weight: bold" />
+                                    </div>
+                                </div>
+                                <p:panel widgetVar="med" id="med" style="width: 100%">
+                                    <ui:repeat var="m" value="#{doctorManagedBean.patientDiseaseMedicationCollection}" varStatus="status">
+                                        <p:panel class="py-2">
+                                            <div align="left" class="pb-2">
+                                                <p:outputLabel for="medication" value="Medication" styleClass="text-lg" style="font-weight: bold" />
+                                            </div>
+                                            <div align="left">
+                                                <p:selectOneMenu disabled="true" id="medication" filter="true" value="#{m.medicationId.medicationId}" required="true" requiredMessage="Please select medication" style="width: 100%">
+                                                    <f:selectItem itemLabel="Select medication" itemValue="" noSelectionOption="true"/>
+                                                    <f:selectItems value="#{doctorManagedBean.medications}" var="m1" itemLabel="#{m1.medicationName}" itemValue="#{m1.medicationId}" />
+                                                </p:selectOneMenu>
+                                            </div>
+                                            <p:message for="medication" style="width: 98%;" class="my-2" />
+                                            <div class="grid">
+                                                <div class="col-6">
+                                                    <div align="left" class="pb-2">
+                                                        <p:outputLabel for="start" styleClass="text-lg" style="font-weight: bold" value="Start Date" />
+                                                    </div>
+                                                    <div>
+                                                        <p:datePicker style="width: 100%!important" id="start" value="#{m.startDate}" mindate="#{doctorManagedBean.today}" monthNavigator="true" yearNavigator="true" showWeek="true" required="true" requiredMessage="select start date">
+                                                            <p:ajax event="change" listener="#{doctorManagedBean.onStartDateSelect()}" />
+                                                        </p:datePicker>
+                                                    </div>
+                                                    <p:message for="start" style="width: 98%;" styleClass="my-2" />
+                                                </div>
+                                                <div class="col-6">
+                                                    <div align="left" class="pb-2">
+                                                        <p:outputLabel for="end" styleClass="text-lg" style="font-weight: bold" value="End Date" />
+                                                    </div>
+                                                    <div>
+                                                        <p:datePicker style="width: 100%!important" id="end" value="#{m.endDate}" monthNavigator="true" mindate="#{m.startDate}" yearNavigator="true" showWeek="true" required="true" requiredMessage="Please select end date"/>
+                                                    </div>
+                                                    <p:message for="end" style="width: 98%;" styleClass="my-2" />
+                                                </div>
+                                            </div>
+                                            <div align="left" class="pb-2">
+                                                <p:outputLabel for="frequency" value="Frequency" styleClass="text-lg" style="font-weight: bold" />
+                                            </div>
+                                            <div align="left">
+                                                <p:inputText id="frequency" placeholder="per day" style="width: 100%;" required="true" requiredMessage="Please Enter frequency" value="#{m.frequency}" />
+                                            </div>
+                                            <p:message for="frequency" style="width: 98%;" class="my-2" />
+                                            <p:staticMessage severity="Warn" detail='Enter frequency of medication per day e.g., "after dinner daily", "every 8 hrs." etc.' style="width: 98%"/>
+                                        </p:panel>
+                                    </ui:repeat>
+                                </p:panel>
+                            </p:outputPanel>
+                        </p:outputPanel>
+                        <f:facet name="footer">
+                            <p:commandButton  value="Save" icon="pi pi-check" actionListener="#{doctorManagedBean.editMedication()}"
+                                              update="manage-medication-content1 message1" process="manage-medication-content1 @this" />
+                            <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageMedicationDialog1').hide()"
+                                             class="ui-button-secondary" type="button" />
+                        </f:facet>
+                    </p:dialog>
+                    <p:growl id="message1" showDetail="true" rendered="#{not facesContext.validationFailed}"/>
+                </h:form>
+
+                <h:form id="dialogs">
+                    <p:dialog header="Notes" width="1030" height="450" showEffect="fade" modal="true" widgetVar="manageNotesDialog"
+                              responsive="true">
+                        <p:outputPanel id="manage-notes-content" class="ui-fluid">
+                            <p:outputPanel rendered="#{not empty doctorManagedBean.doctorNotes}">
+                                <div class="field">
+                                    <p:outputLabel for="notes">Enter Notes</p:outputLabel>
+                                    <p:textEditor id="notes" secure="false" required="true" requiredMessage="Please enter notes" value="#{doctorManagedBean.doctorNotes.notes}" height="300"  />
+                                    <div><p:message for="notes" style="width: 98%" styleClass="my-2" /></div>
+                                </div>
+                            </p:outputPanel>
+                        </p:outputPanel>
+                        <f:facet name="footer">
+                            <p:commandButton  value="Save" icon="pi pi-check" actionListener="#{doctorManagedBean.addNotes()}"
+                                              update="manage-notes-content message1" process="manage-notes-content @this" />
+                            <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageNotesDialog').hide()"
+                                             class="ui-button-secondary" type="button" />
+                        </f:facet>
+                    </p:dialog>
+                    <p:growl id="message1" showDetail="true" rendered="#{not facesContext.validationFailed}"/>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

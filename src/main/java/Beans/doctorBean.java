@@ -15,9 +15,13 @@ import Entities.ResponseModel;
 import Entities.Users;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Random;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -28,6 +32,10 @@ public class doctorBean implements doctorBeanLocal {
 
     @PersistenceContext(unitName = "my_persistence")
     EntityManager em;
+    @EJB
+    EmailClientLocal mail;
+    @EJB
+    userBeanLocal ubl;
 
     @Override
     public ResponseModel addDoctorDetails(DoctorDetails data) {
@@ -52,13 +60,11 @@ public class doctorBean implements doctorBeanLocal {
     @Override
     public ResponseModel<Collection<DoctorDetails>> getDoctorDetails(int doctorId) {
         ResponseModel<Collection<DoctorDetails>> res = new ResponseModel<>();
-        try{
+        try {
             res.data = em.createNamedQuery("Doctordetails.findAll").getResultList();
             res.status = true;
-            
-        }
-        
-        catch(Exception e){
+
+        } catch (Exception e) {
             res.status = false;
             res.message = e.getMessage();
         }
@@ -77,12 +83,12 @@ public class doctorBean implements doctorBeanLocal {
 
             if (em.find(DoctorDetails.class, data.getDoctorId()) != null) {
                 DoctorDetails doctor = em.find(DoctorDetails.class, data.getDoctorId());
-                
+
                 doctor.setDegreeId(data.getDegreeId());
                 doctor.setEducationLevelId(data.getEducationLevelId());
                 doctor.setFieldOfStudyId(data.getFieldOfStudyId());
                 doctor.setLicenceNo(data.getLicenceNo());
-                
+
                 em.merge(doctor);
                 res.status = true;
             } else {
@@ -97,10 +103,8 @@ public class doctorBean implements doctorBeanLocal {
         return res;
     }
 
-   
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
-
     @Override
     public ResponseModel addAppointment(Appointments data) {
         ResponseModel res = new ResponseModel();
@@ -111,8 +115,7 @@ public class doctorBean implements doctorBeanLocal {
                 res.message = "input invalid";
                 return res;
             } else {
-                if(addData == null)
-                {
+                if (addData == null) {
                     em.persist(data);
                     res.status = true;
                     res.message = "input success";
@@ -130,18 +133,15 @@ public class doctorBean implements doctorBeanLocal {
         ResponseModel res = new ResponseModel();
         DoctorDetails doctor = em.find(DoctorDetails.class, id);
         Collection<Appointments> appointments = doctor.getAppointmentsCollection();
-        if(!appointments.isEmpty())
-        {
+        if (!appointments.isEmpty()) {
             res.status = true;
             res.data = appointments;
             res.message = "Get success";
-            
-        }
-        else
-        {
+
+        } else {
             res.status = false;
             res.message = "Invalid input";
-            
+
         }
         return res;
     }
@@ -158,12 +158,11 @@ public class doctorBean implements doctorBeanLocal {
 
             if (em.find(Appointments.class, data.getAppointmentId()) != null) {
                 Appointments appointment = em.find(Appointments.class, data.getAppointmentId());
-                
+
                 appointment.setAppointmentDate(data.getAppointmentDate());
                 appointment.setDuration(data.getDuration());
                 appointment.setIsAttended(data.getIsAttended());
-                
-                
+
                 em.merge(appointment);
                 res.status = true;
             } else {
@@ -182,19 +181,17 @@ public class doctorBean implements doctorBeanLocal {
     public ResponseModel deleteAppointment(Appointments data) {
         ResponseModel res = new ResponseModel();
         Appointments deletedata = em.find(Appointments.class, data.getAppointmentId());
-        try{
-            if(deletedata == null){
+        try {
+            if (deletedata == null) {
                 res.status = false;
                 res.message = "input invalid";
-            }
-            else{
-                
+            } else {
+
                 em.remove(deletedata);
                 res.status = true;
                 res.message = "Delete success";
             }
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             res.message = e.getMessage();
             res.status = false;
         }
@@ -211,8 +208,7 @@ public class doctorBean implements doctorBeanLocal {
                 res.message = "input invalid";
                 return res;
             } else {
-                if(addData.isEmpty())
-                {
+                if (addData.isEmpty()) {
                     PatientDoctorMapper pdm = new PatientDoctorMapper();
                     pdm.setStartDate(new Date());
                     pdm.setPatientId(data.getPatientId());
@@ -264,11 +260,11 @@ public class doctorBean implements doctorBeanLocal {
 
             if (em.find(PatientDoctorMapper.class, data.getPatientDoctorMapperId()) != null) {
                 PatientDoctorMapper updateData = em.find(PatientDoctorMapper.class, data.getPatientDoctorMapperId());
-                
+
                 updateData.setDiseaseId(data.getDiseaseId());
                 updateData.setStartDate(data.getStartDate());
                 updateData.setEndDate(data.getEndDate());
-                
+
                 em.merge(updateData);
                 res.status = true;
             } else {
@@ -288,14 +284,11 @@ public class doctorBean implements doctorBeanLocal {
         ResponseModel res = new ResponseModel();
         DoctorDetails data = em.find(DoctorDetails.class, id);
         Collection<Users> users = data.getUsersCollection();
-        if(!users.isEmpty())
-        {
+        if (!users.isEmpty()) {
             res.status = true;
             res.data = users;
             res.message = "Get Success";
-        }
-        else
-        {
+        } else {
             res.status = false;
             res.message = "Invalid input";
         }
@@ -308,21 +301,15 @@ public class doctorBean implements doctorBeanLocal {
         DoctorDetails doctor = em.find(DoctorDetails.class, id);
         Users userdata = em.find(Users.class, user.getUserId());
         Collection<Users> users = doctor.getUsersCollection();
-        if(users.contains(user))
-        {
+        if (users.contains(user)) {
             res.status = false;
             res.message = "user already exists";
-        }
-        else
-        {
-            if(userdata!=null)
-            {
+        } else {
+            if (userdata != null) {
                 userdata.getDoctorDetailsCollection().add(doctor);
                 users.add(user);
                 res.status = true;
-            }
-            else
-            {
+            } else {
                 res.status = false;
                 res.message = "invalid user";
             }
@@ -349,7 +336,6 @@ public class doctorBean implements doctorBeanLocal {
 //    public ResponseModel deleteAllergyFromPatient(Allergies allergy, Users user) {
 //        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
 //    }
-
     @Override
     public ResponseModel<DoctorDetails> getDoctorDetailsByUserId(int id) {
         ResponseModel<DoctorDetails> res = new ResponseModel<>();
@@ -360,6 +346,31 @@ public class doctorBean implements doctorBeanLocal {
                 return res;
             }
             res.data = (DoctorDetails) em.createNamedQuery("DoctorDetails.findByUserId").setParameter("userId", id).getSingleResult();
+            if (res.data != null) {
+                res.status = true;
+                return res;
+            } else {
+                res.status = false;
+                res.message = "Doctor not found";
+                return res;
+            }
+        } catch (Exception ex) {
+            res.status = false;
+            res.message = ex.getMessage();
+            return res;
+        }
+    }
+
+    @Override
+    public ResponseModel<DoctorDetails> getDoctorDetailsById(int id) {
+        ResponseModel<DoctorDetails> res = new ResponseModel<>();
+        try {
+            if (String.valueOf(id).isEmpty() || id == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            res.data = em.find(DoctorDetails.class, id);
             if (res.data != null) {
                 res.status = true;
                 return res;
@@ -402,6 +413,7 @@ public class doctorBean implements doctorBeanLocal {
                 if (pdm != null) {
                     data.setPatientDoctorMapperId(pdm);
                     em.persist(data);
+                    em.flush();
                     res.status = true;
                 } else {
                     res.status = false;
@@ -429,8 +441,7 @@ public class doctorBean implements doctorBeanLocal {
                 res.message = "input invalid";
                 return res;
             } else {
-                if(pdm != null)
-                {
+                if (pdm != null) {
                     for (PatientDiseaseMedication patientDiseaseMedication : data) {
                         patientDiseaseMedication.setPatientDoctorMapperId(pdm);
                     }
@@ -459,8 +470,7 @@ public class doctorBean implements doctorBeanLocal {
                 res.message = "input invalid";
                 return res;
             } else {
-                if(pdm != null)
-                {
+                if (pdm != null) {
                     for (PatientFiles patientFiles : data) {
                         patientFiles.setPatientDoctorMapperId(pdm);
                     }
@@ -489,7 +499,7 @@ public class doctorBean implements doctorBeanLocal {
                 return res;
             }
 
-            if (em.find(PatientDiseaseMedication.class, data.getPatientDiseaseMedicationId())!= null) {
+            if (em.find(PatientDiseaseMedication.class, data.getPatientDiseaseMedicationId()) != null) {
                 PatientDiseaseMedication pdm = em.find(PatientDiseaseMedication.class, data.getPatientDiseaseMedicationId());
                 pdm.setStartDate(data.getStartDate());
                 pdm.setEndDate(data.getEndDate());
@@ -518,7 +528,7 @@ public class doctorBean implements doctorBeanLocal {
                 return res;
             }
 
-            if (em.find(PatientDoctorMapper.class, id)!= null) {
+            if (em.find(PatientDoctorMapper.class, id) != null) {
                 PatientDoctorMapper pdm = em.find(PatientDoctorMapper.class, id);
                 res.data = pdm.getPatientDiseaseMedicationCollection();
                 res.status = true;
@@ -533,4 +543,110 @@ public class doctorBean implements doctorBeanLocal {
         }
         return res;
     }
+
+    @Override
+    public ResponseModel sendOTPForAccess(String email, HttpServletRequest request) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (email.isEmpty()) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+            if (!em.createNamedQuery("Users.findByEmailId").setParameter("emailId", email).getResultList().isEmpty()) {
+                Users u = (Users) em.createNamedQuery("Users.findByEmailId").setParameter("emailId", email).getSingleResult();
+                Random random = new Random();
+                int otp = random.nextInt(999999);
+                ServletContext context = request.getServletContext();
+                context.setAttribute(u.getUserId().toString(), String.format("%06d", otp));
+                String body = "<h3>Hello " + u.getUsername()
+                        + "!</h3><p>We come to know that you want to give your profile access to any doctor.</p><br/><p>So Here is the OTP to give your profile access. Share it with the concern doctor only.</p><br/><p>OTP = <strong>" + otp + "</strong></p><br/><p>If you did not request for this, you can ignore this message</p>";
+                mail.sendMail(u.getEmailid(), "Share Access - EHR", body);
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "User not found";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel giveAccess(int userId, int doctorId, int otp, HttpServletRequest request) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (userId == 0 && doctorId == 0 && otp == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+
+            ServletContext context = request.getServletContext();
+            if (String.valueOf(otp).equals(context.getAttribute(String.valueOf(userId)))) {
+                context.removeAttribute(String.valueOf(userId));
+                ResponseModel r = AddPatientDoctorAccess(userId, doctorId);
+                if (r.status) {
+                    res.status = true;
+                } else {
+                    res.status = false;
+                    res.message = r.message;
+                }
+            } else {
+                res.status = false;
+                res.message = "OTP doesn't match";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
+    @Override
+    public ResponseModel AddPatientDoctorAccess(int userId, int doctorId) {
+        ResponseModel res = new ResponseModel();
+        try {
+            if (userId == 0 && doctorId == 0) {
+                res.status = false;
+                res.message = "Input Invalid";
+                return res;
+            }
+
+            if (ubl.getUserById(userId).status) {
+                Users u = ubl.getUserById(userId).data;
+                Collection<DoctorDetails> doctors = u.getDoctorDetailsCollection();
+
+                ResponseModel<DoctorDetails> r = getDoctorDetailsById(doctorId);
+                if (r.status) {
+                    DoctorDetails d = r.data;
+
+                    if (!doctors.contains(d)) {
+                        Collection<Users> users = d.getUsersCollection();
+                        doctors.add(d);
+                        users.add(u);
+
+                        u.setDoctorDetailsCollection(doctors);
+                        d.setUsersCollection(users);
+
+                        em.merge(u);
+                    }
+                }
+                res.status = true;
+            } else {
+                res.status = false;
+                res.message = "User not found";
+            }
+
+        } catch (Exception e) {
+            res.status = false;
+            res.message = e.getMessage();
+        }
+        return res;
+    }
+
 }
