@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -190,5 +191,5 @@ public class PatientDoctorMapper implements Serializable {
     public String toString() {
         return "Entities.PatientDoctorMapper[ patientDoctorMapperId=" + patientDoctorMapperId + " ]";
     }
-
+    
 }

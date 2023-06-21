@@ -38,6 +38,7 @@ import javax.validation.constraints.Size;
 @Table(name = "doctor_details", catalog = "ehrsystem", schema = "")
 @NamedQueries({
     @NamedQuery(name = "DoctorDetails.findAll", query = "SELECT d FROM DoctorDetails d"),
+    @NamedQuery(name = "DoctorDetails.findByUserId", query = "SELECT d FROM DoctorDetails d WHERE d.userId.userId = :userId"),
     @NamedQuery(name = "DoctorDetails.findByDoctorId", query = "SELECT d FROM DoctorDetails d WHERE d.doctorId = :doctorId")})
 @NamedStoredProcedureQueries({
     @NamedStoredProcedureQuery(name = "getDistrictCountWithDoctors",
@@ -63,6 +64,7 @@ public class DoctorDetails implements Serializable {
     @JsonbTransient
     private Collection<Users> usersCollection;
     @OneToMany(mappedBy = "doctorId")
+    @JsonbTransient
     private Collection<Appointments> appointmentsCollection;
     @JoinColumn(name = "degree_id", referencedColumnName = "degree_id")
     @ManyToOne
@@ -81,10 +83,12 @@ public class DoctorDetails implements Serializable {
     private Collection<PatientDoctorMapper> patientDoctorMapperCollection;
 
     public DoctorDetails() {
+        this.usersCollection = new ArrayList<>();
     }
 
     public DoctorDetails(Integer doctorId) {
         this.doctorId = doctorId;
+        this.usersCollection = new ArrayList<>();
     }
 
     public Integer getDoctorId() {

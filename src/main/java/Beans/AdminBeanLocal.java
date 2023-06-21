@@ -21,7 +21,6 @@ import ReportModels.BloodGroupFrequency;
 import ReportModels.DiseaseToFrequency;
 import ReportModels.DateWiseCaseFrequency;
 import java.time.LocalDate;
-import java.util.Date;
 import Entities.Roles;
 
 /**

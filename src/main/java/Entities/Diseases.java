@@ -65,11 +65,13 @@ public class Diseases implements Serializable {
         @JoinColumn(name = "disease_id", referencedColumnName = "disease_id")}, inverseJoinColumns = {
         @JoinColumn(name = "medication_id", referencedColumnName = "medication_id")})
     @ManyToMany
+    @JsonbTransient
     private Collection<CommonMedications> commonMedicationsCollection;
     @JoinTable(name = "disease_symptom_mapper", joinColumns = {
         @JoinColumn(name = "disease_id", referencedColumnName = "disease_id")}, inverseJoinColumns = {
         @JoinColumn(name = "symptom_id", referencedColumnName = "symptom_id")})
     @ManyToMany
+    @JsonbTransient
     private Collection<Symptoms> symptomsCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "diseaseId")
     @JsonbTransient

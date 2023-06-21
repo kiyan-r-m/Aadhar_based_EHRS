@@ -219,7 +219,8 @@ public class userBean implements userBeanLocal {
             }
 
             if (em.find(Users.class, user.getUserId()) != null) {
-                Users u = em.find(Users.class, user.getUserId());
+                Users u = new Users();
+                u = em.find(Users.class, user.getUserId());
                 u.setUsername(user.getUsername());
                 u.setEmailid(user.getEmailid());
                 u.setAadharCardNo(user.getAadharCardNo());
@@ -234,30 +235,37 @@ public class userBean implements userBeanLocal {
                 }
                 ResponseModel addr = updateAddresses(user.getAddressId());
                 Collection<Integer> dids = new ArrayList<>();
-                for (Diseases diseases : u.getDiseasesCollection()) {
-                    dids.add(diseases.getDiseaseId());
+                if (!u.getDiseasesCollection().isEmpty()) {
+                    for (Diseases diseases : u.getDiseasesCollection()) {
+                        dids.add(diseases.getDiseaseId());
+                    }
+                    removeChronicDiseasesToUser(u.getUserId(), dids);
                 }
-                removeChronicDiseasesToUser(u.getUserId(), dids);
-                for (Diseases diseases : user.getDiseasesCollection()) {
-                    dids.add(diseases.getDiseaseId());
+                if (!user.getDiseasesCollection().isEmpty()) {
+                    for (Diseases diseases : user.getDiseasesCollection()) {
+                        dids.add(diseases.getDiseaseId());
+                    }
+                    addChronicDiseasesToUser(u.getUserId(), dids);
                 }
-                addChronicDiseasesToUser(u.getUserId(), dids);
                 Collection<Integer> aids = new ArrayList<>();
-                for (Allergies allergies : u.getAllergiesCollection()) {
-                    aids.add(allergies.getAllergyId());
+                if (!u.getAllergiesCollection().isEmpty()) {
+                    for (Allergies allergies : u.getAllergiesCollection()) {
+                        aids.add(allergies.getAllergyId());
+                    }
+                    removeAllergiesToUser(u.getUserId(), aids);
                 }
-                removeAllergiesToUser(u.getUserId(), aids);
-                for (Allergies allergies : user.getAllergiesCollection()) {
-                    aids.add(allergies.getAllergyId());
+                if (!user.getAllergiesCollection().isEmpty()) {
+                    for (Allergies allergies : user.getAllergiesCollection()) {
+                        aids.add(allergies.getAllergyId());
+                    }
+                    addAllergiesToUser(u.getUserId(), aids);
                 }
-                addAllergiesToUser(u.getUserId(), aids);
                 em.merge(u);
                 res.status = true;
             } else {
                 res.status = false;
                 res.message = "User not found";
             }
-
         } catch (Exception e) {
             res.status = false;
             res.message = e.getMessage();
