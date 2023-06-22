@@ -372,6 +372,12 @@ public class DoctorManagedBean implements Serializable {
         } else {
             errorMessage("Add Disease", r.message);
         }
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect("home.jsf");
+        } catch (IOException ex) {
+            Logger.getLogger(DoctorManagedBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        refreshPage("AccessesTable");
     }
 
     public void openNewNotes() {
