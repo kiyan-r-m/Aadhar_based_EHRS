@@ -5,6 +5,7 @@
 package Entities;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Collection;
 import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
@@ -19,6 +20,10 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -31,6 +36,17 @@ import javax.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "Allergies.findAll", query = "SELECT a FROM Allergies a"),
     @NamedQuery(name = "Allergies.findByAllergyId", query = "SELECT a FROM Allergies a WHERE a.allergyId = :allergyId")})
+@NamedStoredProcedureQueries({
+    @NamedStoredProcedureQuery(name = "getAllergyList",
+            procedureName = "ehrsystem.getAllergyList"
+    ),
+    @NamedStoredProcedureQuery(name = "getAllergyFrequency",
+            procedureName = "ehrsystem.getAllergyFrequency", parameters = {
+                @StoredProcedureParameter(mode = ParameterMode.IN, name = "stateval", type = String.class),
+                @StoredProcedureParameter(mode = ParameterMode.IN, name = "districtval", type = String.class)
+            }
+    ),
+})
 public class Allergies implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -113,7 +113,7 @@ public interface AdminBeanLocal {
     ResponseModel<Diseases> getDiseaseById(int id);
     Collection<BloodGroupFrequency>getBloodGroupFrequency();
     long getAllUsersFrequency(int userid);
-    Collection<DateWiseCaseFrequency>getCasesFrequency(String disease, LocalDate startDate, String state);
+    Collection<DateWiseCaseFrequency>getCasesFrequency(String disease, LocalDate startDate, String state, String district);
     Collection<DiseaseToFrequency>getTopCases();
     long getTotalAccess();
     long getTotalAcuteCases();
@@ -138,5 +138,7 @@ public interface AdminBeanLocal {
     public Collection<String> getCities(String state);
     public long getDistrictCountWithDoctors();
     public Collection<String> getDiseases();
+    public Collection<String> getAllergies();
+    Collection<DiseaseToFrequency>getTopAllergies(String state, String district);
 }
 

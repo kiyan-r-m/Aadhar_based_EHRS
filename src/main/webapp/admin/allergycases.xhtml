@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        <ui:composition template="adminPanel.xhtml">
+            <ui:define name="content">
+                <h:form>
+                    <div class="card m-3">
+                        <div class=" p-2 flex justify-content-between flex-wrap flex-wrap">
+                            <div class="flex align-items-center justify-content-center">
+                                <p:selectOneMenu filter="true" value="#{adminReportsManagedBean.state}" id="state" style="width: 100% !important">
+                                    <f:selectItem itemLabel="All States" itemValue="#{null}" />
+                                    <f:selectItems value="#{adminReportsManagedBean.states}" />
+                                    <f:ajax listener="#{adminReportsManagedBean.getCitiesByState()}" execute="@this" render="city"/>
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="flex align-items-center justify-content-center">
+                                <p:selectOneMenu filter="true" value="#{adminReportsManagedBean.city}" id="city" style="width: 100% !important">
+                                    <f:selectItem itemLabel="All districts" itemValue="#{null}" />
+                                    <f:selectItems value="#{adminReportsManagedBean.cities}" />
+                                </p:selectOneMenu>
+                            </div>
+
+
+                            <div class="flex align-items-center justify-content-center">
+                                <p:commandButton value="search" icon="pi pi-search">
+                                    <f:ajax listener="#{adminReportsManagedBean.createCasesMixedModel()}" execute="@this" render="allergytb"/>
+                                </p:commandButton>
+                            </div>
+                        </div>
+                    </div>
+                </h:form>
+                <div class="card p-3">
+
+                    <p:dataTable var="topDisease" value="#{adminReportsManagedBean.topAllergies}" stripedRows="true" widgetVar="dtCases" paginator="true" rows="5" paginatorPosition="bottom" id="allergytb">
+                        <f:facet name="header">
+                            <div class="bloodGroup-table-header card p-3">
+                                <div class="flex justify-content-between flex-wrap" >
+                                    <div style="font-weight: bold" class="text-2xl">Most frequent allergies</div>
+                                </div>
+                            </div>
+                        </f:facet>
+                        <p:column headerText="Allergy" style="padding-left: 3rem">
+                            <h:outputText value="#{topDisease.diseaseName}" />
+                        </p:column>
+
+                        <p:column headerText="Cases" style="text-align: right; padding-right: 3rem">
+                            <h:outputText value="#{topDisease.frequency}" />
+                        </p:column>
+                    </p:dataTable>
+                </div>
+
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

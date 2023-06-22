@@ -30,6 +30,7 @@ import org.primefaces.model.charts.bar.BarChartOptions;
 import org.primefaces.model.charts.donut.DonutChartDataSet;
 import org.primefaces.model.charts.line.LineChartDataSet;
 import org.primefaces.model.charts.optionconfig.animation.Animation;
+import org.primefaces.model.charts.optionconfig.legend.Legend;
 import org.primefaces.model.charts.optionconfig.title.Title;
 
 /**
@@ -47,9 +48,9 @@ public class AdminReportsManagedBean implements Serializable {
     private DonutChartModel donutModel;
 
     private long doctorCounter, accessCounter, doctorDensity, DistrictCountWithDoctors;
-    private String disease, state, city, datedropdown;
-    private Collection<String> states, cities, diseases;
-    List<DiseaseToFrequency> topDiseases;
+    private String disease, state, city, datedropdown, allergy;
+    private Collection<String> states, cities, diseases, allergies;
+    List<DiseaseToFrequency> topDiseases, topAllergies;
     LocalDate startDate;
 
     public AdminReportsManagedBean() {
@@ -158,8 +159,8 @@ public class AdminReportsManagedBean implements Serializable {
         for (BloodGroupFrequency valueset : Bardata) {
             values.add(valueset.getFrequency());
             labels.add(valueset.getBlood_group_name());
-            bgColor.add("rgba(255, 99, 132, 0.2)");
-            borderColor.add("rgb(255, 99, 132)");
+            bgColor.add("rgba(233, 86, 112, 0.8)");
+            borderColor.add("rgba(233, 86, 112, 1)");
         }
         barDataSet.setData(values);
 
@@ -189,12 +190,13 @@ public class AdminReportsManagedBean implements Serializable {
         title.setDisplay(true);
         title.setText("Blood Group Distribution");
         options.setTitle(title);
-
+        Legend legend = new Legend();
+        legend.setDisplay(false);
         // disable animation
         Animation animation = new Animation();
         animation.setDuration(700);
         options.setAnimation(animation);
-
+        options.setLegend(legend);
         barModel.setOptions(options);
     }
 
@@ -280,7 +282,7 @@ public class AdminReportsManagedBean implements Serializable {
 
     public ArrayList<DateWiseCaseFrequency> returnCasesDataset() {
         startDate = returnGraphDate();
-        ArrayList<DateWiseCaseFrequency> spData = (ArrayList) abl.getCasesFrequency(disease, startDate, state);
+        ArrayList<DateWiseCaseFrequency> spData = (ArrayList) abl.getCasesFrequency(disease, startDate, state, city);
         ArrayList<DateWiseCaseFrequency> returnData = new ArrayList<>();
         LocalDate endDate = LocalDate.now();
 
@@ -459,6 +461,32 @@ public class AdminReportsManagedBean implements Serializable {
 
     public void setDisease(String disease) {
         this.disease = disease;
+    }
+
+    public String getAllergy() {
+        return allergy;
+    }
+
+    public void setAllergy(String allergy) {
+        this.allergy = allergy;
+    }
+
+    public Collection<String> getAllergies() {
+        allergies = abl.getAllergies();
+        return allergies;
+    }
+
+    public void setAllergies(Collection<String> allergies) {
+        this.allergies = allergies;
+    }
+
+    public List<DiseaseToFrequency> getTopAllergies() {
+        topAllergies = (List) abl.getTopAllergies(state, city);
+        return topAllergies;
+    }
+
+    public void setTopAllergies(List<DiseaseToFrequency> topAllergies) {
+        this.topAllergies = topAllergies;
     }
     
     
