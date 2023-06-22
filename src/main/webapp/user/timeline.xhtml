@@ -26,27 +26,15 @@
                                         <h:outputText value="#{case.startDate}">
                                             <f:convertDateTime dateStyle="long" />
                                         </h:outputText>
-                                        <c:choose>
-                                            <c:when test="#{case.endDate==null}">
-                                                - <h:outputText value="#{case.endDate}">
+                                         - 
+                                                <h:outputText value="#{case.endDate}" rendered="#{case.endDate != null}">
                                                     <f:convertDateTime dateStyle="long" />
                                                 </h:outputText>
-                                                
-                                            </c:when>
-                                            <c:otherwise>
-                                                present
-                                            </c:otherwise>
-                                        </c:choose>
+                                                <h:outputText value="ongoing" rendered="#{case.endDate == null}" />
                                     </f:facet>
 
                                     <p>
-                                        <c:choose>
-                                            <c:when test="#{userManagedBean.getMyNotes(case.patientDoctorMapperId).isEmpty()}">
-                                            </c:when>
-                                            <c:otherwise>
-                                                #{userManagedBean.getMyNotes(case.patientDoctorMapperId).get(0).getNotes()}
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <p:outputLabel escape="false" value="#{userManagedBean.getMyNotes(case.patientDoctorMapperId).get(0).getNotes()}" rendered="#{!userManagedBean.getMyNotes(case.patientDoctorMapperId).isEmpty()}" />
                                     </p>
                                     <h:commandLink value = "Read More" action="#{userManagedBean.openDetailsPage(case)}">
                                         <f:param name="caseid" value="#{case.patientDoctorMapperId}"/>

@@ -414,6 +414,9 @@ public class doctorBean implements doctorBeanLocal {
                     data.setPatientDoctorMapperId(pdm);
                     em.persist(data);
                     em.flush();
+                    Collection<DoctorNotes> notes = pdm.getDoctorNotesCollection();
+                    notes.add(data);
+                    em.merge(pdm);
                     res.status = true;
                 } else {
                     res.status = false;
@@ -432,9 +435,9 @@ public class doctorBean implements doctorBeanLocal {
     }
 
     @Override
-    public ResponseModel addMedication(Collection<PatientDiseaseMedication> data) {
+    public ResponseModel addMedication(PatientDiseaseMedication data) {
         ResponseModel res = new ResponseModel();
-        PatientDoctorMapper pdm = em.find(PatientDoctorMapper.class, data.iterator().next().getPatientDoctorMapperId().getPatientDoctorMapperId());
+        PatientDoctorMapper pdm = em.find(PatientDoctorMapper.class, data.getPatientDoctorMapperId().getPatientDoctorMapperId());
         try {
             if (data == null) {
                 res.status = false;
@@ -442,10 +445,11 @@ public class doctorBean implements doctorBeanLocal {
                 return res;
             } else {
                 if (pdm != null) {
-                    for (PatientDiseaseMedication patientDiseaseMedication : data) {
-                        patientDiseaseMedication.setPatientDoctorMapperId(pdm);
-                    }
-                    pdm.setPatientDiseaseMedicationCollection(data);
+                    data.setPatientDoctorMapperId(pdm);
+                    em.persist(data);
+                    em.flush();
+                    Collection<PatientDiseaseMedication> pdms = pdm.getPatientDiseaseMedicationCollection();
+                    pdms.add(data);
                     em.merge(pdm);
                     res.status = true;
                 } else {
@@ -461,9 +465,9 @@ public class doctorBean implements doctorBeanLocal {
     }
 
     @Override
-    public ResponseModel addPatientReports(Collection<PatientFiles> data) {
+    public ResponseModel addPatientReports(PatientFiles data) {
         ResponseModel res = new ResponseModel();
-        PatientDoctorMapper pdm = em.find(PatientDoctorMapper.class, data.iterator().next().getPatientDoctorMapperId().getPatientDoctorMapperId());
+        PatientDoctorMapper pdm = em.find(PatientDoctorMapper.class, data.getPatientDoctorMapperId().getPatientDoctorMapperId());
         try {
             if (data == null) {
                 res.status = false;
@@ -471,10 +475,11 @@ public class doctorBean implements doctorBeanLocal {
                 return res;
             } else {
                 if (pdm != null) {
-                    for (PatientFiles patientFiles : data) {
-                        patientFiles.setPatientDoctorMapperId(pdm);
-                    }
-                    pdm.setPatientFilesCollection(data);
+                    data.setPatientDoctorMapperId(pdm);
+                    em.persist(data);
+                    em.flush();
+                    Collection<PatientFiles> pf = pdm.getPatientFilesCollection();
+                    pf.add(data);
                     em.merge(pdm);
                     res.status = true;
                 } else {
