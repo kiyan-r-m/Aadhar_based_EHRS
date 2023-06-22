@@ -71,10 +71,10 @@ public class TestServlet extends HttpServlet {
             Long countdoctors = abl.getAllUsersFrequency(3);
             out.println(countdoctors);
             LocalDate ld = LocalDate.of(2023,01,22);
-            Collection<DateWiseCaseFrequency> cf = abl.getCasesFrequency(null, ld, null);
-            for(DateWiseCaseFrequency data : cf){
-                out.println(data.getFrequency().toString());
-            }
+            //Collection<DateWiseCaseFrequency> cf = abl.getCasesFrequency(null, ld, null);
+            //for(DateWiseCaseFrequency data : cf){
+                //out.println(data.getFrequency().toString());
+            //}
             out.println(abl.getTotalAcuteCases());
             out.println(abl.getTotalChronicCases());
             

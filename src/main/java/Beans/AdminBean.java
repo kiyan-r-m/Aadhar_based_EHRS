@@ -1646,7 +1646,7 @@ public class AdminBean implements AdminBeanLocal {
     }
 
     @Override
-    public Collection<DateWiseCaseFrequency> getCasesFrequency(String disease, LocalDate startDate, String state) {
+    public Collection<DateWiseCaseFrequency> getCasesFrequency(String disease, LocalDate startDate, String state, String district) {
         Collection<DateWiseCaseFrequency> res = new ArrayList<>();
         StoredProcedureQuery qry = em.createNamedStoredProcedureQuery("frequencyByDiseaseDateState");
         qry.setParameter("diseaseval", disease);
@@ -1654,6 +1654,7 @@ public class AdminBean implements AdminBeanLocal {
         qry.setParameter("dateval", startDate);
 
         qry.setParameter("stateval", state);
+        qry.setParameter("districtval", district);
         qry.execute();
         List<Object[]> datalist = qry.getResultList();
         for (Object[] data : datalist) {
@@ -1764,6 +1765,38 @@ public class AdminBean implements AdminBeanLocal {
         for (Object[] data : datalist) {
             String disease = data[0].toString();
             res.add(disease);
+
+        }
+        return res;
+    }
+
+    @Override
+    public Collection<String> getAllergies() {
+        Collection<String> res = new ArrayList<>();
+        StoredProcedureQuery qry = em.createStoredProcedureQuery("getAllergyList");
+        qry.execute();
+        List<Object[]> datalist = qry.getResultList();
+        for (Object[] data : datalist) {
+            String allergy = data[0].toString();
+            res.add(allergy);
+
+        }
+        return res;
+    }
+
+    @Override
+    public Collection<DiseaseToFrequency> getTopAllergies(String state, String district) {
+        Collection<DiseaseToFrequency> res = new ArrayList<>();
+        StoredProcedureQuery qry = em.createNamedStoredProcedureQuery("getAllergyFrequency");
+        qry.setParameter("stateval", state);
+        qry.setParameter("districtval", district);
+        qry.execute();
+        List<Object[]> datalist = qry.getResultList();
+        for (Object[] data : datalist) {
+            DiseaseToFrequency cf = new DiseaseToFrequency();
+            cf.setDiseaseName(data[0].toString());
+            cf.setFrequency(Long.valueOf(data[1].toString()));
+            res.add(cf);
 
         }
         return res;

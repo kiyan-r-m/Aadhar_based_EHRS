@@ -44,7 +44,8 @@ import javax.persistence.TemporalType;
             procedureName = "ehrsystem.frequencyByDiseaseDateState", parameters = {
                 @StoredProcedureParameter(mode = ParameterMode.IN, name = "diseaseval", type = String.class),
                 @StoredProcedureParameter(mode = ParameterMode.IN, name = "dateval", type = LocalDate.class),
-                @StoredProcedureParameter(mode = ParameterMode.IN, name = "stateval", type = String.class)
+                @StoredProcedureParameter(mode = ParameterMode.IN, name = "stateval", type = String.class),
+                @StoredProcedureParameter(mode = ParameterMode.IN, name = "districtval", type = String.class)
             }
     ),
     @NamedStoredProcedureQuery(name = "topTenDiseasesByCases",
