@@ -31,6 +31,8 @@
                                 <p:commandButton icon="fa fa-pencil" styleClass="rounded-button"  title="Edit Medications" oncomplete="PF('manageMedicationDialog1').show()" style="margin-right: .5rem; background-color: #233565; border: #233565" update=":dialogs3:manage-medication-content1">
                                     <f:ajax listener="#{doctorManagedBean.setProps()}" />
                                 </p:commandButton>
+                                <p:commandButton icon="fa fa-angle-left" styleClass="rounded-button"  title="Back" action="#{adminManagedBean.redirectTo('timeline.jsf')}" style="margin-right: .5rem; background-color: #233565; border: #233565">
+                                </p:commandButton>
                             </h:form>
                         </div>
                     </div>
