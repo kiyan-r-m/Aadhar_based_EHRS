@@ -372,6 +372,12 @@ public class DoctorManagedBean implements Serializable {
         } else {
             errorMessage("Add Disease", r.message);
         }
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect("home.jsf");
+        } catch (IOException ex) {
+            Logger.getLogger(DoctorManagedBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        refreshPage("AccessesTable");
     }
 
     public void openNewNotes() {
@@ -421,38 +427,52 @@ public class DoctorManagedBean implements Serializable {
     }
 
     public void addMedicationToPatientDisease() {
+        Boolean status = true;
+        String error = "";
         int id = getPatientDoctorIdByUserId(this.selectedPatient.getUserId());
         if (id != 0) {
             for (PatientDiseaseMedication patientDiseaseMedication : patientDiseaseMedicationCollection) {
                 patientDiseaseMedication.getPatientDoctorMapperId().setPatientDoctorMapperId(id);
+                ResponseModel r = dbl.addMedication(patientDiseaseMedication);
+                if (!r.status) {
+                    status = false;
+                    error = r.message;
+                }
             }
-            ResponseModel r = dbl.addMedication(this.patientDiseaseMedicationCollection);
-            if (r.status == true) {
+            if (status == true) {
                 successMessage("Add Medications", "Medication added successfully");
             } else {
-                errorMessage("Add Medications", r.message);
+                errorMessage("Add Medications", error);
             }
         } else {
             errorMessage("Add Medications", "Something went wrong");
         }
+        openDetailsPage(new PatientDoctorMapper(id));
         PrimeFaces.current().executeScript("PF('manageMedicationDialog').hide();");
     }
 
     public void addReportToPatient() {
+        Boolean status = true;
+        String error = "";
         int id = getPatientDoctorIdByUserId(this.selectedPatient.getUserId());
         if (id != 0) {
             for (PatientFiles patientFiles : this.patientFilesCollection) {
                 patientFiles.getPatientDoctorMapperId().setPatientDoctorMapperId(id);
+                ResponseModel r = dbl.addPatientReports(patientFiles);
+                if (!r.status) {
+                    status = false;
+                    error = r.message;
+                }
             }
-            ResponseModel r = dbl.addPatientReports(this.patientFilesCollection);
-            if (r.status == true) {
-                successMessage("Add Reports", "Reports added successfully");
+            if (status == true) {
+                successMessage("Add Reports", "Medication added successfully");
             } else {
-                errorMessage("Add Reports", r.message);
+                errorMessage("Add Reports", error);
             }
         } else {
             errorMessage("Add Reports", "Something went wrong");
         }
+        openDetailsPage(new PatientDoctorMapper(id));
         PrimeFaces.current().executeScript("PF('manageReportDialog').hide();");
     }
 
@@ -471,6 +491,7 @@ public class DoctorManagedBean implements Serializable {
         } else {
             errorMessage("Edit Medication", error);
         }
+        openDetailsPage(new PatientDoctorMapper(getPatientDoctorIdByUserId(this.selectedPatient.getUserId())));
         PrimeFaces.current().executeScript("PF('manageMedicationDialog1').hide();");
     }
 
@@ -488,7 +509,7 @@ public class DoctorManagedBean implements Serializable {
         }
         return patientDoctorId;
     }
-    
+
     public String isCurrent() {
         String disease = "";
         Users u = accesses.stream().filter(a -> a.getUserId().toString().equals(String.valueOf(this.selectedPatient.getUserId()))).findFirst().orElse(null);
@@ -534,18 +555,22 @@ public class DoctorManagedBean implements Serializable {
         refreshPage("AccessesTable");
     }
 
-    public String openDetailsPage(PatientDoctorMapper id) {
+    public void openDetailsPage(PatientDoctorMapper id) {
         try {
             ResponseModel<PatientDoctorMapper> res = ubl.getPatientDoctorMapperById(id.getPatientDoctorMapperId());
             this.myCaseDetails = res.data;
-            return "details.jsf";
+            FacesContext.getCurrentInstance().getExternalContext().redirect("details.jsf");
         } catch (Exception e) {
             Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
             int caseid = Integer.parseInt(params.get("caseid"));
             ResponseModel<PatientDoctorMapper> res = ubl.getPatientDoctorMapperById(caseid);
             this.myCaseDetails = res.data;
         }
-        return "details.jsf";
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect("details.jsf");
+        } catch (IOException ex) {
+            Logger.getLogger(DoctorManagedBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public DoctorDetails getDoctorDetails() {

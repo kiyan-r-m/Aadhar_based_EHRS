@@ -10,6 +10,10 @@ import Entities.DoctorDetails;
 import Entities.DoctorNotes;
 import Entities.PatientDoctorMapper;
 import Entities.ResponseModel;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -17,13 +21,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.activation.MimetypesFileTypeMap;
 import javax.ejb.EJB;
-import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import org.primefaces.PrimeFaces;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 /**
  *
@@ -39,6 +45,7 @@ public class UserManagedBean implements Serializable {
     Collection<DoctorDetails> myAccess;
     ArrayList<DoctorNotes> myNotes;
     PatientDoctorMapper myCaseDetails;
+    StreamedContent fileDownload;
 
     @Inject
     Login login;
@@ -115,5 +122,24 @@ public class UserManagedBean implements Serializable {
         }
         return "details.jsf";
     }
+public StreamedContent getFileDownload(String name) {
+        StreamedContent download = new DefaultStreamedContent();
+        try {
+            File file = new File("D:\\EHR\\Aadhar_based_EHRS\\src\\main\\webapp\\images\\reports\\" + name);
+            InputStream input = new FileInputStream(file);
+//        download = new DefaultStreamedContent(input, externalContext.getMimeType(file.getName()), file.getName());
+            download = new DefaultStreamedContent().builder()
+                    .name(file.getName()).
+                    contentType(new MimetypesFileTypeMap().getContentType(file.getName()))
+                    .stream(() -> FacesContext.getCurrentInstance().getExternalContext().getResourceAsStream("D:\\EHR\\Aadhar_based_EHRS\\src\\main\\webapp\\images\\reports\\" + name)).build();
+            System.out.println("PREP = " + download.getName());
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(DoctorManagedBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return download;
+    }
 
+    public void setFileDownload(StreamedContent fileDownload) {
+        this.fileDownload = fileDownload;
+    }
 }

@@ -115,7 +115,7 @@
                                             </h:outputText>
                                         </h6>
                                         <div class="pl-3">
-                                            <h:outputText value="#{item.notes}"/>
+                                            <h:outputText value="#{item.notes}" escape="false"/>
                                         </div>
                                     </div>
                                 </c:forEach>
@@ -126,12 +126,31 @@
                 <div class="m-2">
                     <p:fieldset legend="Files &amp; Reports" toggleable="true" toggleSpeed="500">
                         <p class="m-0">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                            dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                            <p:carousel value="#{userManagedBean.myCaseDetails.patientFilesCollection}" var="files" circular="true" numVisible="2" numScroll="1">
+                                <h:form>
+                                    <p:commandLink style="color: #000">
+                                        <center>
+                                            <div><span style="border: 1px solid #233565; border-radius: 1rem; padding: 2rem">
+                                                    <i class="fa-solid fa-file-invoice fa-2xl" style="color: #233565" />
+                                                </span></div><br/>
+                                            <div style="font-weight: bold; padding-top: 2rem">
+                                                ${files.reportName}
+                                            </div><br/>
+                                            <div>
+                                                ${files.categoryId.reportCategory}
+                                            </div>
+                                        </center>
+                                        <p:fileDownload value="#{userManagedBean.getFileDownload(files.location)}" />
+                                    </p:commandLink>
+                                </h:form>
+                            </p:carousel>
                         </p>
                     </p:fieldset>
-                    
+                    <style>
+                        .ui-carousel-items-container {
+                            padding-top: 50px !important;
+                        }
+                    </style>
                 </div>
             </ui:define>
         </ui:composition>

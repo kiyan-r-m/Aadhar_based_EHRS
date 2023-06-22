@@ -56,8 +56,8 @@ public interface doctorBeanLocal {
 
     ResponseModel<Collection<MedicalReportCategories>> getAllReportCategories();
     ResponseModel addNotes(DoctorNotes data);
-    ResponseModel addMedication(Collection<PatientDiseaseMedication> data);
-    ResponseModel addPatientReports(Collection<PatientFiles> data);
+    ResponseModel addMedication(PatientDiseaseMedication data);
+    ResponseModel addPatientReports(PatientFiles data);
     ResponseModel updateMedication(PatientDiseaseMedication data);
     ResponseModel<Collection<PatientDiseaseMedication>> getMedicationsByPatientDoctorId(int id);
     ResponseModel sendOTPForAccess(String email, HttpServletRequest request);
