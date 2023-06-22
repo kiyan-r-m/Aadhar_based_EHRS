@@ -7,11 +7,13 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
         <link rel="shortcut icon" href="../images/favicon.ico"/>
-        <title>Home - EHR Admin</title>
+        <title>Home - EHR Doctor</title>
         <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous" />
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js" integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE" crossorigin="anonymous"></script>
+        <h:outputStylesheet library="css" name="main.css"/>
         <style>
             body .ui-menu .ui-menu-list .ui-menuitem.ui-menuitem-active>.ui-menuitem-link {
                 background: #233565;
@@ -36,13 +38,14 @@
         </style>
     </h:head>
     <h:body style="background-color: whitesmoke">
-        <nav class="navbar navbar-expand-lg" style="background: #233565; padding: 0.5rem 3rem 0.5rem 2rem;z-index: 2;position: fixed;width: 100%;">
+        <nav class="navbar navbar-expand-lg" style="background: #233565; padding: 0.5rem 3rem 0.5rem 1rem;z-index: 2;position: fixed;width: 100%;">
             <div class="container-fluid flex justify-content-between">
-                <button id="sb" value="sidebar" title="sidebar" onclick="PF('sidebar').show()" style="background: #233565; color: #FFFFFF" class="btn" ><i class="pi pi-bars" style="font-size: 1.6rem"></i></button>
+                <div><a href="home.jsf"><p:graphicImage value="../images/Health-crop.png" height="60"/></a></div>
                 <!--<div class="text-white fw-bold"> <i class="fa fa-user-circle fs-3 p-2 " /> Welcome, ${adminManagedBean.username} </div>-->
                 <h:form>
                     <p:menubar style="background: #233565">
-                        <p:submenu class="user-bedge" label="#{login.email}" icon="pi-fw fa fa-user-circle">
+                        <p:submenu class="user-bedge" label="Dr. #{login.email}" icon="pi-fw fa fa-user-circle">
+                            <p:menuitem value="Profile" action="#{doctorManagedBean.showProfile()}" icon="pi-fw fa fa-solid fa-user-doctor"/>
                             <p:menuitem value="Change Password" onclick="PF('manageChangePasswordDialog').show()" icon="pi-fw fa fa-light fa-key"/>
                             <p:menuitem value="Log out" action="#{logout.submit()}" icon="pi pi-fw pi-sign-out"/>
                         </p:submenu>
@@ -51,10 +54,10 @@
             </div>
         </nav>
         <div class="p-4" style="padding-top: 5rem !important">
-            <ui:insert name="content" />
+        <ui:insert name="content" />
         </div>
         <h:form>
-            <p:dialog header="Change Password" minHeight="40" width="25rem" showEffect="fade" modal="true" widgetVar="manageChangePasswordDialog" responsive="true">
+            <p:dialog header="Change Password" minHeight="40" width="25rem" showEffect="fade" modal="true" widgetVar="manageChangePasswordDialog" responsive="true">  
                 <p:outputPanel id="manage-change-password-content" class="ui-fluid">
                     <div class="field">
                         <p:outputLabel for="old" value="Old Password" styleClass="text-lg" />
@@ -62,15 +65,11 @@
                             <f:validateRegex pattern="^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,}$"  />
                         </p:password>
                         <p:message for="old" style="width: 98%;" class="my-2" />
-                    </div>
-                    <div class="field">
                         <p:outputLabel for="password" value="Password" styleClass="text-lg" />
                         <p:password id="password" style="width: 100%" required="true" validatorMessage="Please enter new password properly" requiredMessage="Please enter new password" value="#{passwordManagedBean.password}" >
                             <f:validateRegex pattern="^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,}$"  />
                         </p:password>
                         <p:message for="password" style="width: 98%;" class="my-2" />
-                    </div>
-                    <div class="field">
                         <p:outputLabel for="confirm" value="Confirm Password" styleClass="text-lg" style="font-weight: bold" />
                         <p:password id="confirm" style="width: 100%" required="true" validatorMessage="Please enter confirm password properly" requiredMessage="Please enter confirm password" value="#{passwordManagedBean.confirmPassword}" >
                             <f:validator validatorId="confirmPasswordValidator"  />
@@ -87,64 +86,6 @@
             </p:dialog>
             <p:growl id="msgs" showDetail="true" rendered="#{not facesContext.validationFailed}"/>
         </h:form>
-        <p:sidebar widgetVar="sidebar" style="width:17.5%;margin:0;padding:0;background-color: #233565">
-            <div style="padding: 0.8rem 0 0.1rem 0.1rem;">
-                <h:link outcome="home.jsf"><p:graphicImage value="../images/Health-crop.png" width="100%"/></h:link>
-                <h:form style="margin-top: 2rem">
-                    <div style="margin: 0 0 0 2rem;">
-                        <p:outputLabel class="py-2" style="font-size: 1.2rem; color: ghostwhite" value="Charts" />
-                    </div>
-                    <div class="pl-4">
-                    <div style="margin: 0 0 0 2rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('bloodGroupReport.jsf')}" class="text-white">
-                            <i class="fa fa-droplet fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="blood-groups" />
-                        </p:commandLink>
-                    </div>
-                    </div>
-                    <div style="margin: 0 0 0 2rem;">
-                        <p:outputLabel class="py-2" style="font-size: 1.2rem; color: ghostwhite" value="Functionalities" />
-                    </div>
-                    <div class="pl-4">
-                    <div style="margin: 0 0 0 2rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('users.jsf')}" class="text-white">
-                            <i class="pi pi-user fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="users" />
-                        </p:commandLink>
-                    </div>
-                    <div style="margin: 0 0 0 2rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('diseases.jsf')}" class="text-white">
-                            <i class="fa fa-viruses fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="diseases" />
-                        </p:commandLink>
-                    </div>
-                    <div style="margin: 0 0 0 1.6rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('symptoms.jsf')}" class="text-white">
-                            <p:graphicImage value="../images/symptoms.svg"/>
-                            <p:outputLabel class="fs-6 pl-1 py-2" value="symptoms" />
-                        </p:commandLink>
-                    </div>
-                    <div style="margin: 0 0 0 2rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('medications.jsf')}" class="text-white">
-                            <i class="fas fa-pills fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="medications" />
-                        </p:commandLink>
-                    </div>
-                    <div style="margin: 0 0 0 2rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('bloodGroups.jsf')}" class="text-white">
-                            <i class="fa fa-droplet fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="blood-groups"/>
-                        </p:commandLink>
-                    </div>
-                    <div style="margin: 0 0 0 2rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('fieldOfStudies.jsf')}" class="text-white">
-                            <i class="fa fa-graduation-cap fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="field-of-study"/>
-                        </p:commandLink>
-                    </div>
-                    </div>
-                </h:form>
-            </div>
-        </p:sidebar>
     </h:body>
 </html>
+

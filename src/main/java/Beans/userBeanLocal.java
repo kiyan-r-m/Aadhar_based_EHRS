@@ -54,6 +54,7 @@ public interface userBeanLocal {
     ResponseModel<DoctorDetails> getDoctorDetailById(int id);
     ResponseModel<Collection<Addresses>> getAllAddresses();
     ResponseModel getUserByAadharPassword(String aadhar, String password);
+    ResponseModel getUserByEmail(String email);
     ResponseModel<Users> getUserByUsernamePassword(String username, String password);
     ResponseModel removeUser(int id);
     ResponseModel<Collection<Roles>> getAllRoles();

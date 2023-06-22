@@ -13,60 +13,92 @@
     <h:body>
         <ui:composition template="adminPanel.xhtml">
             <ui:define name="content">
-                <div>
-                    <h1 class="quicksand-font-500">Welcome <h:outputText value="#{login.email}"/>! </h1>
-                    <h3 class="quicksand-font-500 subtitle">This is your Admin Dashboard</h3>
+                <div class="card m-2 px-4 py-2">
+                    <h1 style="font-family: sans-serif" class="quicksand-font-500">Welcome <h:outputText value="#{login.email}"/>! </h1>
                 </div>
 
                 <div class="grid">
-                    <div class="col  m-2">
-                        <p:card>
-                            <p class="m-0 p-0 text-6xl text-center">
-                                #{adminReportsManagedBean.doctorCounter}
-                            </p>
-                            <f:facet name="footer">
-                                <p class="m-0 quicksand-font-500 font-bold text-center">Doctors in active service</p>
-                            </f:facet>
-                        </p:card>
+                    <div class="col m-2">
+                        <div class="card">
+                            <div style="display: grid; grid-template-columns: 70% auto;align-items: center">
+                                <div class="px-4 pt-3 pb-2 text-left">
+                                    <div class="font-bold" style="color: grey">DOCTORS</div>
+                                    <small class="m-0 quicksand-font-500 font-bold" style="color: #4d4d4d">In active service</small>
+                                    <p class="m-0 text-6xl text-left">
+                                        #{adminReportsManagedBean.doctorCounter}
+                                    </p>
+                                </div>
+                                <div style="background: #233565; height: 100%;padding: 3rem 0" class="text-center">
+                                    <span style="border: 1px solid #233565; border-radius: 1rem;background: #233565">
+                                        <i class="fa-solid fa-user-doctor" style="color: #FFF; font-size: 3rem" />
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col m-2">
-                        <p:card>
-                            <p class="m-0 p-0 text-6xl text-center">
-                                #{adminReportsManagedBean.accessCounter}
-                            </p>
-                            <f:facet name="footer">
-                                <p class="m-0 quicksand-font-500 font-bold text-center">Active patient-doctor access</p>
-                            </f:facet>
-                        </p:card>
+                        <div class="card">
+                            <div style="display: grid; grid-template-columns: 70% auto;align-items: center">
+                                <div class="px-4 pt-3 pb-2 text-left">
+                                    <div class="font-bold" style="color: grey">ACCESS</div>
+                                    <small class="m-0 quicksand-font-500 font-bold" style="color: #4d4d4d">Active patient-doctor</small>
+                                    <p class="m-0 text-6xl text-left">
+                                        #{adminReportsManagedBean.accessCounter}
+                                    </p>
+                                </div>
+                                <div style="background: #233565; height: 100%;padding: 3rem 0" class="text-center">
+                                    <span style="border: 1px solid #233565; border-radius: 1rem;background: #233565">
+                                        <i class="fa-solid fa-unlock-keyhole" style="color: #FFF; font-size: 3rem" />
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col m-2">
-                        <p:card>
-                            <p class="m-0 p-0 text-6xl text-center">
-                                #{adminReportsManagedBean.doctorCounter}
-                            </p>
-                            <f:facet name="footer">
-                                <p class="m-0 quicksand-font-500 font-bold text-center">Average Doctors per district</p>
-                            </f:facet>
-                        </p:card>
+                        <div class="card">
+                            <div style="display: grid; grid-template-columns: 70% auto;align-items: center">
+                                <div class="px-4 pt-3 pb-2 text-left">
+                                    <div class="font-bold" style="color: grey">DOCTORS</div>
+                                    <small class="m-0 quicksand-font-500 font-bold" style="color: #4d4d4d">Average per district</small>
+                                    <p class="m-0 text-6xl text-left">
+                                        #{adminReportsManagedBean.doctorCounter}
+                                    </p>
+                                </div>
+                                <div style="background: #233565; height: 100%;padding: 3rem 0" class="text-center">
+                                    <span style="border: 1px solid #233565; border-radius: 1rem;background: #233565">
+                                        <i class="fa-solid fa-user-doctor" style="color: #FFF; font-size: 3rem" />
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col m-2">
-                        <p:card>
-                            <p class="m-0 p-0 text-6xl text-center">
-                                #{adminReportsManagedBean.doctorDensity}
-                            </p>
-                            <f:facet name="footer">
-                                <p class="m-0 quicksand-font-500 font-bold text-center">Doctors per 1000 people</p>
-                            </f:facet>
-                        </p:card>
-                    </div>
+                        <div class="card">
+                            <div style="display: grid; grid-template-columns: 70% auto;align-items: center">
+                                <div class="px-4 pt-3 pb-2 text-left">
+                                    <div class="font-bold" style="color: grey">DOCTORS</div>
+                                    <small class="m-0 quicksand-font-500 font-bold" style="color: #4d4d4d">Per 1000 people</small>
+                                    <p class="m-0 text-6xl text-left">
+                                        #{adminReportsManagedBean.doctorDensity}
+                                    </p>
+                                </div>
+                                <div style="background: #233565; height: 100%;padding: 3rem 0" class="text-center">
+                                    <span style="border: 1px solid #233565; border-radius: 1rem;background: #233565">
+                                        <i class="fa-solid fa-users" style="color: #FFF; font-size: 3rem" />
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
                 </div>
-                <div class="grid">
-                    <div class="col-6">
+
+                <div class="grid m-1">
+                    <div class="card col m-1">
                         <p:barChart model="#{adminReportsManagedBean.mixedModel}"/>
                     </div>
-                    <div class="col">
+                    <div class="col card m-1" style="max-height: 25rem">
                         <h:form>
-                            <div class="card">
+                            <div>
                                 <p:dataTable var="topDisease" value="#{adminReportsManagedBean.topDiseases}" stripedRows="true">
                                     <p:column headerText="Disease">
                                         <h:outputText value="#{topDisease.diseaseName}" />
@@ -79,18 +111,14 @@
                             </div>
                         </h:form>
                     </div>
-
                 </div>
 
-                <div class = "grid">
-                    <div class="col">
-                        <p:barChart model="#{adminReportsManagedBean.acBarModel}" style="width: 50%; height: 100%;"/>
-
+                <div class="grid m-1">
+                    <div class="col-9 card m-1" style="max-height: 25rem">
+                        <p:barChart model="#{adminReportsManagedBean.acBarModel}" style="height: 20rem; width: 100%"/>
                     </div>
-                    <div class="col">
-                        <div class="card">
-                            <p:donutChart model="#{adminReportsManagedBean.donutModel}" style="width: 100px"/>
-                        </div>
+                    <div class="col card m-1">
+                        <p:donutChart model="#{adminReportsManagedBean.donutModel}"/>
                     </div>
                 </div>
 

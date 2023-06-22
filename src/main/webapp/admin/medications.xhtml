@@ -14,7 +14,6 @@
     <h:body>
         <ui:composition template="adminPanel.xhtml">
             <ui:define name="content">
-                <div class="container">
                     <h:form>
                         <p:dataTable id="medicationTable" widgetVar="dtMedications" var="medication" value="#{adminManagedBean.getAllMedications()}" styleClass="medications-table" paginator="true" rows="5" paginatorPosition="bottom">
                             <f:facet name="header">
@@ -39,7 +38,7 @@
                             </p:column>
                             <p:column style="text-align: right; padding-right: 3rem">
                                 <p:growl id="message" showDetail="true"/>
-                                <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-medication-content"
+                                <p:commandButton icon="fa fa-pencil" update=":dialogs:manage-medication-content"
                                                  oncomplete="PF('manageMedicationDialog').show()" style="background-color: #233565; border: #233565"
                                                  styleClass="edit-button rounded-button ui-button-primary" process="@this">
                                     <f:setPropertyActionListener value="#{medication}" target="#{adminManagedBean.selectedMedication}" />
@@ -77,7 +76,6 @@
                         </p:dialog>
                         <p:growl id="message1" showDetail="true" rendered="#{not facesContext.validationFailed}" />
                     </h:form>
-                </div>
             </ui:define>
         </ui:composition>
     </h:body>

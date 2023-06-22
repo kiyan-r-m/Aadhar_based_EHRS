@@ -111,5 +111,5 @@ public class CommonMedications implements Serializable {
     public String toString() {
         return "Entities.CommonMedications[ medicationId=" + medicationId + " ]";
     }
-    
+
 }

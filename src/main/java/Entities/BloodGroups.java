@@ -4,7 +4,6 @@
  */
 package Entities;
 
-import ReportModels.BloodGroupFrequency;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.json.bind.annotation.JsonbTransient;

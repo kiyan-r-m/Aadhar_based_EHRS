@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,6 +38,7 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "PatientDoctorMapper.findAll", query = "SELECT p FROM PatientDoctorMapper p"),
     @NamedQuery(name = "PatientDoctorMapper.findByPatientDoctorMapperId", query = "SELECT p FROM PatientDoctorMapper p WHERE p.patientDoctorMapperId = :patientDoctorMapperId"),
     @NamedQuery(name = "PatientDoctorMapper.findByStartDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.startDate = :startDate"),
+    @NamedQuery(name = "PatientDoctorMapper.findByPatientIdDoctorIdDiseaseIdStartDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.patientId.userId = :patientId AND p.doctorId.doctorId = :doctorId AND p.diseaseId.diseaseId = :diseaseId AND p.startDate = :startDate"),
     @NamedQuery(name = "PatientDoctorMapper.findByEndDate", query = "SELECT p FROM PatientDoctorMapper p WHERE p.endDate = :endDate"),
     @NamedQuery(name = "PatientDoctorMapper.findByPatientId", query = "SELECT p FROM PatientDoctorMapper p WHERE p.patientId = :patientId")})
 @NamedStoredProcedureQueries({
@@ -82,10 +84,13 @@ public class PatientDoctorMapper implements Serializable {
     @ManyToOne(optional = false)
     private Users patientId;
     @OneToMany(mappedBy = "patientDoctorMapperId")
+    @JsonbTransient
     private Collection<PatientDiseaseMedication> patientDiseaseMedicationCollection;
     @OneToMany(mappedBy = "patientDoctorMapperId")
+    @JsonbTransient
     private Collection<PatientFiles> patientFilesCollection;
     @OneToMany(mappedBy = "patientDoctorMapperId")
+    @JsonbTransient
     private Collection<DoctorNotes> doctorNotesCollection;
 
     public PatientDoctorMapper() {

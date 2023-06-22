@@ -1,0 +1,241 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Profile - EHR</title>
+        <link rel="shortcut icon" href="images/favicon.ico"/>
+        <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </h:head>
+    <h:body>
+        <ui:composition template="doctorPanel.xhtml">
+            <ui:define name="content">
+                <style>
+                    .divider {
+                        width: 100%;
+                        height: 1.1rem;
+                        border-bottom: 0.2rem solid #233565;
+                        text-align: left;
+                    }
+                    .divider-text {
+                        font-size: 1.2rem;
+                        background-color: #ffffff;
+                        padding: 0px 10px;
+                        font-weight: bold;
+                        color: #233565;
+                    }
+                    body .ui-panelgrid .ui-panelgrid-cell {
+                        border: none;
+                        padding: 0.5rem
+                    }
+                </style>
+                <p:card class="mt-2">
+                    <div class="divider mb-5">
+                        <span class="divider-text">
+                            <i class="fa fa-solid fa-circle-info pr-2" />Personal Info
+                        </span>
+                    </div>
+                    <div class="px-4">
+                        <div class="flex flex-wrap justify-content-between">
+                            <h1 style="color: #233565; padding-bottom: 2rem">Dr. ${doctorManagedBean.doctorDetails.userId.username}</h1>
+                            <h:form><p:commandButton icon="fa fa-pencil" class="rounded-button mt-2" style="background-color: #233565;border-color: #233565" title="Edit Profile" process="@this" oncomplete="PF('manageDoctorDialog').show();" update=":dialogs:manage-doctor-content">
+                                    <f:ajax listener="#{doctorManagedBean.setProperties()}" />
+                                    <p:resetInput target=":dialogs:manage-doctor-content" />
+                                </p:commandButton></h:form>
+                        </div>
+                        <p:panelGrid columns="2">
+
+                            <p:outputLabel style="font-weight: bold;" class="text-xl" value="Aadhar-card No: "/>
+                            <p:outputLabel class="text-xl px-4" value="#{doctorManagedBean.doctorDetails.userId.aadharCardNo}" />
+
+                            <p:outputLabel style="font-weight: bold;" class="text-xl" value="Date of Birth: "/>
+                            <p:outputLabel class="text-xl px-4" value="#{doctorManagedBean.doctorDetails.userId.dob}" >
+                                <f:convertDateTime type="date" pattern="dd-MMM-yyyy"/>
+                            </p:outputLabel>
+
+                            <p:outputLabel style="font-weight: bold;" class="text-xl" value="Gender: "/>
+                            <p:outputLabel class="text-xl px-4" value="#{doctorManagedBean.doctorDetails.userId.gender}" />
+
+                            <p:outputLabel style="font-weight: bold;" class="text-xl" value="BloodGroup: "/>
+                            <p:outputLabel class="text-xl px-4" value="#{doctorManagedBean.doctorDetails.userId.bloodGroupId.bloodGroupName}" />
+
+                        </p:panelGrid>
+                    </div>
+                    <div class="divider my-5">
+                        <span class="divider-text">
+                            <i class="fa fa-solid fa-circle-info pr-2" />Qualification Info
+                        </span>
+                    </div>
+                    <div class="px-4">
+                        <p:panelGrid columns="2">
+                            <p:outputLabel style="font-weight: bold;" class="text-xl" value="Licence No: "/>
+                            <p:outputLabel class="text-xl px-4" value="#{doctorManagedBean.doctorDetails.licenceNo}" />
+
+                            <p:outputLabel style="font-weight: bold;" class="text-xl" value="Degree: "/>
+                            <p:outputLabel class="text-xl px-4" value="#{doctorManagedBean.doctorDetails.degreeId.degreeName}" />
+
+                            <p:outputLabel style="font-weight: bold;" class="text-xl" value="Field Of Study: "/>
+                            <p:outputLabel class="text-xl px-4" value="#{doctorManagedBean.doctorDetails.fieldOfStudyId.fieldName}" />
+                        </p:panelGrid>
+                    </div>
+                    <div class="divider my-5">
+                        <span class="divider-text">
+                            <i class="fa fa-solid fa-circle-info pr-2" />Contact Info
+                        </span>
+                    </div>
+                    <div class="px-4">
+                        <p:panelGrid columns="2">
+                            <p:outputLabel style="font-weight: bold;" class="text-xl" value="Contact No: "/>
+                            <p:outputLabel class="text-xl px-4" value="#{doctorManagedBean.doctorDetails.userId.contactNo}" />
+
+                            <p:outputLabel style="font-weight: bold;" class="text-xl" value="Email Id: "/>
+                            <p:outputLabel class="text-xl px-4" value="#{doctorManagedBean.doctorDetails.userId.emailid}" />
+
+                            <p:outputLabel style="font-weight: bold;" class="text-xl" value="Address: "/>
+                            <p:outputLabel class="text-xl px-4" value="#{doctorManagedBean.doctorDetails.userId.addressId.address}, #{doctorManagedBean.doctorDetails.userId.addressId.pincode.district.toLowerCase()}, #{doctorManagedBean.doctorDetails.userId.addressId.pincode.state}, #{doctorManagedBean.doctorDetails.userId.addressId.pincode.pincode.toString()}" />
+                        </p:panelGrid>
+                    </div>
+                </p:card>
+
+                <h:form id="dialogs">
+                    <p:dialog header="Edit Profile" minHeight="40" width="35rem" showEffect="fade" modal="true" widgetVar="manageDoctorDialog" responsive="true">  
+                        <p:scrollPanel style="height:600px">
+                            <p:outputPanel id="manage-doctor-content" class="ui-fluid p-5">
+                                <p:outputPanel rendered="#{not empty doctorManagedBean.editdoctorDetails}">
+                                    <div class="field">
+                                        <p:outputLabel for="userName">User Name</p:outputLabel>
+                                        <div><p:inputText style="width: 100% !important " id="userName" required="true" requiredMessage="Please enter username" value="#{doctorManagedBean.editdoctorDetails.userId.username}" /></div>
+                                        <div><p:message for="userName" styleClass="my-2" /></div>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="aadharCard">Aadhar-Card No</p:outputLabel>
+                                        <div>
+                                            <p:inputText style="width: 100% !important " id="aadharCard" required="true" requiredMessage="Please enter aadhar card no" validatorMessage="Please enter valid aadhar card no" value="#{doctorManagedBean.editdoctorDetails.userId.aadharCardNo}" >
+                                                <f:validateLongRange maximum="999999999999" minimum="120000000000" />
+                                            </p:inputText>
+                                        </div>
+                                        <div><p:message for="aadharCard" styleClass="my-2" /></div>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="dob">Date of Birth</p:outputLabel>
+                                        <div><p:datePicker style="width: 100% !important " id="dob" value="#{doctorManagedBean.editdoctorDetails.userId.dob}" monthNavigator="true" yearNavigator="true" showWeek="true" required="true" requiredMessage="Please select date of birth"/></div>
+                                        <div><p:message for="dob" styleClass="my-2" /></div>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="gender">Gender</p:outputLabel>
+                                        <div>
+                                            <p:selectOneRadio id="gender" value="#{doctorManagedBean.editdoctorDetails.userId.gender}" required="true" requiredMessage="Please select gender">
+                                                <f:selectItem itemValue="Male" itemLabel="Male" />
+                                                <f:selectItem itemValue="Female" itemLabel="Female" />
+                                            </p:selectOneRadio>
+                                        </div>
+                                        <div><p:message for="gender" styleClass="my-2" /></div>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="bloodGroup">Blood Group</p:outputLabel>
+                                        <div>
+                                            <p:selectOneMenu id="bloodGroup" value="#{doctorManagedBean.bloodGroupId}" filter="true" required="true" requiredMessage="Please select blood group">
+                                                <f:selectItem itemLabel="Select blood-group" itemValue="" noSelectionOption="true"/>
+                                                <f:selectItems value="#{doctorManagedBean.bloodGroups}" var="bg1" itemValue="#{bg1.bloodGroupId.toString()}" itemLabel="#{bg1.bloodGroupName}" />
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <div><p:message for="bloodGroup" styleClass="my-2" /></div>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="contact">Contact No</p:outputLabel>
+                                        <div>
+                                            <p:inputText style="width: 100% !important " id="contact" required="true" requiredMessage="Please select gender" validatorMessage="Please enter valid mobile no" value="#{doctorManagedBean.editdoctorDetails.userId.contactNo}" >
+                                                <f:validateLongRange maximum="9999999999" minimum="1000000000" />
+                                            </p:inputText>
+                                        </div>
+                                        <div><p:message for="contact" styleClass="my-2" /></div>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="email">Email Id</p:outputLabel>
+                                        <div>
+                                            <p:inputText style="width: 100% !important " id="email" required="true" requiredMessage="Please enter email" validatorMessage="Please enter email properly" value="#{doctorManagedBean.editdoctorDetails.userId.emailid}" >
+                                                <f:validateRegex pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$" />
+                                            </p:inputText>
+                                        </div>
+                                        <div><p:message for="email" styleClass="my-2" /></div>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="address">Address</p:outputLabel>
+                                        <div><p:inputText style="width: 100% !important " id="address" required="true" requiredMessage="Please enter address" value="#{doctorManagedBean.editdoctorDetails.userId.addressId.address}" /></div>
+                                        <div><p:message for="address" styleClass="my-2" /></div>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="pincode">Pin-Code</p:outputLabel>
+                                        <div>
+                                            <p:selectOneMenu filter="true" value="#{doctorManagedBean.pincode}" id="pincode" style="width: 100% !important" required="true" requiredMessage="Please select pincode" >
+                                                <f:selectItem itemLabel="Select pincode" itemValue="" noSelectionOption="true" />
+                                                <f:selectItems value="#{doctorManagedBean.pc}" />
+                                                <f:ajax listener="#{doctorManagedBean.onPincodeSelect()}" />
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <div><p:message for="pincode" styleClass="my-2" /></div>
+                                    </div>
+                                    <div class="field mt-2 mb-6">
+                                        <div class="flex justify-content-between flex-wrap">
+                                            <div>
+                                                <p:outputLabel for="district">District</p:outputLabel>
+                                                <div>
+                                                    <p:inputText disabled="true" widgetVar="district1" id="district" value="#{doctorManagedBean.editdoctorDetails.userId.addressId.pincode.district}" style="padding-left: 0.5rem; padding-right: 0" />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <p:outputLabel for="state">State</p:outputLabel>
+                                                <div>
+                                                    <p:inputText disabled="true" id="state" widgetVar="state1" value="#{doctorManagedBean.editdoctorDetails.userId.addressId.pincode.state}" style="padding-left: 0.5rem; padding-right: 0" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="licence" value="Licence No" />
+                                        <div>
+                                            <p:inputText id="licence" style="width: 100%;" required="true" requiredMessage="please enter licence no" value="#{doctorManagedBean.editdoctorDetails.licenceNo}" />
+                                        </div>
+                                        <p:message for="licence" class="my-2" />
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="degree" value="Degree" />
+                                        <div>
+                                            <p:selectOneMenu style="width: 100%" id="degree" value="#{doctorManagedBean.degreeId}" filter="true" required="true" requiredMessage="please select degree">
+                                                <f:selectItem itemLabel="Select degree" itemValue="" noSelectionOption="true"/>
+                                                <f:selectItems value="#{doctorManagedBean.degrees}" var="d" itemValue="#{d.degreeId.toString()}" itemLabel="#{d.degreeName}" />
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <p:message for="degree" class="my-2" />
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="field" value="Field Of Study"/>
+                                        <div>
+                                            <p:selectOneMenu style="width: 100%" id="field" value="#{doctorManagedBean.fieldId}" filter="true" required="true" requiredMessage="please select field of study">
+                                                <f:selectItem itemLabel="Select field" itemValue="" noSelectionOption="true"/>
+                                                <f:selectItems value="#{doctorManagedBean.fields}" var="f" itemValue="#{f.fieldId.toString()}" itemLabel="#{f.fieldName}" />
+                                            </p:selectOneMenu>
+                                        </div>
+                                        <p:message for="field" class="my-2" />
+                                    </div>
+                                </p:outputPanel>
+                            </p:outputPanel>
+                            <div class="flex justify-content-end flex-wrap mb-5 mt-2 mx-5">
+                                <p:commandButton  value="Save" icon="pi pi-check" actionListener="#{doctorManagedBean.editProfile()}"
+                                                  update="manage-doctor-content msgs" class="mx-2" process="manage-doctor-content @this" />
+                                <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageDoctorDialog').hide()"
+                                                 class="ui-button-secondary" type="button" />
+                            </div>
+                        </p:scrollPanel>
+                    </p:dialog>
+                    <p:growl id="msgs" showDetail="true" rendered="#{not facesContext.validationFailed}"/>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

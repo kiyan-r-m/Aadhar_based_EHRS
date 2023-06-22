@@ -5,6 +5,7 @@
 package CDIs;
 
 import Beans.AdminBeanLocal;
+import Beans.doctorBeanLocal;
 import Beans.userBeanLocal;
 import Config.Login;
 import Entities.*;
@@ -22,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -36,26 +38,32 @@ import org.primefaces.PrimeFaces;
 @SessionScoped
 public class AdminManagedBean implements Serializable {
 
-    int userId;
+    int userId, degreeId, fieldOfStudy;
     BigInteger aadharCardNo, contactNo;
-    String username, emailid, password, gender;
+    String username, emailid, password, confirm, gender, licenceNo;
     Date dob;
     Collection<Diseases> diseasesCollection = new ArrayList<>();
     Collection<Allergies> allergiesCollection = new ArrayList<>();
     BloodGroups userBloodGroupId = new BloodGroups();
     Roles userRoleId = new Roles();
     String Pincode;
-
+    Addresses address = new Addresses();
     @EJB
     AdminBeanLocal abl;
     @EJB
     userBeanLocal ubl;
+    @EJB
+    doctorBeanLocal dbl;
+    @Inject
+    private FacesContext facesContext;
 
     Collection<Diseases> diseases = new ArrayList<>();
     Collection<Allergies> allergies = new ArrayList<>();
+    Collection<Diseases> chronicDiseases = new ArrayList<>();
+    Collection<Diseases> chronicCollection = new ArrayList<>();
 //    Collection<Addresses> addresses = new ArrayList<>();
     Collection<BloodGroups> bloodGroups = new ArrayList<>();
-    Collection <FieldOfStudy> fields = new ArrayList<>();
+    Collection<FieldOfStudy> fields = new ArrayList<>();
     Collection<Roles> roles = new ArrayList<>();
     Collection<Users> users = new ArrayList<>();
     Users selectedUser;
@@ -88,6 +96,7 @@ public class AdminManagedBean implements Serializable {
     Login login;
 
     public AdminManagedBean() {
+        this.gender = "Male";
     }
 
     @PostConstruct
@@ -126,6 +135,14 @@ public class AdminManagedBean implements Serializable {
         ResponseModel<Collection<CommonMedications>> res6 = abl.getAllCommonMedications();
         if (res6.status) {
             medications = res6.data;
+        }
+        ResponseModel<Collection<FieldOfStudy>> res7 = abl.getAllFieldsofStudy();
+        if (res7.status) {
+            this.fields = res7.data;
+        }
+        ResponseModel<Collection<Degrees>> res8 = abl.getAllDegrees();
+        if (res8.status) {
+            this.degrees = res8.data;
         }
     }
 
@@ -431,6 +448,70 @@ public class AdminManagedBean implements Serializable {
         this.selectedFieldOfStudy = selectedFieldOfStudy;
     }
 
+    public String getConfirm() {
+        return confirm;
+    }
+
+    public void setConfirm(String confirm) {
+        this.confirm = confirm;
+    }
+
+    public Addresses getAddress() {
+        return address;
+    }
+
+    public void setAddress(Addresses address) {
+        this.address = address;
+    }
+
+    public String getLicenceNo() {
+        return licenceNo;
+    }
+
+    public void setLicenceNo(String licenceNo) {
+        this.licenceNo = licenceNo;
+    }
+
+    public Collection<Diseases> getChronicDiseases() {
+        return chronicDiseases;
+    }
+
+    public void setChronicDiseases(Collection<Diseases> chronicDiseases) {
+        this.chronicDiseases = chronicDiseases;
+    }
+
+    public Collection<Diseases> getChronicCollection() {
+        return chronicCollection;
+    }
+
+    public void setChronicCollection(Collection<Diseases> chronicCollection) {
+        this.chronicCollection = chronicCollection;
+    }
+
+    public int getDegreeId() {
+        return degreeId;
+    }
+
+    public void setDegreeId(int degreeId) {
+        this.degreeId = degreeId;
+    }
+
+    public int getFieldOfStudy() {
+        return fieldOfStudy;
+    }
+
+    public void setFieldOfStudy(int fieldOfStudy) {
+        this.fieldOfStudy = fieldOfStudy;
+    }
+
+    public Collection<FieldOfStudy> getFields() {
+        return fields;
+    }
+
+    public void setFields(Collection<FieldOfStudy> fields) {
+        this.fields = fields;
+    }
+
     public List<Users> getAllUsers() {
         ResponseModel<Collection<Users>> res = ubl.getAllUsers();
         if (res.status) {
@@ -461,9 +542,12 @@ public class AdminManagedBean implements Serializable {
 
     public void onPincodeSelect() {
         if (Pincode != null || Pincode.isEmpty()) {
-            Pincodes pin = pincodes.stream().filter(p -> p.getPincode().toString().equals(Pincode)).findFirst().orElse(null);
-
-            this.selectedUser.getAddressId().setPincode(pin);
+            Pincodes localP = pincodes.stream().filter(p -> p.getPincode().toString().equals(Pincode)).findFirst().orElse(null);
+            if (selectedUser == null) {
+                address.setPincode(localP);
+            } else {
+                this.selectedUser.getAddressId().setPincode(localP);
+            }
             UIComponent baseComponent = FacesContext.getCurrentInstance().getViewRoot();
             UIComponent component = findComponentById(baseComponent, "district");
             PrimeFaces.current().ajax().update(component.getClientId());
@@ -827,9 +911,9 @@ public class AdminManagedBean implements Serializable {
     public List<FieldOfStudy> getAllFieldOfStudies() {
         ResponseModel<Collection<FieldOfStudy>> res = abl.getAllFieldsofStudy();
         if (true) {
-            return (List<FieldOfStudy>) res.data;
+            this.fields = res.data;
         }
-        return null;
+        return (List<FieldOfStudy>) this.fields;
     }
 
     public void deleteFieldOfStudy(int id) {
@@ -875,6 +959,64 @@ public class AdminManagedBean implements Serializable {
             FacesContext.getCurrentInstance().getExternalContext().redirect(page);
         } catch (IOException ex) {
             Logger.getLogger(AdminManagedBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void signUp() {
+        Users u = new Users();
+        u.setUsername(username);
+        u.setEmailid(emailid);
+        u.setPassword(password);
+        u.setAadharCardNo(aadharCardNo);
+        u.setContactNo(contactNo);
+        Roles role = roles.stream().filter(r -> r.getRoleid().toString().equals(String.valueOf(roleId))).findFirst().orElse(null);
+        if (role != null) {
+            u.setRoleId(role);
+        }
+        u.setGender(gender);
+        u.setDob(dob);
+        BloodGroups b = bloodGroups.stream().filter(bg -> bg.getBloodGroupId().toString().equals(String.valueOf(bloodGroupId))).findFirst().orElse(null);
+        if (b != null) {
+            u.setBloodGroupId(b);
+        }
+        Addresses a = new Addresses();
+        a.setAddress(address.getAddress());
+        a.setPincode(address.getPincode());
+        u.setAddressId(a);
+        // For doctor
+        if (this.roleId == 3) {
+            ResponseModel res = ubl.addUser(u);
+            if (res.status == true) {
+                DoctorDetails details = new DoctorDetails();
+                FieldOfStudy f = fields.stream().filter(f1 -> f1.getFieldId().toString().equals(String.valueOf(fieldOfStudy))).findFirst().orElse(null);
+                if (f != null) {
+                    details.setFieldOfStudyId(f);
+                }
+                details.setLicenceNo(licenceNo);
+                Degrees d = degrees.stream().filter(de -> de.getDegreeId().toString().equals(String.valueOf(degreeId))).findFirst().orElse(null);
+                if (d != null) {
+                    details.setDegreeId(d);
+                }
+                details.setUserId(u);
+                ResponseModel res1 = dbl.addDoctorDetails(details);
+                if (res1.status == true) {
+                    redirectTo("login.jsf");
+                } else {
+                    facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", res1.message));
+                }
+            } else {
+                errorMessage("Register", res.message);
+            }
+        } // For User 
+        else if (this.roleId == 2) {
+            u.setDiseasesCollection(diseasesCollection);
+            u.setAllergiesCollection(allergiesCollection);
+            ResponseModel res = ubl.addUser(u);
+            if (res.status == true) {
+                redirectTo("login.jsf");
+            } else {
+                facesContext.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", res.message));
+            }
         }
     }
 }

@@ -59,10 +59,16 @@ public class PatientDiseaseMedication implements Serializable {
     private PatientDoctorMapper patientDoctorMapperId;
 
     public PatientDiseaseMedication() {
+        this.medicationId = new CommonMedications();
+        this.startDate = new Date();
+        this.patientDoctorMapperId = new PatientDoctorMapper();
     }
 
     public PatientDiseaseMedication(Integer patientDiseaseMedicationId) {
         this.patientDiseaseMedicationId = patientDiseaseMedicationId;
+        this.medicationId = new CommonMedications();
+        this.startDate = new Date();
+        this.patientDoctorMapperId = new PatientDoctorMapper();
     }
 
     public Integer getPatientDiseaseMedicationId() {
@@ -137,5 +143,5 @@ public class PatientDiseaseMedication implements Serializable {
     public String toString() {
         return "Entities.PatientDiseaseMedication[ patientDiseaseMedicationId=" + patientDiseaseMedicationId + " ]";
     }
-    
+
 }

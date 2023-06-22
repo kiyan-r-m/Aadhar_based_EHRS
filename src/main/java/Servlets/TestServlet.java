@@ -5,19 +5,13 @@
 package Servlets;
 
 import Beans.AdminBeanLocal;
+import Beans.doctorBeanLocal;
 import Beans.userBeanLocal;
-import Entities.*;
-import ReportModels.BloodGroupFrequency;
-import ReportModels.DateWiseCaseFrequency;
+import Entities.Users;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -43,6 +37,10 @@ public class TestServlet extends HttpServlet {
 
     @EJB
     AdminBeanLocal abl;
+
+    @EJB
+    doctorBeanLocal dbl;
+
     @PersistenceContext(unitName = "my_persistence")
     EntityManager em;
 
@@ -60,26 +58,24 @@ public class TestServlet extends HttpServlet {
             out.println("<title>Servlet TestServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            Collection<BloodGroupFrequency> respo = abl.getBloodGroupFrequency();
-            for(BloodGroupFrequency data : respo){
-                out.println(data.getBlood_group_name());
-            }
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
-            String datestring = "01-04-2023";
-            Date date = sdf.parse(datestring);
-            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-            Long countdoctors = abl.getAllUsersFrequency(3);
-            out.println(countdoctors);
-            LocalDate ld = LocalDate.of(2023,01,22);
-            //Collection<DateWiseCaseFrequency> cf = abl.getCasesFrequency(null, ld, null);
-            //for(DateWiseCaseFrequency data : cf){
-                //out.println(data.getFrequency().toString());
-            //}
-            out.println(abl.getTotalAcuteCases());
-            out.println(abl.getTotalChronicCases());
-            
-            
 
+//            Collection<BloodGroupFrequency> respo = abl.getBloodGroupFrequency();
+//            for(BloodGroupFrequency data : respo){
+//                out.println(data.getBlood_group_name());
+//            }
+//            SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
+//            String datestring = "01-04-2023";
+//            Date date = sdf.parse(datestring);
+//            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+//            Long countdoctors = abl.getAllUsersFrequency(3);
+//            out.println(countdoctors);
+//            LocalDate ld = LocalDate.of(2023,01,22);
+//            Collection<DateWiseCaseFrequency> cf = abl.getCasesFrequency(null, ld, null);
+//            for(DateWiseCaseFrequency data : cf){
+//                out.println(data.getFrequency().toString());
+//            }
+//            out.println(abl.getTotalAcuteCases());
+//            out.println(abl.getTotalChronicCases());
 //            ubl.addUser(new Users("Vesu", new Pincodes(395006)));
 //            ubl.updateAddresses(new Addresses(1, "Vesu", new Pincodes(395006)));
 //            ResponseModel<Collection<Users>> cm = ubl.getAllUsers();
@@ -97,25 +93,22 @@ public class TestServlet extends HttpServlet {
 //                System.out.println(users.message);
 //            }
 //            out.println("<h1>Servlet TestServlet at " + request.getContextPath() + "</h1>");
-            
-
-            ResponseModel<Users> res = new ResponseModel<>();
-
-            String password = passwordHash.generate( "Chr@1234".toCharArray());
-            out.println(password);
-            res = ubl.getUserByUsernamePassword("kiyanmorena", password);
-            out.println(res.data);
-            Users u = new Users();
-            u.setUsername("kiyanpatient");
-            u.setPassword("Chr@1234");
-            u.setAadharCardNo(BigInteger.valueOf(123412341234L));
-            u.setContactNo(BigInteger.valueOf(9824663176L));
-            u.setRoleId(em.find(Roles.class, 1));
-            u.setGender("male");
-            u.setDob(date);
-            u.setBloodGroupId(em.find(BloodGroups.class, 1));
-            u.setAddressId(em.find(Addresses.class, 1));
-            ubl.addUser(u);
+//            ResponseModel<Users> res = new ResponseModel<>();
+//            String password = passwordHash.generate( "secret12345".toCharArray());
+//            out.println(password);
+//            res = ubl.getUserByUsernamePassword("kiyanmorena", password);
+//            out.println(res.data);
+//            Users u = new Users();
+//            u.setUsername("kiyanmorena");
+//            u.setPassword("secret12345");
+//            u.setAadharCardNo(BigInteger.valueOf(123412341234L));
+//            u.setContactNo(BigInteger.valueOf(9824663176L));
+//            u.setRoleId(em.find(Roles.class, 1));
+//            u.setGender("male");
+//            u.setDob(date);
+//            u.setBloodGroupId(em.find(BloodGroups.class, 1));
+//            u.setAddressId(em.find(Addresses.class, 1));
+//            ubl.adduser1(u);
 //            Users u = new Users();
 //            u.setUserId(3);
 //            u.setUsername("Charmi Modi");
@@ -166,9 +159,57 @@ public class TestServlet extends HttpServlet {
 //            ubl.SendMailForForgetPassword("charmimodi242@gmail.com", response);
 //            ubl.ForgetPassword(request, response, 16, "6b824236-cea2-4c3d-8cf9-c940fafdc8ac", "Chr@1234");
 //            ubl.ChangePassword(16, "Chr@1234", "Krm@1234");
+            // dbl.addPatientAccess(2, new Users(25));
+
+//            Users p = ubl.getUserById(24).data;
+//            DoctorDetails d = dbl.getDoctorDetailsByUserId(23).data;
+//            PatientDoctorMapper pdm = new PatientDoctorMapper();
+//            Diseases disease = ubl.getDiseaseById(8).data;
+//            pdm.setPatientDoctorMapperId(1);
+//            pdm.setPatientId(p);
+//            pdm.setDoctorId(d);
+//            pdm.setDiseaseId(disease);
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//            pdm.setStartDate(sdf.parse("2023-01-26"));
+//            pdm.setEndDate(sdf.parse("2023-02-26"));
+//            dbl.updatePatientDoctorMapperRecord(pdm);
+
+//            Collection<java.util.Date> unsortedDates = new ArrayList<java.util.Date>();
+//            java.util.Date originalDate = new java.util.Date();
+//// Add some dates to the collection.
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//            unsortedDates.add(sdf.parse("2023-05-02"));
+//            unsortedDates.add(sdf.parse("2001-11-26"));
+//            unsortedDates.add(sdf.parse("2023-06-17"));
+//
+//            List<java.util.Date> dateList = new LinkedList<java.util.Date>(unsortedDates);
+//            Collections.sort(dateList);
+//            Iterator<java.util.Date> iterator = dateList.iterator();
+//            java.util.Date previousDate = null;
+//            while (iterator.hasNext()) {
+//                java.util.Date nextDate = iterator.next();
+//                if (nextDate.before(originalDate)) {
+//                    previousDate = (java.util.Date) nextDate;
+//                    continue;
+//                } else if (nextDate.after(originalDate)) {
+//                    if (previousDate == null || isCloserToNextDate(originalDate, previousDate, nextDate)) {
+//                        out.println(nextDate);
+//                    }
+//                } else {
+//                    out.println(nextDate);
+//                }
+//            }
+//            out.println(previousDate);
             out.println("</body>");
             out.println("</html>");
         }
+    }
+
+    private static boolean isCloserToNextDate(java.util.Date originalDate, java.util.Date previousDate, java.util.Date nextDate) {
+        if (previousDate.after(nextDate)) {
+            throw new IllegalArgumentException("previousDate > nextDate");
+        }
+        return ((nextDate.getTime() - previousDate.getTime()) / 2 + previousDate.getTime() <= originalDate.getTime());
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

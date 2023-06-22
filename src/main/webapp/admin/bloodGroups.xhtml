@@ -14,7 +14,6 @@
     <h:body>
         <ui:composition template="adminPanel.xhtml">
             <ui:define name="content">
-                <div class="container">
                     <h:form>
                         <p:dataTable id="bloodGroupTable" widgetVar="dtBloodGroups" var="bloodGroup" value="#{adminManagedBean.getAllBloodGroups()}" styleClass="blood-groups-table" paginator="true" rows="5" paginatorPosition="bottom">
                             <f:facet name="header">
@@ -38,7 +37,7 @@
                             </p:column>
                             <p:column style="text-align: right; padding-right: 3rem">
                                 <p:growl id="message" showDetail="true"/>
-                                <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-blood-group-content"
+                                <p:commandButton icon="fa fa-pencil" update=":dialogs:manage-blood-group-content"
                                                  oncomplete="PF('manageBloodGroupDialog').show()"
                                                  styleClass="edit-button rounded-button" style="background: #233565; border: #233565" process="@this">
                                     <f:setPropertyActionListener value="#{bloodGroup}" target="#{adminManagedBean.selectedBloodGroup}" />
@@ -76,7 +75,6 @@
                         </p:dialog>
                         <p:growl id="message1" showDetail="true" rendered="#{not facesContext.validationFailed}"/>
                     </h:form>
-                </div>
             </ui:define>
         </ui:composition>
     </h:body>

@@ -7,6 +7,7 @@ package Entities;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Collection;
+import javax.json.bind.annotation.JsonbTransient;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -60,6 +61,7 @@ public class Pincodes implements Serializable {
     @Column(name = "state")
     private String state;
     @OneToMany(mappedBy = "pincode")
+    @JsonbTransient
     private Collection<Addresses> addressesCollection;
 
     public Pincodes() {

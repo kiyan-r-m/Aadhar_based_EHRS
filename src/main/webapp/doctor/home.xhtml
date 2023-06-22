@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Home - EHR</title>
+        <link rel="shortcut icon" href="images/favicon.ico"/>
+        <link rel="stylesheet" href="https://unpkg.com/primeflex@^3/primeflex.css" />
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </h:head>
+    <h:body>
+        <ui:composition template="doctorPanel.xhtml">
+            <ui:define name="content">
+                <h:form>
+                    <p:dataTable id="AccessesTable" widgetVar="dtAccesses" var="access" value="#{doctorManagedBean.getAllAccesses()}" styleClass="accesses-table" paginator="true" rows="5" paginatorPosition="bottom">
+                        <f:facet name="header">
+                            <div class="accesses-table-header card p-3">
+                                <div class="flex justify-content-between flex-wrap" >
+                                    <div style="font-weight: bold" class="text-2xl">Patient Accesses</div>
+                                    <div>
+                                        <div class="filter-container ui-input-icon-left mx-3"> 
+                                            <i class="pi pi-search"></i>
+                                            <p:inputText id="globalFilter" onkeyup="PF('dtAccesses').filter()" placeholder="Search" />
+                                        </div>
+                                        <p:commandButton icon="pi pi-plus" styleClass="rounded-button" oncomplete="PF('manageAccessDialog').show()" style="margin-right: .5rem; background-color: #233565; border: #233565" update=":dialogs4:manage-access-content" >
+                                            <p:resetInput target=":dialogs4:manage-access-content" />
+                                        </p:commandButton>
+                                    </div>
+                                </div>
+                            </div>
+                        </f:facet>
+                        <p:column headerText="Patients" style="padding-left: 3rem" filterStyle="display: none" sortBy="#{access.username}" filterBy="#{access.username}">
+                            <p:outputLabel style="font-weight: bold;" class="text-xl" value="#{access.username}"/><br/>
+                            <h:outputText value="#{doctorManagedBean.getCurrentDiseaseByUserId(access.userId)}"/>
+                        </p:column>
+                        <p:column style="text-align: right; padding-right: 3rem">
+                            <p:growl id="message" showDetail="true"/>
+                            
+                            <p:commandButton icon="fa-solid fa-circle-info" rendered="#{doctorManagedBean.getPatientDoctorIdByUserId(access.userId) != 0}" styleClass="rounded-button" title="Add Notes" action="timeline.jsf" oncomplete="" style="margin-right: .5rem; background-color: #233565; border: #233565" >
+                                <f:setPropertyActionListener value="#{access}" target="#{doctorManagedBean.selectedPatient}" />
+                                <f:ajax listener="#{doctorManagedBean.getMyCases()}" />
+                            </p:commandButton>
+                            <p:commandButton icon="fa fa-plus" styleClass="rounded-button" action="addDisease.jsf" style="margin-right: .5rem; background: #233565; border: #233565" process="@this">
+                                <f:setPropertyActionListener value="#{access}" target="#{doctorManagedBean.selectedPatient}" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+
+                <h:form id="dialogs4">
+                    <p:dialog header="Patient Access" width="25rem" showEffect="fade" modal="true" widgetVar="manageAccessDialog"
+                              responsive="true">
+                        <p:outputPanel id="manage-access-content" class="ui-fluid">
+                            <div class="field">
+                                <p:outputLabel for="email">Enter Patient Email-Id</p:outputLabel>
+                                <div>
+                                    <p:inputText style="width: 100% !important " id="email" required="true" requiredMessage="Please enter email-id" validatorMessage="Please enter email-id properly" value="#{doctorManagedBean.email}" >
+                                        <f:validateRegex pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$" />
+                                    </p:inputText>
+                                </div>
+                                <div><p:message for="email" styleClass="my-2" /></div>
+                            </div>
+                        </p:outputPanel>
+                        <f:facet name="footer">
+                            <p:commandButton  value="Save" icon="pi pi-check" actionListener="#{doctorManagedBean.addAccess()}"
+                                              update="manage-access-content message1" process="manage-access-content @this" />
+                            <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageAccessDialog').hide()"
+                                             class="ui-button-secondary" type="button" />
+                        </f:facet>
+                    </p:dialog>
+                    <p:growl id="message1" showDetail="true" rendered="#{not facesContext.validationFailed}"/>
+                </h:form>
+
+                <h:form id="dialogs5">
+                    <p:dialog header="Patient Access" width="25rem" showEffect="fade" modal="true" widgetVar="manageAccessDialog1"
+                              responsive="true">
+                        <p:outputPanel id="manage-access-content1" class="ui-fluid">
+                            <div class="field">
+                                <p:outputLabel for="otp">Enter OTP</p:outputLabel>
+                                <div>
+                                    <p:inputText style="width: 100% !important " id="otp" required="true" requiredMessage="Please enter otp" validatorMessage="Please enter otp properly" value="#{doctorManagedBean.otp}" >
+                                        <f:validateLongRange minimum="100000" maximum="999999" />
+                                    </p:inputText>
+                                </div>
+                                <div><p:message for="otp" styleClass="my-2" /></div>
+                            </div>
+                        </p:outputPanel>
+                        <f:facet name="footer">
+                            <p:commandButton  value="Save" icon="pi pi-check" actionListener="#{doctorManagedBean.getAccess()}"
+                                              update="manage-access-content1 message1" process="manage-access-content1 @this" />
+                            <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageAccessDialog').hide()"
+                                             class="ui-button-secondary" type="button" />
+                        </f:facet>
+                    </p:dialog>
+                    <p:growl id="message1" showDetail="true" rendered="#{not facesContext.validationFailed}"/>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

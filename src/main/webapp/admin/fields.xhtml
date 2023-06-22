@@ -34,7 +34,7 @@
                 </p:column>
                 <p:column>
                     <p:growl id="message" showDetail="true"/>
-                    <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-fields-content"
+                    <p:commandButton icon="fa fa-pencil" update=":dialogs:manage-fields-content"
                                      oncomplete="PF('manageFieldDialog').show()"
                                      styleClass="edit-button rounded-button ui-button-primary" process="@this">
                         <f:setPropertyActionListener value="#{field}" target="#{adminManagedBean.selectedFieldOfStudy}" />

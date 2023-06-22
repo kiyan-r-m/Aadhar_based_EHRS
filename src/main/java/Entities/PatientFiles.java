@@ -51,18 +51,24 @@ public class PatientFiles implements Serializable {
     @Column(name = "report_date")
     @Temporal(TemporalType.DATE)
     private Date reportDate;
-    @JoinColumn(name = "patient_doctor_mapper_id", referencedColumnName = "patient_doctor_mapper_id")
-    @ManyToOne
-    private PatientDoctorMapper patientDoctorMapperId;
     @JoinColumn(name = "category_id", referencedColumnName = "category_id")
     @ManyToOne
     private MedicalReportCategories categoryId;
+    @JoinColumn(name = "patient_doctor_mapper_id", referencedColumnName = "patient_doctor_mapper_id")
+    @ManyToOne
+    private PatientDoctorMapper patientDoctorMapperId;
 
     public PatientFiles() {
+        this.categoryId = new MedicalReportCategories();
+        this.reportDate = new Date();
+        this.patientDoctorMapperId = new PatientDoctorMapper();
     }
 
     public PatientFiles(Integer fileId) {
         this.fileId = fileId;
+        this.categoryId = new MedicalReportCategories();
+        this.reportDate = new Date();
+        this.patientDoctorMapperId = new PatientDoctorMapper();
     }
 
     public Integer getFileId() {
@@ -137,5 +143,5 @@ public class PatientFiles implements Serializable {
     public String toString() {
         return "Entities.PatientFiles[ fileId=" + fileId + " ]";
     }
-    
+
 }
