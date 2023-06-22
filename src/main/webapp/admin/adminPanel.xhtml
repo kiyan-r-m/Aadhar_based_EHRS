@@ -95,53 +95,71 @@
                         <p:outputLabel class="py-2" style="font-size: 1.2rem; color: ghostwhite" value="Charts" />
                     </div>
                     <div class="pl-4">
-                    <div style="margin: 0 0 0 2rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('bloodGroupReport.jsf')}" class="text-white">
-                            <i class="fa fa-droplet fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="blood-groups" />
-                        </p:commandLink>
-                    </div>
+                        <div style="margin: 0 0 0 2rem">
+                            <p:commandLink action="#{adminManagedBean.redirectTo('bloodGroupReport.jsf')}" class="text-white">
+                                <i class="fa fa-chart-simple fs-5 pr-2 py-2" />
+                                <p:outputLabel class="fs-6 py-2" value="blood-groups" />
+                            </p:commandLink>
+                        </div>
+                        <div style="margin: 0 0 0 2rem">
+                            <p:commandLink action="#{adminManagedBean.redirectTo('cases.jsf')}" class="text-white">
+                                <i class="fa fa-chart-line fs-5 pr-2 py-2" />
+                                <p:outputLabel class="fs-6 py-2" value="Case Statistics" />
+                            </p:commandLink>
+                        </div>
+                        <div style="margin: 0 0 0 2rem">
+                            <p:commandLink action="#{adminManagedBean.redirectTo('topcases.jsf')}" class="text-white">
+                                <i class="fa fa-table fs-5 pr-2 py-2" />
+                                <p:outputLabel class="fs-6 py-2" value="Top cases" />
+                            </p:commandLink>
+                        </div>
+                        <div style="margin: 0 0 0 2rem">
+                            <p:commandLink action="#{adminManagedBean.redirectTo('allergycases.jsf')}" class="text-white">
+                                <i class="fa fa-table fs-5 pr-2 py-2" />
+                                <p:outputLabel class="fs-6 py-2" value="Top allergies" />
+                            </p:commandLink>
+                        </div>
                     </div>
                     <div style="margin: 0 0 0 2rem;">
                         <p:outputLabel class="py-2" style="font-size: 1.2rem; color: ghostwhite" value="Functionalities" />
                     </div>
                     <div class="pl-4">
-                    <div style="margin: 0 0 0 2rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('users.jsf')}" class="text-white">
-                            <i class="pi pi-user fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="users" />
-                        </p:commandLink>
-                    </div>
-                    <div style="margin: 0 0 0 2rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('diseases.jsf')}" class="text-white">
-                            <i class="fa fa-viruses fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="diseases" />
-                        </p:commandLink>
-                    </div>
-                    <div style="margin: 0 0 0 1.6rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('symptoms.jsf')}" class="text-white">
-                            <p:graphicImage value="../images/symptoms.svg"/>
-                            <p:outputLabel class="fs-6 pl-1 py-2" value="symptoms" />
-                        </p:commandLink>
-                    </div>
-                    <div style="margin: 0 0 0 2rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('medications.jsf')}" class="text-white">
-                            <i class="fas fa-pills fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="medications" />
-                        </p:commandLink>
-                    </div>
-                    <div style="margin: 0 0 0 2rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('bloodGroups.jsf')}" class="text-white">
-                            <i class="fa fa-droplet fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="blood-groups"/>
-                        </p:commandLink>
-                    </div>
-                    <div style="margin: 0 0 0 2rem">
-                        <p:commandLink action="#{adminManagedBean.redirectTo('fieldOfStudies.jsf')}" class="text-white">
-                            <i class="fa fa-graduation-cap fs-5 pr-2 py-2" />
-                            <p:outputLabel class="fs-6 py-2" value="field-of-study"/>
-                        </p:commandLink>
-                    </div>
+                        <div style="margin: 0 0 0 2rem">
+                            <p:commandLink action="#{adminManagedBean.redirectTo('users.jsf')}" class="text-white">
+                                <i class="pi pi-user fs-5 pr-2 py-2" />
+                                <p:outputLabel class="fs-6 py-2" value="users" />
+                            </p:commandLink>
+                        </div>
+                        <div style="margin: 0 0 0 2rem">
+                            <p:commandLink action="#{adminManagedBean.redirectTo('diseases.jsf')}" class="text-white">
+                                <i class="fa fa-viruses fs-5 pr-2 py-2" />
+                                <p:outputLabel class="fs-6 py-2" value="diseases" />
+                            </p:commandLink>
+                        </div>
+                        <div style="margin: 0 0 0 1.6rem">
+                            <p:commandLink action="#{adminManagedBean.redirectTo('symptoms.jsf')}" class="text-white">
+                                <p:graphicImage value="../images/symptoms.svg"/>
+                                <p:outputLabel class="fs-6 pl-1 py-2" value="symptoms" />
+                            </p:commandLink>
+                        </div>
+                        <div style="margin: 0 0 0 2rem">
+                            <p:commandLink action="#{adminManagedBean.redirectTo('medications.jsf')}" class="text-white">
+                                <i class="fas fa-pills fs-5 pr-2 py-2" />
+                                <p:outputLabel class="fs-6 py-2" value="medications" />
+                            </p:commandLink>
+                        </div>
+                        <div style="margin: 0 0 0 2rem">
+                            <p:commandLink action="#{adminManagedBean.redirectTo('bloodGroups.jsf')}" class="text-white">
+                                <i class="fa fa-droplet fs-5 pr-2 py-2" />
+                                <p:outputLabel class="fs-6 py-2" value="blood-groups"/>
+                            </p:commandLink>
+                        </div>
+                        <div style="margin: 0 0 0 2rem">
+                            <p:commandLink action="#{adminManagedBean.redirectTo('fieldOfStudies.jsf')}" class="text-white">
+                                <i class="fa fa-graduation-cap fs-5 pr-2 py-2" />
+                                <p:outputLabel class="fs-6 py-2" value="field-of-study"/>
+                            </p:commandLink>
+                        </div>
                     </div>
                 </h:form>
             </div>
